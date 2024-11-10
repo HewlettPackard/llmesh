@@ -1,0 +1,13 @@
+Tool to run the OpenAPI specifying the action to perform and the value if needed. 
+
+The possible actions include:
+- ListOpenApis: List all OpenAPI specifications present in the system as an array.
+- SelectOpenApi: Select a specific OpenAPI specification. Input required: the name of the specification as returned by ListOpenApis. Output: the status indicating whether the operation succeeded.
+- GetOpenApiVersion: Return the OpenAPI version of the selected specification.
+- GetInfo: Return the information dictionary (info object) of the selected specification.
+- GetServers: Return the servers dictionary (servers object) of the selected specification.
+- GetTags: List all tags of the selected specification.
+- GetMethodsByTag: List all methods of the selected specification for a specific tag. Input required: one tag from the list returned by GetTags. Output: a list of dictionaries, each containing the method name, its ID, and a descriptive summary.
+- GetMethodById: Return a dictionary with detailed information about a method selected by ID from the selected specification. The results include references to the schema for the request body (e.g., "$ref": "#/components/schemas/Ecscf" -> schema Ecscf) and responses (e.g., "$ref": "#/components/responses/EcscfResponse" -> response EcscfResponse).
+- GetRequestBody: Return a dictionary with the request body schema of the selected specification for a specific schema. Schema name can be found in the GetMethodById results.
+- GetResponse: Return a dictionary with the response schema of the selected specification for a specific response schema. Response schema name can be found in the GetMethodById results.

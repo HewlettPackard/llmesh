@@ -1,0 +1,2 @@
+The 'query' field requires users to input their questions or information requests 
+related to Athonet OpenAPI specification.

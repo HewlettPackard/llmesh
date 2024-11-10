@@ -1,0 +1,3 @@
+TemperatureFinder is a specialized tool designed to fetch the current temperature based on geographical coordinates.
+It utilizes an external API to retrieve temperature data for a specific latitude and longitude, 
+providing users with up-to-date and accurate weather information for any location worldwide.

@@ -1,0 +1,2 @@
+Response to the user request: '{request}' using the tool's 
+responses planned and executed in the previous tasks.

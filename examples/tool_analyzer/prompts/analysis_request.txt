@@ -1,0 +1,65 @@
+Create a Python function that takes a pandas DataFrame variable named `df` as input and returns a matplotlib plot called `plt`.
+
+### Example of input data:
+
+```python
+# pandas DataFrame
+'''
+{{ df_head }}
+'''
+# DataFrame columns
+'''
+{{ df_columns }}
+'''
+
+# pandas DataFrame variable is df
+```
+
+### Plot requirements:
+The plot should display: {{ analysis_query }}
+
+### Initial Python code to be updated:
+
+```python
+def {{ plot_function }}(df):
+    # TODO: Provide the plot
+    return plt
+```
+
+### Constraints:
+- Use only matplotlib and pandas packages (assumed to be already imported). Don't import them again inside the function.
+- Output only the Python function code.
+
+### Example:
+
+Input:
+```python
+# pandas DataFrame
+'''
+   Date       Temperature
+0  2020-01-01          15.5
+1  2020-01-02          17.3
+2  2020-01-03          16.8
+'''
+# DataFrame columns
+'''
+['Date', 'Temperature']
+'''
+
+# pandas DataFrame variable is df
+```
+
+Analysis Query: "Plot temperature over time"
+
+Output:
+```python
+def {{ plot_function }}(df):
+    fig, ax = plt.subplots()
+    ax.plot(df['Date'], df['Temperature'])
+    ax.set_title('Temperature Over Time')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Temperature')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    return plt
+```

@@ -52,10 +52,10 @@ Before setting up the LL-Mesh platform, please ensure the following prerequisite
 If you only need the core LL-Mesh services without the example applications, you can install them directly via `pip`:
 
   ```bash
-  pip install llmesh[all]
+  pip install 'llmesh[all]'
   ```
 
-After installation, refer to the [Usage Guide](https://github.com/HewlettPackard/llmesh/wiki/Usage) for instructions on using platform services.
+After installation, refer to the [Usage Guide](https://github.com/HewlettPackard/llmesh/wiki/Usage#using-library-services) for instructions on using platform services.
 
 #### Option 2: Full Example Setup
 

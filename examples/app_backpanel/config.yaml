@@ -1,0 +1,76 @@
+webapp:
+  ip: 0.0.0.0
+  port: 5011
+  brand: hpe
+  ssh_cert: adhoc
+
+tools:
+  - name: BasicCopywriter
+    type: PromptTool
+    base_url: https://127.0.0.1:5002/
+    version: 
+      min_version: "1.0.0"  # Versions >= 1.0.0 are supported
+      max_version: "2.0.0"  # Versions < 2.0.0 are supported
+    llms:
+      - label: ChatGPT-4o
+        settings:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0  
+          seed: 42
+      - label: ChatHPE-3.5
+        settings:
+          type: LangChainAzureChatOpenAI
+          azure_deployment: $ENV{HPE_DEPLOYMENT}
+          api_version: "2023-10-01-preview"
+          endpoint: $ENV{HPE_ENDPOINT}
+          api_key: $ENV{HPE_API_KEY}
+          temperature: 0  
+          seed: 42
+      - label: Gemini-1.5-Pro
+        settings:
+          type: LangChainChatGoogleGenAI
+          model_name: gemini-1.5-pro
+          api_key: $ENV{GOOGLE_API_KEY}
+          temperature: 0
+      - label: Claude-3.5-Sonnet
+        settings:
+          type: LangChainChatAnthropic
+          model_name: claude-3-5-sonnet-20240620
+          api_key: $ENV{ANTHROPIC_API_KEY}
+          temperature: 0
+      - label: Mistral-Large
+        settings:
+          type: LangChainChatMistralAI
+          model_name: mistral-large-latest
+          api_key: $ENV{MISTRAL_API_KEY}
+          temperature: 0
+    default:
+      path: examples/app_backpanel/tools/tool_copywriter/
+      files: 
+        config: config.yaml
+      prompts:
+        system_prompt: system_prompt.txt
+
+function:
+  discovery:
+    timeout: 100
+    cert_verify: false
+  llm:
+    type: LangChainChatOpenAI
+    model_name: gpt-4o
+    api_key: $ENV{OPENAI_API_KEY} #This should be replaced
+    temperature: 0  
+    seed: 42
+
+prompts:
+  type: JinjaTemplate
+  environment: examples/app_backpanel/prompts/
+  templates:
+    system_prompt: system_prompt.txt
+
+logger:
+  name: ATHON_BACKPANEL
+  log_file: examples/app_backpanel/logs/athon_backpanel.log
+  level: DEBUG

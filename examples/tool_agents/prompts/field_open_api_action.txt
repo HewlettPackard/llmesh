@@ -1,0 +1,1 @@
+The 'action' field requires users to input the action for the OpenAPI specification tool.

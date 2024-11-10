@@ -1,0 +1,10 @@
+A text with the information requested formatted in easy to read way.
+It should contain a summary and include a JSON example using data returned by the tool action inside tag <code>
+and including a field source with https://jdegre.github.io/parser.html
+
+Example:
+Here is the example request body for setting the configuration on TAS:
+<code>
+"source": "https://github.com/jdegre/5GC_APIs",
+"output": ...
+</code>

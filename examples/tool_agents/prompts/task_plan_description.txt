@@ -1,0 +1,2 @@
+Plan the OpenAPI actions required to fulfill the user request: '{request}'.
+For each action, determine if a specific value is needed to execute it, and consider how to obtain that value.

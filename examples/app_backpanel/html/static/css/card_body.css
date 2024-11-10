@@ -1,0 +1,36 @@
+/* Chat Messages */
+.card-body {
+    color: var(--card-body-text); 
+    background-color: var(--card-body-background);
+	margin-top: 10px;
+	padding-top: 10px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	max-height: 512px;
+    overflow-y: auto;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+	background-color: var(--accordion-background);
+	color: var(--accordion-text);
+	cursor: pointer;
+	padding: 4px;
+	width: 100%;
+	text-align: left;
+	border: none;
+	outline: none;
+	transition: 0.4s;
+}  
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.accordion-button {
+	width: 100%;
+	text-align: left; /* Optional: Ensures the text inside the button aligns to the left */
+	background-color: var(--card-body-button);
+	border: none;
+}
+
+#addInterfaceButton {
+    background-color: var(--modal-button);
+}

@@ -1,0 +1,6 @@
+OpenAPIManager is an efficient and user-friendly tool designed to gather information
+from the Athonet OpenAPI specifications. 
+It presents in a natural language form the information collected using
+the Athonet APIs specifications.
+OpenAPIManager is ideal for network operators that want to have information about the 
+API needed to perform an action.

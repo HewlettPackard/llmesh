@@ -1,0 +1,145 @@
+[tool.poetry]
+name = "LL-Mesh"
+version = "0.1.0"
+description = "HPE Athonet LLM Platform is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
+authors = ["Antonio Fin <antonio.fin@hpe.com>"]
+license = "MIT"
+repository = "https://github.hpe.com/antonio-fin/athon"
+homepage = "https://github.hpe.com/antonio-fin/athon/wiki"
+readme = "README.md"
+keywords = ["HPE", "Athon", 'LL-Mesh', 'Agentic Tool Platform']
+classifiers = [
+    'Development Status :: 4 - Beta',  # See https://pypi.org/classifiers/ for a full list
+    'Intended Audience :: Developers',
+    'License :: Other/Proprietary License',  
+    'Programming Language :: Python :: 3',
+]
+packages = [
+    { include = "athon", from = "self_serve_platform/package" },
+    { include = "self_serve_platform" }
+]
+exclude = [
+    "self_serve_platform/tests"
+]
+
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+pydantic = "^2.9.2"
+pyyaml = "^6.0.2"
+jinja2 = "^3.1.4"
+pyopenssl = "^24.2.1"
+flask = "^3.0.3"
+langchain = "^0.3.4"
+python-certifi-win32 = {version = "^1.6.1", platform = "win32"}
+
+# Chat
+langchain-openai = { version = "^0.2.3", optional = true }
+langchain-community = { version = "^0.3.3", optional = true }
+langchain-google-genai = { version = "^2.0.1", optional = true }
+langchain-anthropic = { version = "^0.2.3", optional = true }
+langchain-mistralai = { version = "^0.2.0", optional = true }
+langchain-nvidia-ai-endpoints = { version = "^0.3.0", optional = true }
+llama-index = { version = "^0.10.9", optional = true }
+llama-index-llms-openai = { version = "^0.1.31", optional = true }
+
+# Agents
+crewai = { version = "^0.74.1", optional = true }
+langgraph = { version = "^0.2.39", optional = true }
+
+# RAG
+chromadb = { version = "^0.4.24", optional = true }
+sentence-transformers = { version = "^3.2.0", optional = true }
+qdrant-client = { version = "^1.12.0", optional = true }
+PyMuPDF = { version = "^1.24.11", optional = true }
+unstructured = { version = "^0.16.0", optional = true, extras = ["docx", "pdf", "html"] }
+openpyxl = { version = "^3.1.5", optional = true }
+umap = { version = "^0.1.1", optional = true }
+matplotlib = { version = "^3.9.2", optional = true }
+
+# Test
+pytest = { version = "^8.3.3", optional = true }
+pytest-optional-tests = { version = "^0.1.1", optional = true }
+
+
+[tool.poetry.extras]
+chat = [
+    "langchain-openai",
+    "langchain-community",
+    "langchain-google-genai",
+    "langchain-anthropic",
+    "langchain-mistralai",
+    "langchain-nvidia-ai-endpoints",
+    "llama-index",
+    "llama-index-llms-openai"
+]
+
+agents = [
+    # Chat
+    "langchain-openai",
+    "langchain-community",
+    "langchain-google-genai",
+    "langchain-anthropic",
+    "langchain-mistralai",
+    "langchain-nvidia-ai-endpoints",
+    "llama-index",
+    "llama-index-llms-openai",
+    # Agents specific
+    "crewai",
+    "langgraph"
+]
+
+rag = [
+    # Chat
+    "langchain-openai",
+    "langchain-community",
+    "langchain-google-genai",
+    "langchain-anthropic",
+    "langchain-mistralai",
+    "langchain-nvidia-ai-endpoints",
+    "llama-index",
+    "llama-index-llms-openai",
+    # RAG specific
+    "chromadb",
+    "sentence-transformers",
+    "qdrant-client",
+    "PyMuPDF",
+    "unstructured",
+    "openpyxl",
+    "umap",
+    "matplotlib"
+]
+
+test = [
+    "pytest",
+    "pytest-optional-tests"
+]
+
+all = [
+    # Chat
+    "langchain-openai",
+    "langchain-community",
+    "langchain-google-genai",
+    "langchain-anthropic",
+    "langchain-mistralai",
+    "langchain-nvidia-ai-endpoints",
+    "llama-index",
+    "llama-index-llms-openai",
+    # Agents specific
+    "crewai",
+    "langgraph",
+    # RAG specific
+    "chromadb",
+    "sentence-transformers",
+    "qdrant-client",
+    "PyMuPDF",
+    "unstructured",
+    "openpyxl",
+    "umap",
+    "matplotlib"
+]
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

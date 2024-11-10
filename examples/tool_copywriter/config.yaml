@@ -1,0 +1,45 @@
+version: "1.0.0"
+
+webapp:
+  ip: 0.0.0.0
+  port: 5002
+  ssh_cert: adhoc
+
+tool:
+  name: BasicCopywriter
+  function: $FUNCTION{basic_copywriter}
+  arguments:
+    - name: original_text
+      type: str
+      description: $PROMPT{field_original_text_description}
+      default : null    
+  description: $PROMPT{tool_description}
+  return_direct: true
+  interface:
+    fields:
+      - name: original_text
+        label: "Insert the text to improve"
+        type: textarea
+        rows: 6
+
+function:
+  system_prompt: $PROMPT{system_prompt}
+  llm:
+    type: LangChainChatOpenAI
+    model_name: gpt-4o
+    api_key: $ENV{OPENAI_API_KEY}
+    temperature: 0  
+    seed: 42
+
+prompts:
+  type: JinjaTemplate
+  environment: examples/tool_copywriter/prompts/
+  templates:
+    tool_description: tool_description.txt
+    field_original_text_description: field_original_text_description.txt
+    system_prompt: system_prompt.txt
+
+logger:
+  name: BASIC_COPYWRITER
+  log_file: examples/tool_copywriter/logs/tool.log
+  level: DEBUG

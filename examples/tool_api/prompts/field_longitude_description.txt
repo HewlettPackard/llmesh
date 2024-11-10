@@ -1,0 +1,3 @@
+The 'longitude' field represents the east-west position of a point on the Earth's surface.
+For obtaining weather data using the TemperatureFinder, this field should contain the longitude 
+of the intended location. Longitude values are expressed in degrees, ranging from -180 to 180.

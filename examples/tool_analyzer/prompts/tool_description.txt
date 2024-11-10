@@ -1,0 +1,4 @@
+The Temperature Analyzer is a Python module designed for the HPE Athonet LLM Platform,
+utilizing the Global Land Temperature datasets to analyze historical temperature data. 
+This utility is ideal for applications requiring temperature analysis using a natural
+language, providing a simple interface for retrieving and displaying temperature plots.

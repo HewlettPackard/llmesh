@@ -1,0 +1,31 @@
+/* Style the buttons that are used to open and close the modal panel */
+.modal-dialog {
+	max-width: 600px;
+    max-height: 700px;
+    margin: 1.75rem auto;
+}
+.modal-content {
+	overflow-y: auto;
+    max-height: 700px;
+    background-color: var(--modal-background);
+    color: var(--modal-text); 
+    border-radius: 15px; 
+}
+.modal-header, .modal-body, .modal-footer {
+    border-color: var(--modal-border); 
+}
+.btn-secondary, .btn-primary {
+    background-color: var(--modal-button);
+    border: none; 
+}
+.btn-primary {
+    background-color: var(--modal-button);
+}
+.modal-body input[type="text"], 
+.modal-body input[type="number"], 
+.modal-body input[type="email"], 
+.modal-body input[type="date"] {
+    background-color: var(--modal-background);
+    color: var(--bot-text);
+    border: 1px solid var(--modal-border);
+}

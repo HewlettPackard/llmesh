@@ -1,0 +1,6 @@
+TelcoExpert is an efficient and user-friendly tool designed to streamline 
+the process of information retrieval from 3GPP standards. 
+Leveraging the latest advancements in natural language processing and machine learning, 
+this tool allows users to input queries and receive accurate, context-rich responses. 
+TelcoExpert is ideal for telecommunication engineers and profesionist, researchers, 
+students, and anyone seeking in-depth knowledge from 3GPP standards.
