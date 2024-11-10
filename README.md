@@ -38,18 +38,44 @@ The project is organized into the following directories:
 
 ### Prerequisites
 
-Before installing the LL-Mesh platform, please ensure the following:
+Before setting up the LL-Mesh platform, please ensure the following prerequisites are met:
 
-- Python 3.11 is installed on your machine.
-- All dependencies required by the platform are specified in the `pyproject.toml`. You can install all dependencies using one of the following commands:
+#### General Requirements
+
+- **Python 3.11**: Ensure Python 3.11 is installed on your machine.
+- **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
+
+### Installation Options
+
+#### Option 1: Install LL-Mesh Services Only
+
+If you only need the core LL-Mesh services without the example applications, you can install them directly via `pip`:
 
   ```bash
-  pip install poetry
-  poetry install --all-extras
+  pip install llmesh[all]
   ```
 
-- Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
-- **tool_rag**, **tool_agents** and **tool_analyzer** require initial setup, including copying specific data files and initializing them. For detailed instructions, please refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
+After installation, refer to the [Usage Guide](https://github.com/HewlettPackard/llmesh/wiki/Usage) for instructions on using platform services.
+
+#### Option 2: Full Example Setup
+
+To use the complete setup, including examples and demo applications, follow these steps:
+
+1. **Clone the Repository**: Download the LL-Mesh repository to your local machine.
+
+   ```bash
+   git clone https://github.com/HewlettPackard/llmesh.git
+   cd llmesh
+   ```
+
+2. **Install Dependencies**: All dependencies required by the platform are specified in the `pyproject.toml` file. Use the following commands to install them:
+
+   ```bash
+   pip install poetry
+   poetry install --all-extras
+   ```
+
+3. **Setup for Specific Tools**: Some tools, including **tool_rag**, **tool_agents**, and **tool_analyzer**, require additional setup (e.g., copying specific data files and initializing configurations). For detailed setup instructions, refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
 
 ### Running the UIs
 
