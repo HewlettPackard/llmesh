@@ -49,7 +49,10 @@ def _configure_routes(app, config):
     # Using a list to hold the selected project ID to allow modification within inner functions
     selected_project_id = [1]
     project_settings = {
-        "tool_repository": None,
+        "tool_repository": _discover_project_tools(
+            config["projects"],
+            config["chat"]["tools"],
+            config["chat"]["discovery"]),
         "projects": [],
         "engine": None
     }
@@ -160,13 +163,14 @@ def _init_project(project_settings, config):
     project_settings["tool_repository"] = _discover_project_tools(
         config["projects"],
         config["chat"]["tools"],
-        config["chat"]["discovery"])
+        config["chat"]["discovery"],
+        update=True)
     project_settings["projects"] = _create_project_manager(
         config["projects"],
         project_settings["tool_repository"])
     project_settings["engine"] = ReasoningEngine.create(config["chat"])
 
-def _discover_project_tools(projects_config, tools_config, discovery_config):
+def _discover_project_tools(projects_config, tools_config, discovery_config,update=False):
     tool_repository = ToolRepository.create(tools_config)
     tool_discovery = ToolDiscovery(discovery_config)
     tool_id_counter = 1
@@ -182,7 +186,10 @@ def _discover_project_tools(projects_config, tools_config, discovery_config):
                 }
                 if tool_info.get("interface"):
                     tool_metadata["interface"] = tool_info["interface"]["fields"]
-                tool_repository.add_tool(tool_info["tool"], tool_metadata)
+                if update:
+                    tool_repository.update_tool(tool_info["name"], tool_info["tool"], tool_metadata)
+                else:
+                    tool_repository.add_tool(tool_info["tool"], tool_metadata)
                 tool_id_counter += 1
     return tool_repository
 
