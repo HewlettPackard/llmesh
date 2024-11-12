@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "LL-Mesh"
+name = "llmesh"
 version = "0.1.0"
 description = "HPE Athonet LLM Platform is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
 authors = ["Antonio Fin <antonio.fin@hpe.com>"]
