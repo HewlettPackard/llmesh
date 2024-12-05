@@ -28,7 +28,7 @@ PLEASE READ: If the issue is a security vulnerability, please follow the guideli
 
 If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them.
 
-It is a great way to contribute to [Athon/LL-Mesh] by reporting an issue. Well-written and complete bug reports are always welcome! Please open an issue on GitHub and follow the template to fill in required information.
+It is a great way to contribute to [Athon/LAT-Mesh] by reporting an issue. Well-written and complete bug reports are always welcome! Please open an issue on GitHub and follow the template to fill in required information.
 
 Before opening any issue, please look up the existing [issues] to avoid submitting a duplication.
 If you find a match, you can "subscribe" to it to get notified on updates. If you have additional helpful information about the issue, please leave a comment.
