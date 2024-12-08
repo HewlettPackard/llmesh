@@ -1,10 +1,10 @@
 {
-    "page_title": "HPE LAT-Mesh - Backpanel",
+    "page_title": "HPE LLM Agentic Tool Mesh - Backpanel",
     "favicon_link": "ico/hpe_favicon.ico",
     "logo_image_src": "img/hpe_logo.png",
     "bot_image_src": "img/hpe_logo_bot.png",
     "user_image_src": "img/hpe_logo_user.png",
-    "company_announcement": "HPE LAT-Mesh",
+    "company_announcement": "HPE LLM Agentic Tool Mesh",
     "company_motto": "Chat that Orchestrate AI Tools",
     "cssVariables": {
         "--background-color": "rgb(44, 47, 59)",

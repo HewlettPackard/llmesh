@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.hpe.com/antonio-fin/athon"
 homepage = "https://github.hpe.com/antonio-fin/athon/wiki"
 readme = "README.md"
-keywords = ["HPE", "Athon", 'LAT-Mesh', 'Agentic Tool Platform']
+keywords = ["HPE", "Athon", 'LLM Agentic Tool Mesh', 'LLM Agentic Tool Platform']
 classifiers = [
     'Development Status :: 4 - Beta',  # See https://pypi.org/classifiers/ for a full list
     'Intended Audience :: Developers',
