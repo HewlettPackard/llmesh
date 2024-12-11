@@ -42,7 +42,7 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 
 #### General Requirements
 
-- **Python 3.11**: Ensure Python 3.11 is installed on your machine.
+- **Python 3.12**: Ensure Python 3.12 is installed on your machine.
 - **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
 
 ### Installation Options
@@ -83,7 +83,7 @@ You can run the tools and web applications individually or use the provided scri
 
 ## References
 
-For more details about installation, usage, and advanced configurations, please visit the [Athon project Wiki](https://github.com/HewlettPackard/llmesh/wiki).
+For more details about installation, usage, and advanced configurations, please visit the [LLM Agentic Tool Mesh project Wiki](https://github.com/HewlettPackard/llmesh/wiki).
 
 ## Contact
 
