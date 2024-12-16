@@ -12,7 +12,7 @@ Please use the DEI.md Guide at https://github.com/AllInOpenSource/ProjectBadging
 If you have used this file then you may qualify for a DEI badge to advertise that you follow these principles in your project.  Please see, https://github.com/AllInOpenSource/ProjectBadging for instructions to get badged!
 -->
 
-## [Athon/LL-Mesh]
+## [Athon/LLM Agentic Tool Mesh]
 
 Scope of the DEI.md File
 

@@ -1,6 +1,6 @@
-# LL-Mesh
+# LLM Agentic Tool Mesh
 
-Welcome to LL-Mesh, a pioneering initiative by HPE Athonet aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
+Welcome to LLM Agentic Tool Mesh, a pioneering initiative by HPE Athonet aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
 
 ## Understanding the Challenges
 
@@ -11,13 +11,13 @@ Gen AI has the potential to revolutionize businesses, but adopting it comes with
 
 ## Our Approach
 
-LL-Mesh empowers users to create tools and web applications using Gen AI with Low or No Coding. This approach addresses the technical challenges by simplifying the integration process. By leveraging the Pareto principle, LL-Mesh focuses on the 20% of features that cover 80% of user needs. This is achieved by abstracting complex, low-level libraries into easy-to-understand services that are accessible even to non-developers, effectively hiding the underlying complexity.
+LLM Agentic Tool Mesh empowers users to create tools and web applications using Gen AI with Low or No Coding. This approach addresses the technical challenges by simplifying the integration process. By leveraging the Pareto principle, LLM Agentic Tool Mesh focuses on the 20% of features that cover 80% of user needs. This is achieved by abstracting complex, low-level libraries into easy-to-understand services that are accessible even to non-developers, effectively hiding the underlying complexity.
 
 This simplicity not only helps technical teams but also enables non-technical teams to develop tools related to their domain expertise. The platform then allows for the creation of a "Mesh" of these Gen AI tools, providing orchestration capabilities through an agentic Reasoning Engine based on Large Language Models (LLMs). This orchestration ensures that all tools work together seamlessly, enhancing overall functionality and efficiency across the organization.
 
 ## Quick Start
 
-We have created a series of tools and examples to demonstrate what you can do with LL-Mesh. To get started, follow these steps to set up your environment, understand the project structure, and run the tools and web applications provided.
+We have created a series of tools and examples to demonstrate what you can do with LLM Agentic Tool Mesh. To get started, follow these steps to set up your environment, understand the project structure, and run the tools and web applications provided.
 
 ### Folder Structure
 
@@ -38,7 +38,7 @@ The project is organized into the following directories:
 
 ### Prerequisites
 
-Before setting up the LL-Mesh platform, please ensure the following prerequisites are met:
+Before setting up the LLM Agentic Tool Mesh platform, please ensure the following prerequisites are met:
 
 #### General Requirements
 
@@ -47,9 +47,9 @@ Before setting up the LL-Mesh platform, please ensure the following prerequisite
 
 ### Installation Options
 
-#### Option 1: Install LL-Mesh Services Only
+#### Option 1: Install LLM Agentic Tool Mesh Services Only
 
-If you only need the core LL-Mesh services without the example applications, you can install them directly via `pip`:
+If you only need the core LLM Agentic Tool Mesh services without the example applications, you can install them directly via `pip`:
 
   ```bash
   pip install 'llmesh[all]'
@@ -61,7 +61,7 @@ After installation, refer to the [Usage Guide](https://github.com/HewlettPackard
 
 To use the complete setup, including examples and demo applications, follow these steps:
 
-1. **Clone the Repository**: Download the LL-Mesh repository to your local machine.
+1. **Clone the Repository**: Download the LLM Agentic Tool Mesh repository to your local machine.
 
    ```bash
    git clone https://github.com/HewlettPackard/llmesh.git
@@ -83,7 +83,7 @@ You can run the tools and web applications individually or use the provided scri
 
 ## References
 
-For more details about installation, usage, and advanced configurations, please visit the [Athon project Wiki](https://github.com/HewlettPackard/llmesh/wiki).
+For more details about installation, usage, and advanced configurations, please visit the [LLM Agentic Tool Mesh project Wiki](https://github.com/HewlettPackard/llmesh/wiki).
 
 ## Contact
 
