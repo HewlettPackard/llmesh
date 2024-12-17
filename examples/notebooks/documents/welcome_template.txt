@@ -1,0 +1,17 @@
+Welcome to our chat service!
+
+Hello {{ name }},
+
+I’m Athon, your AI assistant here to help you with any questions or tasks you may have.
+
+Here are a few things I can assist you with:
+- Answering questions on a variety of topics.
+- Providing summaries and explanations.
+- Assisting with translations or information retrieval.
+
+Feel free to ask anything you need!
+
+How can I assist you today?
+
+Best regards,
+Athon
