@@ -1,0 +1,12 @@
+Goodbye!
+
+Dear {{ name }},
+
+Thank you for chatting with me today! I hope I was able to help you with your questions and provide useful assistance.
+
+If you have any further questions or need more help, feel free to come back anytime.
+
+Have a great day!
+
+Take care,
+Athon
