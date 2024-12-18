@@ -81,6 +81,13 @@ function bindLlmEvents() {
             const toolId = document.getElementById('toolSelection').value; // Get toolId from the selected option
             const url = `/tools/${toolId}/prompt`;
 
+            // Start spinner
+            const spinner = document.getElementById('loading-spinner');
+        
+            if (spinner) {
+                spinner.style.display = 'flex';
+            }
+
             // Send a POST request with the prompt text
             try {
                 const response = await fetch(url, {
@@ -107,6 +114,9 @@ function bindLlmEvents() {
             } catch (error) {
                 console.error("Request error:", error);
                 alert("An error occurred while improving the prompt. Please check your connection and try again.");
+            } finally {
+                // Hide the spinner after the request is complete (success or error)
+                spinner.style.display = 'none';
             }
         };
     } else {

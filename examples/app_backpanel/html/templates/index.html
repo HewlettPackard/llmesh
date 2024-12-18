@@ -13,6 +13,10 @@ Admin Panel
                 <div class="card-body">
                     {% include 'components/tool_details.html' %} <!-- Include tool details section -->
                     {% include 'components/tool_settings.html' %} <!-- Include tool settings form -->
+
+                    <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>  
                 </div>
                 {% include 'components/card_footer.html' %} <!-- Include the card footer component -->
             </div>
