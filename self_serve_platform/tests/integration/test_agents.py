@@ -17,11 +17,13 @@ To run these tests, use:
 
 import os
 import pytest
+from crewai_tools import SerperDevTool
 from langchain_community.tools.tavily_search import TavilySearchResults
 from athon.agents import TaskForce
 
 
 tavily_tool = TavilySearchResults(max_results=1)
+serper_tool = SerperDevTool()
 
 SHORT_EXECUTION = False
 
@@ -62,7 +64,7 @@ BASE_TASK_FORCE_CONFIG = {
                 'role': TASK1_AGENT_ROLE,
                 'goal': TASK1_AGENT_GOAL,
                 'backstory': TASK1_AGENT_BACKSTORY,
-                'tools': [tavily_tool]
+                'tools': [serper_tool]
             }
         },
         {

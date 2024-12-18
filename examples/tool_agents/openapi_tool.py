@@ -13,7 +13,7 @@ from typing import Optional, Type, Any
 import yaml
 import jsonref
 from pydantic import BaseModel, Field
-from langchain.tools import BaseTool
+from crewai.tools import BaseTool
 from self_serve_platform.chat.prompt_render import PromptRender
 from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger

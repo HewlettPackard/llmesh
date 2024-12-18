@@ -9,7 +9,7 @@ synthetis them from JSON results.
 """
 
 import sys
-from langchain.tools import BaseTool
+from crewai.tools import BaseTool
 from self_serve_platform.system.tool_client import AthonTool
 from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger

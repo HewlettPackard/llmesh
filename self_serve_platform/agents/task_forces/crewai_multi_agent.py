@@ -9,7 +9,7 @@ This module allows for:
 - Running a request on the system.
 """
 
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Union
 from pydantic import Field
 from crewai import Agent, Crew, Task, Process
 from self_serve_platform.chat.model import ChatModel
@@ -155,13 +155,17 @@ class CrewAIMultiAgentTaskForce(BaseTaskForce):  # pylint: disable=R0903
         :param tasks: List of tasks.
         :return: Initialized Crew object.
         """
-        return Crew(
-            agents=agents,
-            tasks=tasks,
-            memory=self.config.memory,
-            verbose=self.config.verbose,
-            process=self._get_process(self.config.plan_type)
-        )
+        plan_type = self.config.plan_type
+        params = {
+            "agents": agents,
+            "tasks": tasks,
+            "memory": self.config.memory,
+            "verbose": self.config.verbose,
+            "process": self._get_process(plan_type)
+        }
+        if plan_type == "Hierarchical":
+            params["manager_llm"] = self.llm
+        return Crew(**params)
 
     def _get_process(self, plan_type: str) -> Process:
         """
@@ -179,7 +183,7 @@ class CrewAIMultiAgentTaskForce(BaseTaskForce):  # pylint: disable=R0903
             logger.warning(f"No valid planning type '{plan_type}', set to 'Sequential'")
         return process
 
-    def run(self, message: str) -> BaseTaskForce.Result:
+    def run(self, message: Optional[Union[str, Dict[str, Any]]]) -> BaseTaskForce.Result:
         """
         Execute the crew with the input message.
 
@@ -188,7 +192,13 @@ class CrewAIMultiAgentTaskForce(BaseTaskForce):  # pylint: disable=R0903
         """
         try:
             self.result.status = "success"
-            response = self.crew.kickoff(inputs={'request': message})
+            if isinstance(message, str):
+                input_dict = {"request": message}
+            elif isinstance(message, dict):
+                input_dict = message
+            else:
+                raise ValueError(f"Invalid input message type: {type(message)}")
+            response = self.crew.kickoff(inputs=input_dict)
             self.result.completion = response.raw
             self.result.metadata = response.token_usage
             logger.debug(f"Prompt generated: {self.result.completion}")
