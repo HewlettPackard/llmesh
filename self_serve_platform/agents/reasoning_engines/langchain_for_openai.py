@@ -15,12 +15,9 @@ applications in data analysis, automated assistance, and interactive querying.
 """
 
 from typing import Dict, Any, List, Optional
-from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.runnable import RunnablePassthrough
-from langchain.agents.format_scratchpad import format_to_openai_functions
-from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
-from langchain.agents import AgentExecutor
+from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.tools import StructuredTool
 from self_serve_platform.system.log import Logger
 from self_serve_platform.chat.model import ChatModel
@@ -76,10 +73,9 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
         logger.debug("Creating Reasoning Engine with Tools")
         self.engine['prompt'] = self._init_prompt(self.config.system_prompt)
         self.engine['tools'] = self._get_tools()
-        self.engine['functions'] = self._convert_tools_to_functions()
         self.engine['model'] = self._init_model(self.config.model)
         self.engine['memory'] = self._init_memory(self.config.memory)
-        self.engine['chain'] = self._init_chain()
+        self.engine['agent'] = self._init_agent()
 
     def _init_prompt(self, system_prompt: str) -> ChatPromptTemplate:
         """
@@ -116,14 +112,6 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
             logger.error(result.error_message)
         return tools
 
-    def _convert_tools_to_functions(self) -> List[Dict[str, Any]]:
-        """
-        Convert tools to OpenAI function format.
-
-        :return: A list of tools converted to OpenAI function format.
-        """
-        return [convert_to_openai_function(f) for f in self.engine['tools']]
-
     def _init_model(self, model_config: Dict[str, Any]) -> Optional[ChatModel]:
         """
         Initialize the chat model.
@@ -134,7 +122,7 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
         chat_model = ChatModel.create(model_config)
         result = chat_model.get_model()
         if result.status == "success":
-            model = result.model.bind(functions=self.engine['functions'])
+            model = result.model
             logger.debug(f"Initialized engine model {model_config['type']}")
         else:
             model = None
@@ -158,15 +146,16 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
             logger.error(result.error_message)
         return memory
 
-    def _init_chain(self) -> RunnablePassthrough:
+    def _init_agent(self) -> RunnablePassthrough:
         """
-        Initialize the execution chain.
+        Initialize the execution agent.
 
-        :return: The initialized RunnablePassthrough execution chain.
+        :return: The initialized Agent
         """
-        return (RunnablePassthrough.assign(
-            agent_scratchpad=lambda x: format_to_openai_functions(x["intermediate_steps"])
-        ) | self.engine['prompt'] | self.engine['model'] | OpenAIFunctionsAgentOutputParser())
+        return create_tool_calling_agent(
+            self.engine['model'],
+            self.engine['tools'],
+            self.engine['prompt'])
 
     def _init_executor(self) -> AgentExecutor:
         """
@@ -175,10 +164,11 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
         :return: The initialized AgentExecutor.
         """
         return AgentExecutor(
-            agent=self.engine['chain'],
+            agent=self.engine['agent'],
             tools=self.engine['tools'],
+            memory=self.engine['memory'],
             verbose=self.config.verbose,
-            memory=self.engine['memory']
+            handle_parsing_errors=True
         )
 
 
@@ -246,9 +236,8 @@ class LangChainForOpenAIEngine(BaseReasoningEngine):
         try:
             self.result.status = "success"
             self.engine['tools'] = self._get_tools(tool_list)
-            self.engine['functions'] = self._convert_tools_to_functions()
-            self.engine["model"].kwargs["functions"] = self.engine['functions']
-            self.executor.tools = self.engine['tools']
+            self.engine['agent'] = self._init_agent()
+            self.executor = self._init_executor()
             logger.debug("Changed Project Tools")
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
