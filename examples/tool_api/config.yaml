@@ -22,7 +22,7 @@ tool:
         - ge: -180.0  # Greater than or equal to -180
         - le: 180.0  # Less than or equal to 180
   description: $PROMPT{tool_description}
-  return_direct: false
+  return_direct: true
   interface:
     fields:
       - name: latitude
