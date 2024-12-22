@@ -46,10 +46,15 @@ from athon.chat import ChatModel
     },
     {
         "type": "LangChainAzureChatOpenAI",
-        "api_key": os.getenv("HPE_API_KEY"),
+        "api_key": "",
         "azure_deployment": os.getenv("HPE_DEPLOYMENT"),
         "endpoint": os.getenv("HPE_ENDPOINT"),
-        "api_version": "2023-10-01-preview",
+        "api_version": os.getenv("HPE_API_VERSION"),
+        "azure_jwt_server": os.getenv("HPE_JWT_SERVER"),
+        "azure_client_id": os.getenv("HPE_CLIENT_ID"),
+        "azure_client_secret": os.getenv("HPE_CLIENT_SECRET"),
+        "azure_subscription_key": os.getenv("HPE_SUBSCRIPTION_KEY"),
+        "https_verify": False,
     },
 ])
 

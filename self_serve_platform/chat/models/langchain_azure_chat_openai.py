@@ -12,6 +12,8 @@ This module allows to:
 
 import os
 from typing import Dict, Any, Optional
+import httpx
+import requests
 from pydantic import Field
 from langchain_openai import AzureChatOpenAI
 from self_serve_platform.system.log import Logger
@@ -40,7 +42,35 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         )
         api_version: str = Field(
             ...,
-            description="API version if applicable."
+            description="API version."
+        )
+        azure_jwt_server: Optional[str] = Field(
+            None,
+            description="Endpoint of JWT token server."
+        )
+        azure_client_id: Optional[str] = Field(
+            None,
+            description="Client ID."
+        )
+        azure_client_secret: Optional[str] = Field(
+            None,
+            description="Client Secret."
+        )
+        azure_subscription_key: Optional[str] = Field(
+            None,
+            description="Subscription Key."
+        )
+        https_verify: Optional[bool] = Field(
+            None,
+            description="Check or skip HTTPS."
+        )
+        https_timeout: Optional[int] = Field(
+            10,
+            description="Timeout for HTTP request"
+        )
+        azure_subscription_key: Optional[str] = Field(
+            None,
+            description="Subscription Key."
         )
         seed: Optional[int] = Field(
             None,
@@ -64,10 +94,38 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         :return: AzureChatOpenAI model instance.
         """
         logger.debug("Selected Langchain AzureChatOpenAI")
+        self._init_api_key()
         os.environ["AZURE_OPENAI_API_KEY"] = self.config.api_key
         os.environ["AZURE_OPENAI_ENDPOINT"] = self.config.endpoint or "default_endpoint"
         args = self._init_model_arguments()
         return AzureChatOpenAI(**args)
+
+    def _init_api_key(self) -> None:
+        """
+        Initialize the API Key by requesting a JWT from the configured server.
+        """
+        if not self.config.azure_jwt_server:
+            return
+        try:
+            payload = {
+                "clientId": self.config.azure_client_id,
+                "clientSecret": self.config.azure_client_secret,
+            }
+            response = requests.post(
+                self.config.azure_jwt_server,
+                json=payload,  # Automatically sets 'Content-Type: application/json'
+                timeout=self.config.https_timeout,
+            )
+            response.raise_for_status()
+            data = response.json()
+            if 'token' not in data:
+                raise ValueError("Response JSON is missing the 'token' field.")
+            logger.debug("Azure API key updated with JWT")
+            self.config.api_key = data['token']
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error fetching JWT token {str(e)}")
+        except ValueError as e:
+            logger.error(f"Invalid or unexpected JSON response {str(e)}")
 
     def _init_model_arguments(self) -> Dict[str, Any]:
         """
@@ -84,6 +142,15 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
             args["temperature"] = self.config.temperature
         if self.config.seed is not None:
             args["seed"] = self.config.seed
+        if self.config.https_verify is not None:
+            args["http_client"] = httpx.Client(verify=self.config.https_verify)
+        default_headers = {}
+        if self.config.azure_client_id:
+            default_headers["Client-ID"] = self.config.azure_client_id
+        if self.config.azure_subscription_key:
+            default_headers["Ocp-Apim-Subscription-Key"] = self.config.azure_subscription_key
+        if default_headers:
+            args["default_headers"] = default_headers
         return args
 
     def invoke(self, message: str) -> 'LangChainAzureChatOpenAIModel.Result':
