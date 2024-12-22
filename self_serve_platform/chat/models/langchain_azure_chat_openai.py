@@ -12,6 +12,7 @@ This module allows to:
 
 import os
 from typing import Dict, Any, Optional
+import httpx
 from pydantic import Field
 from langchain_openai import AzureChatOpenAI
 from self_serve_platform.system.log import Logger
@@ -40,7 +41,23 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         )
         api_version: str = Field(
             ...,
-            description="API version if applicable."
+            description="API version."
+        )
+        azure_client_id: Optional[str] = Field(
+            None,
+            description="Client ID."
+        )
+        azure_subscription_key: Optional[str] = Field(
+            None,
+            description="Subscription Key."
+        )
+        https_verify: Optional[bool] = Field(
+            None,
+            description="Check or skip HTTPS."
+        )
+        azure_subscription_key: Optional[str] = Field(
+            None,
+            description="Subscription Key."
         )
         seed: Optional[int] = Field(
             None,
@@ -84,6 +101,15 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
             args["temperature"] = self.config.temperature
         if self.config.seed is not None:
             args["seed"] = self.config.seed
+        if self.config.https_verify is not None:
+            args["http_client"] = httpx.Client(verify=self.config.https_verify)
+        default_headers = {}
+        if self.config.azure_client_id:
+            default_headers["Client-ID"] = self.config.azure_client_id
+        if self.config.azure_subscription_key:
+            default_headers["Ocp-Apim-Subscription-Key"] = self.config.azure_subscription_key
+        if default_headers:
+            args["default_headers"] = default_headers
         return args
 
     def invoke(self, message: str) -> 'LangChainAzureChatOpenAIModel.Result':
