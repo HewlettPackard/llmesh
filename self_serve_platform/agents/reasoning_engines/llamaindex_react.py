@@ -224,8 +224,14 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         :param tool_list: List of tool names to set for the engine.
         :return: The result of the operation, containing status and completion or error message.
         """
-        self.result.status = "failure"
-        e = "Not possible change tool in LlamaIndexReActEngine"
-        self.result.error_message = f"An error occurred while setting the engine tools: {e}"
-        logger.error(self.result.error_message)
+        try:
+            self.result.status = "success"
+            self.engine['tools'] = self._get_tools(tool_list)
+            self.engine['function_tools'] = self._convert_tools_to_function_tools()
+            self.executor = self._init_executor()
+            logger.debug("Changed Project Tools")
+        except Exception as e:  # pylint: disable=broad-except
+            self.result.status = "failure"
+            self.result.error_message = f"An error occurred while setting the engine tools: {e}"
+            logger.error(self.result.error_message)
         return self.result
