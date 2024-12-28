@@ -15,25 +15,30 @@ messages:
   json_convert: true
   memory_key: chat_history
 
-memory:
-  core:
+memories:
+  messages:
     type: LangChainBufferWindow
     memory_key: chat_history
-    window: 30
+    window: 10
     return_messages: true
+  core:
+    type: ChromaCollection
+    path: examples/app_memory/data
+    collection: CoreMemGpt
+    reset: true
   recall:
-    storage:
-      type: ChromaCollection
-      path: examples/app_memory/data
-      collection: MemGpt
-      reset: true
-    loader:
-      type: ChromaForSentences
-    retriever:  
-      type: ChromaForSentences
-      expansion_type: None
-      n_results: 3
+    type: ChromaCollection
+    path: examples/app_memory/data
+    collection: RecallMemGpt
+    reset: true
+  loader:
+    type: ChromaForSentences
+  retriever:  
+    type: ChromaForSentences
+    expansion_type: None
+    n_results: 3
 
+memory:
   personal:
     type: LangChainBuffer
     memory_key: chat_history
@@ -54,6 +59,7 @@ prompts:
   type: JinjaTemplate
   environment: examples/app_memory/prompts/
   templates:
+    load_memory: load_memory.txt
     project_info: project_info.txt
     select_memory: select_memory.txt
     system_prompt: system_prompt.txt
