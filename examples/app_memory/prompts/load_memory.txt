@@ -8,7 +8,7 @@ Your task is:
 - Identify which messages and memories are **relevant** to the query.
 - Return **only** those relevant messages/memories—exact quotes when possible.
 - Do **not** provide extra commentary, analysis, or summarizations.
-- If nothing is relevant, return an empty set or a simple statement indicating no relevant information.
+- If nothing is relevant, return a simple statement indicating no relevant information.
 
 Output Requirements:
 - Respond **only** with the relevant messages and memories.

@@ -38,31 +38,13 @@ memories:
     expansion_type: None
     n_results: 3
 
-memory:
-  personal:
-    type: LangChainBuffer
-    memory_key: chat_history
-    return_messages: true
-  project:
-    type: LangChainSummary
-    memory_key: chat_history
-    return_messages: true
-    llm_model:
-      type: LangChainChatOpenAI
-      model_name: gpt-4o-mini
-      api_key: $ENV{OPENAI_API_KEY}
-      temperature: 0  
-      seed: 42
-    buffer: $PROMPT{project_info}
-
 prompts:
   type: JinjaTemplate
   environment: examples/app_memory/prompts/
   templates:
-    load_memory: load_memory.txt
     project_info: project_info.txt
-    select_memory: select_memory.txt
-    system_prompt: system_prompt.txt
+    load_memory: load_memory.txt
+    store_memory: store_memory.txt
 
 logger:
   name: MEMAPP

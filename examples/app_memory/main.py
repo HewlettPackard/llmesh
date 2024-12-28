@@ -11,12 +11,21 @@ and handling user input.
 """
 
 import re
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify
-from langchain.schema import HumanMessage
+from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain.schema import SystemMessage, HumanMessage, AIMessage
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages.utils import get_buffer_string
+from langchain_core.runnables.config import get_executor_for_config
+from langchain_core.tools import tool
 from self_serve_platform.chat.model import ChatModel
 from self_serve_platform.chat.memory import ChatMemory
 from self_serve_platform.chat.message_manager import MessageManager
 from self_serve_platform.chat.prompt_render import PromptRender
+from self_serve_platform.rag.data_storage import DataStorage
+from self_serve_platform.rag.data_loader import DataLoader
+from self_serve_platform.rag.data_retriever import DataRetriever
 from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger
 
@@ -24,9 +33,25 @@ from self_serve_platform.system.log import Logger
 # Parse command-line arguments and start the application
 PATH = 'examples/app_memory/'
 CONFIG = Config(PATH+'config.yaml').get_settings()
-UPDATE_SYSTEM_MEMORY = False
+
+MESSAGE_MEMORY_CONFIG = CONFIG["memories"]["messages"]
+MESSAGE_MEMORY_KEY = CONFIG["memories"]["messages"]["memory_key"]
+CORE_STORAGE_CONFIG = CONFIG["memories"]["core"]
+RECALL_STORAGE_CONFIG = CONFIG["memories"]["recall"]
+STORAGE_LOADER_CONFIG = CONFIG["memories"]["loader"]
+STORAGE_RETRIEVER_CONFIG = CONFIG["memories"]["retriever"]
+PROMPT_CONFIG = CONFIG["prompts"]
+MODEL_CONFIG = CONFIG["llm"]
+
 # Create Logger
 logger = Logger().configure(CONFIG["logger"]).get_logger()
+services = {
+    "prompt_render": PromptRender.create(PROMPT_CONFIG),
+    "chat_model": ChatModel.create(MODEL_CONFIG),
+    "data_loader": DataLoader.create(STORAGE_LOADER_CONFIG),
+    "data_retriever": DataRetriever.create(STORAGE_RETRIEVER_CONFIG)
+}
+memories = {}
 
 
 def create_webapp(config):
@@ -38,19 +63,91 @@ def create_webapp(config):
     logger.debug("Create Flask Web App")
     app = Flask(__name__)
     logger.debug("Configure Web App Routes")
-    personal_memory = _setup_memory(config["memory"]["personal"])
-    project_memory = _setup_memory(config["memory"]["project"])
-    if config["memory"]["personal"]["memory_key"] == config["memory"]["project"]["memory_key"]:
-        memory_key = config["memory"]["personal"]["memory_key"]
-        _configure_routes(app, personal_memory, project_memory, memory_key, config)
+    _init_memories()
+    agent = _init_agent()
+    _configure_routes(app, config, agent)
     return app
 
-def _setup_memory(config):
-    chat_memory = ChatMemory.create(config)
+def _init_memories():
+    memories["messages"] = _get_memory(MESSAGE_MEMORY_CONFIG)
+    memories["core"] = _get_collection(CORE_STORAGE_CONFIG)
+    _init_core_memory()
+    memories["recall"] = _get_collection(RECALL_STORAGE_CONFIG)
+    memories["last_recall"] = ""
+
+def _get_memory(memory_config):
+    chat_memory = ChatMemory.create(memory_config)
     result = chat_memory.get_memory()
     return result.memory
 
-def _configure_routes(app, personal_memory, project_memory, memory_key, config):
+def _get_collection(storage_config):
+    data_storage= DataStorage.create(storage_config)
+    result = data_storage.get_collection()
+    return result.collection
+
+def _init_core_memory():
+    memory = memories["core"]
+    prompt = services["prompt_render"].load("project_info").content
+    _store_memory(memory, prompt)
+
+def _store_memory(memory, element):
+    elements = [
+        {
+            "text": element,
+            "metadata": {
+                "timestamp": datetime.now(tz=timezone.utc),
+            }
+        }
+    ]
+    services["data_loader"].insert(memory, elements)
+
+def _init_agent():
+    tools = [
+        save_core_memory,
+        save_recall_memory,
+        update_last_recall_memory
+    ]
+    llm = services['chat_model'].get_model()
+    agent = create_tool_calling_agent(
+        llm.model,
+        tools,
+        _get_agent_prompt())
+    return AgentExecutor(
+        agent=agent,
+        tools=tools,
+        verbose=True,
+        handle_parsing_errors=True)
+
+def _get_agent_prompt():
+    system_prompt = services["prompt_render"].load("store_memory").content
+    logger.debug(f"Agent system prompt: '{system_prompt}'")
+    return ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("user", "{input}"),
+        MessagesPlaceholder(variable_name="agent_scratchpad")
+    ])
+
+@tool
+def save_core_memory(message: str) -> str:
+    """Save the core memory"""
+    _store_memory(memories["core"], message)
+    return "Core memory updated"
+
+@tool
+def save_recall_memory(message: str) -> str:
+    """Save the recall memory"""
+    _store_memory(memories["recall"], memories["last_recall"])
+    memories["last_recall"] = message
+    return "Recall memory saved"
+
+@tool
+def update_last_recall_memory(message: str) -> str:
+    """Update the last recall memory."""
+    memories["last_recall"] += f" {message}"
+    return "Recall memory updated"
+
+
+def _configure_routes(app, config, agent):
     """
     Configures the routes for the Flask application.
     """
@@ -61,20 +158,59 @@ def _configure_routes(app, personal_memory, project_memory, memory_key, config):
         data = request.json
         if 'inputs'in data:
             result = _load_memories(data['inputs'])
-            result = _convert_to_json(result)
-            return jsonify(result), 200
+            return jsonify(_convert_to_json(result)), 200
         return jsonify({"error": "No message provided"}), 400
 
     def _load_memories(inputs):
-        personal_result = personal_memory.load_memory_variables(inputs)
-        project_result = project_memory.load_memory_variables(inputs)
-        if not personal_result[memory_key]:
-            if project_result[memory_key]:
-                personal_result[memory_key].append(project_result[memory_key][0])
-        elif UPDATE_SYSTEM_MEMORY:
-            # Update System Memory with project memory
-            personal_result[memory_key][0] = project_result[memory_key][0]
-        return personal_result
+        with get_executor_for_config(config) as executor:
+            futures = [
+                executor.submit(_fetch_messages, inputs),
+                executor.submit(_fetch_core_memories, inputs),
+                executor.submit(_fetch_recall_memories, inputs),
+            ]
+            related_memories = _get_related_memories(futures)
+        return {MESSAGE_MEMORY_KEY: [AIMessage(content=related_memories)]}
+
+    def _fetch_messages(inputs):
+        messages = memories["messages"].load_memory_variables(inputs)
+        return get_buffer_string(messages["chat_history"])
+
+    def _fetch_core_memories(inputs):
+        return _retrieve_from_collection(memories["core"], inputs)
+
+    def _fetch_recall_memories(inputs):
+        recall_memories = _retrieve_from_collection(memories["recall"], inputs)
+        return [memories["last_recall"]] + recall_memories
+
+    def _retrieve_from_collection(collection, query):
+        result = services["data_retriever"].select(collection, query["input"])
+        if result.status == "success" and result.elements:
+            return [item["text"] for item in result.elements]
+        return []
+
+    def _get_related_memories(futures):
+        messages = [
+            SystemMessage(content = services["prompt_render"].load("load_memory").content),
+            HumanMessage(content = _get_messages_prompt(futures))
+        ]
+        llm = services['chat_model'].get_model()
+        result = llm.model.invoke(messages)
+        return result.content
+
+    def _get_messages_prompt(futures):
+        result = services["prompt_render"].render(
+            (
+                "The messagges are:\n" 
+                "{{ messages }}\n"
+                "The memories are:\n"
+                "{{ core_memories }}\n" 
+                "{{ recall_memories }}" 
+            ),
+            messages = futures[0].result(),
+            core_memories = futures[1].result(),
+            recall_memories = futures[2].result()
+        )
+        return result.content
 
     def _convert_to_json(prompts):
         messages = MessageManager.create(config["messages"])
@@ -86,70 +222,43 @@ def _configure_routes(app, personal_memory, project_memory, memory_key, config):
         "Route the store memory function"
         data = request.json
         if 'inputs' in data and 'outputs' in data:
-            inputs = _convert_to_messages(data['inputs'])
-            memory_type = _get_memory_type(inputs, memory_key)
-            # Clean text among tags code and img
-            cleaned_output = _remove_tags(data['outputs']['output'])
-            data['outputs']['output'] = cleaned_output
-            if memory_type == "project":
-                logger.debug("Saved project memory")
-                project_memory.save_context(inputs, data['outputs'])
-            else:
-                logger.debug("Saved personal memory")
-                personal_memory.save_context(inputs, data['outputs'])
+            inputs = data['inputs']
+            outputs = {"output": _remove_tags(data['outputs']['output'])}
+            _store_messages(inputs, outputs)
+            _store_memories(inputs, outputs)
             return jsonify({"message": "Memory saved"}), 200
         return jsonify({"error": "No message provided"}), 400
-
-    def _convert_to_messages(prompts):
-        messages = MessageManager.create(config["messages"])
-        result = messages.convert_to_messages(prompts)
-        return result.prompts
-
-    def _get_memory_type(inputs, memory_key):
-        project_description = ""
-        if inputs[memory_key]:
-            project_description = inputs[memory_key][0].content
-        prompt = _render_prompt(project_description, inputs["input"])
-        memory_type = _reason_with_llm(prompt)
-        return memory_type
 
     def _remove_tags(text):
         text = re.sub(r'<code>.*?</code>', '', text, flags=re.DOTALL)
         text = re.sub(r'<img>.*?</img>', '', text, flags=re.DOTALL)
         return text
 
-    def _render_prompt(project_description, input_message):
-        prompt = PromptRender.create(config["prompts"])
-        result = prompt.load(
-            "select_memory",
-            project_description = project_description,
-            input_message = input_message)
-        return result.content
+    def _store_messages(inputs, outputs):
+        memories["messages"].save_context(inputs, outputs)
 
-    def _reason_with_llm(prompt):
-        messages = [HumanMessage(content = prompt)]
-        content = _invoke_llm(messages)
-        return _remove_delimeters(content, "```")
-
-    def _invoke_llm(messages):
-        chat = ChatModel.create(config["llm"])
-        result = chat.invoke(messages)
-        return result.content
-
-    def _remove_delimeters(content, delimeters):
-        content = content.replace(" ", "")
-        content = content.replace("\t", "")
-        content = content.replace("\n", "")
-        for delimeter in delimeters:
-            content = content.replace(delimeter, "")
-        return content
+    def _store_memories(inputs, outputs):
+        message = services["prompt_render"].render(
+            (
+                "Human wrote:\n" 
+                "{{ input }}\n"
+                "Assistant responded:\n"
+                "{{ output }}\n" 
+                "Last recall memory:\n"
+                "{{ last_memory }}"
+            ),
+            input = inputs['input'],
+            output = outputs['output'],
+            last_memory = memories['last_recall']
+        )
+        result = agent.invoke({"input": message.content})
+        logger.debug(f"Prompt generated {result['output']}")
 
     @app.route('/clear', methods=['POST'])
     def clear_memory():
         "Route the clear memory function"
-        personal_memory.clear()
-        project_memory.clear()
-        project_memory.buffer = config["memory"]["project"]["buffer"]
+        memories["messages"].clear()
+        memories["last_recall"] = ""
         return jsonify({"message": "Memory cleared"}), 200
 
 
