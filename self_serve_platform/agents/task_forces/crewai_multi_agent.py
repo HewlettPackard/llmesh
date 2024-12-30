@@ -54,6 +54,14 @@ class CrewAIMultiAgentTaskForce(BaseTaskForce):  # pylint: disable=R0903
             False,
             description="Indicates if human input is required"
         )
+        dependencies: Optional[List[Any]] = Field(
+            None,
+            description="List of context data or tasks"
+        )
+        output_schema: Optional[Any] = Field(
+            None,
+            description="Used to define or store the output schema/model"
+        )
 
     class ConfigAgent(BaseTaskForce.ConfigAgent):
         """
@@ -140,12 +148,17 @@ class CrewAIMultiAgentTaskForce(BaseTaskForce):  # pylint: disable=R0903
         :param agent: Agent associated with the task.
         :return: Initialized Task object.
         """
-        return Task(
-            description=task_config.description,
-            expected_output=task_config.expected_output,
-            human_input=task_config.human_input,
-            agent=agent
-        )
+        task_args = {
+            "description": task_config.description,
+            "expected_output": task_config.expected_output,
+            "human_input": task_config.human_input,
+            "agent": agent
+        }
+        if task_config.dependencies is not None:
+            task_args["context"] = task_config.dependencies
+        if task_config.output_schema is not None:
+            task_args["output_pydantic"] = task_config.output_schema
+        return Task(**task_args)
 
     def _create_crew(self, agents: List[Agent], tasks: List[Task]) -> Crew:
         """
