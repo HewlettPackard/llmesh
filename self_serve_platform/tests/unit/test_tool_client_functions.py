@@ -146,6 +146,65 @@ def test_run_app():
         mock_run.assert_not_called()  # Ensure that Flask.run is not called during tests
 
 
+@pytest.fixture
+def mock_minimal_config():
+    """
+    Returns a minimal valid tool config, used to patch Config.get_settings.
+    """
+    return {
+        "tool": {
+            "name": "DefaultTool",
+            "function": "default_func",
+            "description": "A default tool"
+        }
+    }
+
+def test_no_config_no_logger(mock_minimal_config):  # pylint: disable=W0621
+    """
+    Test that AthonTool can initialize without explicitly passing config or logger.
+    We patch out file-system calls so it doesn't rely on an actual config file.
+    """
+    with patch(
+        "self_serve_platform.system.config.Config.get_settings",
+        return_value=mock_minimal_config):
+        tool = AthonTool()  # No config, no logger
+        assert tool.config["tool"]["name"] == "DefaultTool", \
+            "AthonTool should load or generate a default config when none is provided."
+        assert tool.logger is not None, \
+            "AthonTool should create a default logger when none is provided."
+
+
+def test_no_logger_but_valid_config():
+    """
+    Test that AthonTool can initialize with a valid config but no logger.
+    """
+    config = {
+        "tool": {
+            "name": "MyTool",
+            "function": "my_func",
+            "description": "Just a test tool"
+        }
+    }
+    tool = AthonTool(config=config)  # valid config, no logger
+    assert tool.config["tool"]["name"] == "MyTool"
+    assert tool.logger is not None, \
+        "AthonTool should create a default logger when none is provided."
+
+
+def test_no_config_but_logger(mock_minimal_config):  # pylint: disable=W0621
+    """
+    Test that AthonTool can initialize with a logger but no config.
+    """
+    mock_logger = MagicMock()
+    with patch(
+        "self_serve_platform.system.config.Config.get_settings",
+        return_value=mock_minimal_config):
+        tool = AthonTool(logger=mock_logger)  # no config, but we have a logger
+        assert tool.logger == mock_logger, "AthonTool should use the provided logger."
+        assert tool.config["tool"]["name"] == "DefaultTool", \
+            "AthonTool should fall back to a default config behavior when config is None."
+
+
 if __name__ == "__main__":
     current_file = os.path.abspath(__file__)
     pytest.main([current_file, '-vv'])

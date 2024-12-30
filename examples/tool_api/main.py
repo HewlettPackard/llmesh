@@ -11,18 +11,9 @@ import datetime
 import requests
 from requests.exceptions import HTTPError, Timeout, RequestException
 from self_serve_platform.system.tool_client import AthonTool
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
 
 
-# Parse command-line arguments and start the application
-config = Config('examples/tool_api/config.yaml').get_settings()
-LOG_CONFIG = config['logger']
-# Create Logger
-logger = Logger().configure(LOG_CONFIG).get_logger()
-
-
-@AthonTool(config, logger)
+@AthonTool()
 def temperature_finder(latitude: float, longitude: float) -> str:
     """
     Fetches the current temperature for specified geographic coordinates.
@@ -34,6 +25,9 @@ def temperature_finder(latitude: float, longitude: float) -> str:
     return f'The current temperature is {current_temperature}°C'
 
 def _get_weather_data(latitude: float, longitude: float) -> dict:
+    tool = temperature_finder.athon_tool
+    config = tool.config
+    logger = tool.logger
     base_url = config["function"]["meteo_api"]
     params = {
         'latitude': latitude,
@@ -57,6 +51,8 @@ def _get_weather_data(latitude: float, longitude: float) -> dict:
         raise RuntimeError(f"Error during request: {req_err}") from req_err
 
 def _find_current_temperature(weather_data: dict) -> float:
+    tool = temperature_finder.athon_tool
+    logger = tool.logger
     logger.debug("Search Current Temperature")
     current_utc_time = datetime.datetime.utcnow()
     time_list = [
