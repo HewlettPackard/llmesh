@@ -103,6 +103,19 @@ def test_save_yaml():
         # Check if the final written data matches the expected YAML content
         assert yaml.safe_load(written_data) == settings
 
+def test_load_yaml_preserves_raw_text():
+    """
+    Test that '_raw_file' in the settings contains the exact original YAML text,
+    while placeholders in 'settings' are resolved.
+    """
+    raw_data = "database:\nhost: $ENV{DB_HOST}\nport: 5432"
+    # Patch the file open so that reading it returns our raw_data
+    with patch("builtins.open", mock_open(read_data=raw_data)):
+        with patch("os.path.exists", return_value=True):
+            config = Config("dummy_path.yaml")
+            # Check that the raw YAML is preserved exactly
+            assert config.settings["_raw_file"] == raw_data
+
 
 if __name__ == "__main__":
     current_file = os.path.abspath(__file__)

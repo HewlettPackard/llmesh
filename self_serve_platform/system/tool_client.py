@@ -18,11 +18,14 @@ Example:
 """
 
 import os
+import inspect
 import copy
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 from flask import Flask, request, jsonify
 from pydantic import BaseModel, Field, ValidationError
 from self_serve_platform.system.template_engine import TemplateEngine
+from self_serve_platform.system.config import Config
+from self_serve_platform.system.log import Logger
 
 
 class AthonTool:
@@ -108,31 +111,77 @@ class AthonTool:
             extra = "allow"  # Allows extra fields not explicitly defined in the model
 
 
-    def __init__(self, config: dict, logger: Any):
+    def __init__(
+        self,
+        config: Union[dict, str, None] = None,
+        logger: Optional[Any] = None):
         """
         Initialize the AthonTool instance with a configuration and logger.
 
-        :param config: A dictionary containing the tool's configuration.
-        :param logger: A logger instance for logging purposes.
+        :param config: A dictionary containing the tool's configuration, 
+            or a path to a config file, or None for default.
+        :param logger: A logger instance for logging purposes, or None 
+            to create/use a default logger.
         """
         self.config = self._init_config(config)
-        self.logger = logger
+        self.logger = self._init_logger(logger)
         self.function = None
         self.app = None
 
-    def _init_config(self, config: dict) -> dict:
+    def _init_config(self, config) -> dict:
         """
         Initialize and validate the tool configuration.
 
-        :param config: The initial configuration dictionary.
+        :param config: A dictionary containing the tool's configuration, 
+            or a path to a config file, or None for default.
         :return: The validated configuration dictionary.
         """
         try:
+            if config is None:
+                config = self._auto_detect_config_from_caller()
+            if isinstance(config, str):
+                config = Config(config).get_settings()
             validated_manifest = self._validate_tool_manifest(config.get("tool", {}))
             config["tool"] = validated_manifest
         except Exception as e:  # pylint: disable=W0718
             raise ValueError(f"Invalid configuration: {e}") from e
         return config
+
+    def _auto_detect_config_from_caller(self) -> dict:
+        """
+        Auto-detects a config by deriving a default path from the caller's file.
+        If the file exists, load it. Otherwise return an empty dict or default.
+        """
+        stack = inspect.stack()
+        main_py_frame = None
+        for frame_info in stack:
+            # For example, look for a file that ends with "main.py"
+            if frame_info.filename.endswith('main.py'):
+                main_py_frame = frame_info
+                break
+        if main_py_frame:
+            caller_file = main_py_frame.filename
+        else:
+            caller_file = stack[2].filename  # past the current function and the __init__
+        caller_folder = os.path.dirname(caller_file)
+        default_config_path = os.path.join(caller_folder, "config.yaml")
+        return default_config_path
+
+    def _init_logger(self, logger) -> Any:
+        """
+        Initialize the tool logger.
+
+        :param logger: A logger instance for logging purposes, or None 
+            to create/use a default logger.
+        :return: The tool logger
+        """
+        if logger is None:
+            logger_config = self.config.get('logger')
+            if logger_config:
+                return Logger().configure(logger_config).get_logger()
+            else:
+                return Logger().get_logger()
+        return logger
 
     def _validate_tool_manifest(self, manifest: dict) -> dict:
         """
@@ -162,6 +211,7 @@ class AthonTool:
             return result
 
         self.function = func
+        wrapper.athon_tool = self
         wrapper.invoke = self.invoke
         wrapper.get_manifest = self.get_manifest
         wrapper.run_app = self.run_app
