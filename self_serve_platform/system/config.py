@@ -53,11 +53,13 @@ class Config:
         """
         try:
             with open(self.config_file, 'r', encoding='utf-8') as file:
-                file_data = yaml.safe_load(file)
+                raw_content = file.read()
+                file_data = yaml.safe_load(raw_content)
                 self.prompts = file_data.get("prompts", {})
             settings = self._replace_placeholders_in_data(file_data)
             if settings:
                 settings["_file_path"] = self.config_file
+                settings["_raw_file"] = raw_content
                 settings["_sentitive_keys"] = self.sentitive_keys
             return settings
         except FileNotFoundError:
