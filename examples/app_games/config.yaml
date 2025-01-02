@@ -1,0 +1,47 @@
+webapp:
+  ip: 0.0.0.0
+  port: 5001
+  brand: hpe
+  ssh_cert: adhoc
+
+games:
+  - type: WhoAmI
+    name: "Who am I?"
+    chat:
+      type: LangChainForOpenAI
+      system_prompt: $PROMPT{whoami_prompt}
+      rules_prompt: $PROMPT{whoami_rules}
+      secret_identity_prompt: $PROMPT{whoami_secret_identity}
+      model: 
+        type: LangChainChatOpenAI
+        model_name: gpt-4o
+        api_key: $ENV{OPENAI_API_KEY}
+        temperature: 0
+        seed: 42
+      memory:
+        type: LangChainBufferWindow
+        memory_key: chat_history
+        window: 10
+        return_messages: true
+      tools:
+        type: LangChainStructured
+      verbose: true
+  - type: FantasiaGenesis
+    name: "Fantasia Genesis"
+    chat:
+      type: TBD
+
+prompts:
+  type: JinjaTemplate
+  environment: examples/app_games/prompts/
+  templates:
+    chat_system_prompt: chat_system_prompt.txt
+    chat_error_message: chat_error_message.txt
+    whoami_prompt: whoami_prompt.txt
+    whoami_rules: whoami_rules.txt
+    whoami_secret_identity: whoami_secret_identity.txt
+
+logger:
+  name: ATHON
+  log_file: examples/app_games/logs/athon.log
+  level: DEBUG

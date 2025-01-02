@@ -1,0 +1,88 @@
+/* Chat Header */
+.card-header{
+    border-radius: 15px 15px 0 0 !important;
+    border-bottom: 0 !important;
+    padding-bottom: 5px;
+}
+
+.msg_head{
+	position: relative;
+}
+
+.img_cont{
+	position: relative;
+	height: 70px;
+	width: 70px;
+}
+
+.logo_img{
+	height: 70px;
+	width: 70px;
+	border:1.5px solid #f5f6fa;
+
+}
+
+.online_icon{
+	position: absolute;
+	height: 15px;
+	width:15px;
+	background-color: #4cd137;
+	border-radius: 50%;
+	bottom: 0.2em;
+	right: 0.4em;
+	border:1.5px solid white;
+}
+
+.offline_icon{
+	background-color: #b30000 !important;
+}
+
+.user_info{
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: 15px;
+}
+
+.user_info span{
+	font-size: 20px;
+	color: white;
+}
+
+.user_info p{
+	font-size: 10px;
+	color: rgba(255,255,255,0.6);
+}
+
+/* Chat projects dropdown menu */
+.dropdown-menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 0.25rem;
+}
+
+#chatTypeDropdown {
+    width: 40%;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--chat-type-project);
+    color: white;
+    height: 40px;
+    border-radius: 15px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center; /* Center the text */
+    -webkit-appearance: none; /* Remove the default dropdown arrow in Safari */
+    -moz-appearance: none; /* Remove the default dropdown arrow in Firefox */
+    appearance: none; /* Remove the default dropdown arrow in other browsers */
+}
+
+#chatTypeDropdown:focus {
+    box-shadow: none;
+    outline: 0;
+}
+
+.dropdown-container {
+    width: 50%;
+    margin: 10 auto;
+}

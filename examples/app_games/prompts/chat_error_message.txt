@@ -1,0 +1,4 @@
+**ERROR: Failed to process your message**
+**ACTION: Refresh your Browser or, if not enough, restart the WebApp**
+
+**LOG: {{error}}**

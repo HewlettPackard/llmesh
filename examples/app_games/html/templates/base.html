@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <!-- Dynamic Favicon -->
+    <link rel="icon" type="image/png" id="dynamic-favicon" href="" sizes="32x32">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_messages.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_input_form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tools_modal.css') }}">
+</head>
+<body data-customer-type="{{ theme }}">
+    {% block content %}{% endblock %}
+    
+    <!-- jQuery JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/showdown.min.js') }}"></script>
+    <!-- Dynamic Theme JavaScript -->
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script>
+        // Get the theme variable from the session passed from Flask
+        const currentTheme = "{{ theme }}";
+        // Apply the theme
+        applyTheme(currentTheme);
+    </script>
+    <!-- Custom JavaScript -->
+    <script type="module" src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/tools.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/projects.js') }}"></script>
+</body>
+</html>
