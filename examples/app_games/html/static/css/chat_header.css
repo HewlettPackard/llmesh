@@ -53,7 +53,7 @@
 	color: rgba(255,255,255,0.6);
 }
 
-/* Chat projects dropdown menu */
+/* Chat games dropdown menu */
 .dropdown-menu-container {
     display: flex;
     justify-content: center;
@@ -65,7 +65,7 @@
 #chatTypeDropdown {
     width: 40%;
     background-color: rgba(0, 0, 0, 0.3);
-    border: 2px solid var(--chat-type-project);
+    border: 2px solid var(--chat-type-game);
     color: white;
     height: 40px;
     border-radius: 15px;

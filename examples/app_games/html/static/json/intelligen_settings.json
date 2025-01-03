@@ -11,7 +11,7 @@
         "--gradient-start": "rgb(38, 51, 61)",
         "--gradient-middle": "rgb(50, 55, 65)",
         "--gradient-end": "rgb(33, 33, 78)",
-        "--chat-type-project": "#ff9267",
+        "--chat-type-game": "#ff9267",
         "--bot-message": "#ff9267",
         "--bot-text": "black",
         "--table-lines": "black",

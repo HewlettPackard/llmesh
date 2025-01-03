@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_messages.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_input_form.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tools_modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings_modal.css') }}">
 </head>
 <body data-customer-type="{{ theme }}">
     {% block content %}{% endblock %}
@@ -34,7 +34,7 @@
     </script>
     <!-- Custom JavaScript -->
     <script type="module" src="{{ url_for('static', filename='js/chat.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/tools.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/projects.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/games.js') }}"></script>
 </body>
 </html>

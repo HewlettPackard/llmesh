@@ -1,19 +1,19 @@
 Here are the detailed rules for the “Who Am I?” game:
 
-1. **Objective**: 
-   - The goal is for each player (or the chatbot user) to figure out the identity assigned to them. This identity can be a famous person, fictional character, or any well-known figure.
+**Objective**: 
+- The goal is for each player (or the chatbot user) to figure out the identity assigned to them. This identity can be a famous person, fictional character, or any well-known figure.
 
-2. **Setup**:
-   - The chatbot secretly chooses a name or character and assigns it to the guessing player.
-   - The guessing player does not know their assigned identity at the start of the game.
+**Setup**:
+- The chatbot secretly chooses a name or character and assigns it to the guessing player.
+- The guessing player does not know their assigned identity at the start of the game.
 
-3. **Asking Questions**:
-   - The guessing player can ask only *yes/no* questions about their assigned identity.
-   - Example questions: “Am I a real person?”, “Am I alive?”, “Am I fictional?”, “Am I known for sports?”, etc.
+**Asking Questions**:
+- The guessing player can ask only *yes/no* questions about their assigned identity.
+- Example questions: “Am I a real person?”, “Am I alive?”, “Am I fictional?”, “Am I known for sports?”, etc.
 
-4. **Answering Questions**:
-   - Whoever knows the identity (in this case, the chatbot) answers each yes/no question truthfully: “Yes,” “No,” or occasionally “I’m not sure” if it’s not clearly defined.
+**Answering Questions**:
+- Whoever knows the identity (in this case, the chatbot) answers each yes/no question truthfully: “Yes,” “No,” or occasionally “I’m not sure” if it’s not clearly defined.
 
-5. **Guessing**:
-   - At any point, the guessing player can try to guess their identity.
-   - If they guess correctly, they win! If not, they can continue asking questions until they figure it out.
+**Guessing**:
+- At any point, the guessing player can try to guess their identity.
+- If they guess correctly, they win! If not, they can continue asking questions until they figure it out.

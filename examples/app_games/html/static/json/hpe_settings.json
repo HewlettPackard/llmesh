@@ -11,7 +11,7 @@
         "--gradient-start": "#FFEB59",
         "--gradient-middle": "#FC6161",
         "--gradient-end": "#F740FF",
-        "--chat-type-project": "#01A982",
+        "--chat-type-game": "#01A982",
         "--bot-message": "#008567",
         "--bot-text": "white",
         "--table-lines": "white",

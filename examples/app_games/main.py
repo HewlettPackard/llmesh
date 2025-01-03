@@ -13,11 +13,8 @@ rendering a chat interface, and handling user input.
 from flask import Flask, render_template, request, jsonify
 from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger
-from self_serve_platform.chat.memory import ChatMemory
 from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.system.tool_server import ToolDiscovery
-from self_serve_platform.agents.tool_repository import ToolRepository
-from self_serve_platform.agents.reasoning_engine import ReasoningEngine
+from examples.app_games.game import Game
 
 
 # Supported Brands
@@ -31,8 +28,7 @@ logger = Logger().configure(CONFIG['logger']).get_logger()
 
 def create_webapp(config):
     """
-    Create the Flask application with its routes and
-    the reasoning engine.
+    Create the Flask application with its routes.
     """
     logger.debug("Create Flask Web App")
     app = Flask(__name__, template_folder = "./html/templates", static_folder = "./html/static")
@@ -40,42 +36,36 @@ def create_webapp(config):
     _configure_routes(app, config)
     return app
 
+def _discover_games(config):
+    games_list = []
+    for game_config in config["games"]:
+        game_object = Game().create(game_config)
+        games_list.append(game_object)
+    return games_list
+
 def _configure_routes(app, config):
     """
     Configures the routes for the Flask application.
     """
 
-    # Using a list to hold the selected project ID to allow modification within inner functions
-    selected_project_id = [1]
-    project_settings = {
-        "tool_repository": _discover_project_tools(
-            config["projects"],
-            config["chat"]["tools"],
-            config["chat"]["discovery"]),
-        "projects": [],
-        "engine": None
-    }
+    games = _discover_games(config)
+    selected_game_id = [1]
 
     @app.route("/")
     def index():
         """
         Route to the index page.
-        Clears the engine's chat history and renders the chat interface.
+        Clears the chat history and renders the chat interface.
         """
         logger.debug("Load Home page")
-        _clear_all_memories()
-        _init_project(project_settings, config)
-        project = project_settings["projects"][0]
-        project_settings["engine"].set_tools(project["tools"])
-        project_settings["engine"].set_memory(project["memory"])
+        _reset_games()
         session_variables = _get_session_variables(config["webapp"]["brand"])
         result = render_template('index.html', **session_variables)
         return result
 
-
-    def _clear_all_memories():
-        for project in project_settings["projects"]:
-            project["memory"].clear()
+    def _reset_games():
+        for game in games:
+            game.reset()
 
     def _get_session_variables(brand):
         if brand not in BRANDS:
@@ -94,130 +84,123 @@ def _configure_routes(app, config):
         try:
             data = request.get_json()  # Parse JSON data
             msg = data.get("msg")  # Get the 'msg' value from the JSON data
-            logger.debug("Invoke LLM model")
-            result = project_settings["engine"].run(msg)
+            logger.debug("Invoke Game agent")
+            result = games[selected_game_id[0]-1].play(msg)
             if result.status == "failure":
                 raise RuntimeError(result.error_message)
             return result.completion
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error("Catch Exception running LLM or Tools")
+            logger.error("Catch Exception running Game")
             prompt = PromptRender.create(config["prompts"])
             result = prompt.load("chat_error_message", error = {str(e)})
             return result.content
 
-    @app.route('/tools', methods=['GET'])
-    def get_tools():
-        """Endpoint to get a list of tools."""
-        project_id = selected_project_id[0]
-        for project in project_settings["projects"]:
-            if project_id == project["id"]:
-                project_name = project["project"]
-                result = project_settings["tool_repository"].get_tools(
-                    metadata_filter={"project": project_name})
-                if result.status == "success":
-                    filtered_tools = [
-                        {"id": tool["metadata"]["id"], "name": tool["metadata"]["name"]}
-                        for tool in result.tools
-                    ]
-                    return jsonify(filtered_tools)
-        return jsonify([])
-
-    @app.route('/tools/<int:tool_id>/fields', methods=['GET'])
-    def get_tool_fields(tool_id):
-        """Endpoint to get the fields for a specific tool."""
-        result = project_settings["tool_repository"].get_tools(metadata_filter={"id": tool_id})
-        if result.status == "success":
-            return jsonify(result.tools[0]["metadata"]["interface"])
-        return jsonify({})
-
-    @app.route('/projects', methods=['GET'])
-    def get_projects():
-        """Endpoint to get a list of projects."""
-        projects = []
-        for project in project_settings["projects"]:
-            projects.append({
-                "id": project["id"],
-                "name": project["project"]
+    @app.route('/games', methods=['GET'])
+    def get_games():
+        """Endpoint to get a list of games."""
+        game_list = []
+        game_id = 1
+        for game in config["games"]:
+            game_list.append({
+                "id": game_id,
+                "name": game["name"]
             })
-        return jsonify(projects)
+            game_id += 1
+        return jsonify(game_list)
 
-    @app.route('/projects/<int:project_id>', methods=['GET'])
-    def select_project(project_id):
+    @app.route('/games/<int:game_id>', methods=['GET'])
+    def select_game(game_id):
         """Endpoint to select the project"""
-        selected_project_id[0] = project_id
-        for project in project_settings["projects"]:
-            if project_id == project["id"]:
-                project_name = project["project"]
-                logger.debug(f"Project selected: {project_name}")
-                project_settings["engine"].set_tools(project["tools"])
-                project_settings["engine"].set_memory(project["memory"])
-                response = {
-                    "status": "success",
-                    "selected_project": project_name
-                }
-                return jsonify(response)
+        try:
+            selected_game_id[0] = game_id
+            game = config["games"][game_id-1]
+            logger.debug(f"Game selected: {game['name']}")
+            response = {
+                "status": "success",
+                "selected_game": game['name']
+            }
+            return jsonify(response)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error(f"Catch Exception selecting a Game: {e}")
+            return jsonify({})
+
+    @app.route('/games/<int:game_id>/settings', methods=['GET'])
+    def get_game_settings(game_id):
+        """Endpoint to get the settings for a specific tool."""
+        logger.debug("Get Game settings")
+        result = games[game_id-1].get_settings()
+        if result.status == "success":
+            return jsonify(_encode_settings(result.settings))
         return jsonify({})
 
-def _init_project(project_settings, config):
-    project_settings["tool_repository"] = _discover_project_tools(
-        config["projects"],
-        config["chat"]["tools"],
-        config["chat"]["discovery"],
-        update=True)
-    project_settings["projects"] = _create_project_manager(
-        config["projects"],
-        project_settings["tool_repository"])
-    project_settings["engine"] = ReasoningEngine.create(config["chat"])
+    def _encode_settings(settings_dict):
+        """
+        Encode a settings dict into a new structure:
+        - For string values, return a 'textarea' object.
+        - For number values, return a 'number' object.
+        - For dict with 'Options' and 'Selected', return a 'select' object.
+        """
+        encoded = []
+        for field_name, value in settings_dict.items():
+            # Handle dictionary with "Options" and "Selected" keys
+            if isinstance(value, dict) and "Options" in value and "Selected" in value:
+                options_encoded = []
+                for option in value["Options"]:
+                    # Convert each option into the requested format
+                    options_encoded.append({
+                        "value": option,
+                        "text": option,
+                        # Mark selected = True if it matches the "Selected" field
+                        "selected": (option == value["Selected"])
+                    })
+                encoded.append({
+                    "type": "select",
+                    "label": field_name,
+                    "name": field_name,
+                    "options": options_encoded
+                })
+            # Handle strings
+            elif isinstance(value, str):
+                encoded.append({
+                    "type": "textarea",
+                    "label": field_name,
+                    "name": field_name,
+                    "rows": 3,
+                    "value": value
+                })
+            # Handle numbers
+            elif isinstance(value, (int, float)):
+                encoded.append({
+                    "type": "number",
+                    "label": field_name,
+                    "name": field_name,
+                    "value": value
+                })
+            # If there's some other structure, decide how you want to handle it
+            else:
+                encoded.append({
+                    "type": "input",
+                    "label": field_name,
+                    "name": field_name,
+                    "value": value
+                })
+        return encoded
 
-def _discover_project_tools(projects_config, tools_config, discovery_config,update=False):
-    tool_repository = ToolRepository.create(tools_config)
-    tool_discovery = ToolDiscovery(discovery_config)
-    tool_id_counter = 1
-    for project in projects_config:
-        for tool in project["tools"]:
-            tool_info = tool_discovery.discover_tool(tool)
-            if tool_info:
-                tool_metadata = {
-                    "id": tool_id_counter,
-                    "project": project["name"],
-                    "name": tool_info["name"],
-                    "interface": None
-                }
-                if tool_info.get("interface"):
-                    tool_metadata["interface"] = tool_info["interface"]["fields"]
-                if update:
-                    tool_repository.update_tool(tool_info["name"], tool_info["tool"], tool_metadata)
-                else:
-                    tool_repository.add_tool(tool_info["tool"], tool_metadata)
-                tool_id_counter += 1
-    return tool_repository
-
-def _create_project_manager(projects_config, tool_repository):
-    project_manager = []
-    project_id_counter = 1
-    for project in projects_config:
-        project_data = {
-            "id": project_id_counter,
-            "project": project["name"],
-            "tools": _get_tools_names(tool_repository, project["name"]),
-            "memory": _get_project_memory(project["memory"])
-        }
-        project_manager.append(project_data)
-        project_id_counter += 1
-    return project_manager
-
-def _get_tools_names(tool_repository, project_name):
-    result = tool_repository.get_tools(metadata_filter={"project": project_name})
-    if result.status == "success":
-        return [tool["metadata"]["name"] for tool in result.tools]
-    return []
-
-def _get_project_memory(memory_config):
-    chat_memory = ChatMemory.create(memory_config)
-    result = chat_memory.get_memory()
-    if result.status == "success":
-        return result.memory
-    return None
+    @app.route('/games/<int:game_id>/settings', methods=['POST'])
+    def set_game_settings(game_id):
+        try:
+            data = request.get_json()  # Parse JSON data
+            settings = data.get("settings")  # Get the 'settings' value from the JSON data
+            logger.debug("Configure Game agent")
+            result = games[game_id-1].set_settings(settings)
+            if result.status == "failure":
+                raise RuntimeError(result.error_message)
+            return "Game settings updated"
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Catch Exception configuring Game")
+            prompt = PromptRender.create(config["prompts"])
+            result = prompt.load("chat_error_message", error = {str(e)})
+            return result.content
 
 
 def main():

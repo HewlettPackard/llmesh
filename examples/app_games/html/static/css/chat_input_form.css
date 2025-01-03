@@ -5,8 +5,8 @@
 	padding-top: 5px;
 }
 
-/* Open tool settings button */
-.tool_btn {
+/* Open setting button */
+.setting_btn {
 	border-radius: 15px 0 0 15px !important;
 	background-color: rgba(0,0,0,0.3) !important;
 	border: 0 !important;

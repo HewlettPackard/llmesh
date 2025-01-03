@@ -1,14 +1,14 @@
 /* Chat Messages */
 .card-body {
     max-height: 512px;
-    border-bottom: 2px solid var(--chat-type-project); /* Adds a bottom border */
+    border-bottom: 2px solid var(--chat-type-game); /* Adds a bottom border */
 }
 
 .msg_card_body{
     overflow-y: auto;
 }
 
-.project-chat{
+.game-chat{
     height: 450px;
     overflow-y: auto;
 }

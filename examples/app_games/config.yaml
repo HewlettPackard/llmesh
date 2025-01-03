@@ -26,10 +26,10 @@ games:
       tools:
         type: LangChainStructured
       verbose: true
-  - type: FantasiaGenesis
-    name: "Fantasia Genesis"
-    chat:
-      type: TBD
+  # - type: FantasiaGenesis
+  #   name: "Fantasia Genesis"
+  #   chat:
+  #     type: TBD
 
 prompts:
   type: JinjaTemplate

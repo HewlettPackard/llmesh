@@ -7,6 +7,8 @@
 This is the class related to the 'Who am I?' game
 """
 
+import random
+import string
 from typing import Any
 from langchain.tools import StructuredTool
 from langchain.schema import SystemMessage, HumanMessage
@@ -60,6 +62,7 @@ class WhoAmI(BaseGame):
         self.config = WhoAmI.Config(**config)
         self.result = WhoAmI.Result()
         self._init_settings()
+        self._init_tools()
         self.game = self._init_game()
 
     def _init_settings(self):
@@ -80,20 +83,20 @@ class WhoAmI(BaseGame):
         tool_repository = ToolRepository.create(self.config.chat["tools"])
         self._init_tool_rules(tool_repository)
         self._init_tool_secret_identity(tool_repository)
+        self._init_tool_end_game(tool_repository)
 
     def _init_tool_rules(self, tool_repository):
         """
         Add the tool rules inside the repository.
         """
         tool_object = StructuredTool.from_function(
-            name="WhoAmI Rules",
+            name="WhoAmIRules",
             func=self._tool_get_rules,
             description="Uses this tool to get the rules of the game"
         )
         tool_metadata = {
             "id": 1,
-            "game": "WhoAmI",
-            "name": "WhoAmI Rules"
+            "game": "WhoAmI"
         }
         tool_repository.add_tool(tool_object, tool_metadata)
 
@@ -102,14 +105,28 @@ class WhoAmI(BaseGame):
         Add the tool secret identity inside the repository.
         """
         tool_object = StructuredTool.from_function(
-            name="WhoAmI Secret Identity",
+            name="WhoAmISecretIdentity",
             func=self._tool_handle_secret_identity,
             description="Uses this tool to get the secret identity"
         )
         tool_metadata = {
             "id": 2,
-            "game": "WhoAmI",
-            "name": "WhoAmI Secret Identity"
+            "game": "WhoAmI"
+        }
+        tool_repository.add_tool(tool_object, tool_metadata)
+
+    def _init_tool_end_game(self, tool_repository):
+        """
+        Add the tool end game inside the repository.
+        """
+        tool_object = StructuredTool.from_function(
+            name="WhoAmIEndGame",
+            func=self._tool_end_game,
+            description="Uses this tool when user guesses the secret identity"
+        )
+        tool_metadata = {
+            "id": 3,
+            "game": "WhoAmI"
         }
         tool_repository.add_tool(tool_object, tool_metadata)
 
@@ -117,20 +134,31 @@ class WhoAmI(BaseGame):
         """
         A tool that return the rules.
         """
-        return self.config["rules_prompt"]
+        return self.config.chat["rules_prompt"]
+
+    def _tool_end_game(self) -> str:
+        """
+        A tool that handle the end of a game
+        """
+        self._who = None
+        result = self.game.clear_memory()
+        self.result.status = result.status
+        if result.status != "success":
+            return result.error_message
+        return "Congratulation you guess the secret identity."
 
     def _tool_handle_secret_identity(self) -> str:
         """
-        A tool that handel the secret identity
+        A tool that handle the secret identity
         """
         if self._who is None:
             self._who = self._get_secret_identity()
         return self._who
 
     def _get_secret_identity(self):
-        chat_model = ChatModel.create(self.config.chat)
+        chat_model = ChatModel.create(self.config.chat["model"])
         messages = [
-            SystemMessage(content = self.config["secret_identity_prompt"]),
+            SystemMessage(content = self.config.chat["secret_identity_prompt"]),
             HumanMessage(content = self._get_identity_prompt())
         ]
         llm = chat_model.get_model()
@@ -143,6 +171,7 @@ class WhoAmI(BaseGame):
             (
                 "Game Settings:\n"
                 "- Difficulty: {{ difficulty }}\n"
+                "- First Letter: {{ first_letter }}"
                 "- Region: {{ region }}\n"
                 "- Time Period: {{ time_period }}\n"
                 "- Essence: {{ essence }}\n"
@@ -150,6 +179,7 @@ class WhoAmI(BaseGame):
                 "- Comment: {{ comment }}\n"
             ),
             difficulty = self._settings["Difficulty"]["Selected"],
+            first_letter = self._get_random_char(),
             region = self._settings["Region"]["Selected"],
             time_period = self._settings["TimePeriod"]["Selected"],
             essence = self._settings["Essence"]["Selected"],
@@ -157,6 +187,16 @@ class WhoAmI(BaseGame):
             comment = self._settings["Comment"]
         )
         return result.content
+
+    def _get_random_char(self) -> str:
+        """
+        Get a random character from the English alphabet (a-z).
+        
+        :return: A single lowercase character.
+        """
+        char = random.choice(string.ascii_lowercase)
+        logger.debug(f"First Char: {char}")
+        return char
 
     def _init_game(self) -> Any:
         """
@@ -166,7 +206,7 @@ class WhoAmI(BaseGame):
         """
         logger.debug("Initializing game: 'Who am I?'")
         game = ReasoningEngine.create(self.config.chat)
-        game.set_tools(["WhoAmI Rules", "WhoAmI Secret Identity"])
+        game.set_tools(["WhoAmIRules", "WhoAmISecretIdentity", "WhoAmIEndGame"])
         return game
 
     def play(self, message) -> 'WhoAmI.Result':

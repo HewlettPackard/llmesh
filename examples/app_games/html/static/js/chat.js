@@ -92,21 +92,21 @@ function clearInputField() {
 }
 
 /**
- * Appends a message to the selected project's chat div.
+ * Appends a message to the selected game's chat div.
  * @param {string} htmlContent - The HTML content to append.
  */
 function appendMessageToChat(htmlContent) {
-    const projectId = document.getElementById('chatTypeDropdown').value;
-    let projectChatDiv = document.getElementById(`messageFormeight-${projectId}`);
+    const gameId = document.getElementById('chatTypeDropdown').value;
+    let gameChatDiv = document.getElementById(`messageFormeight-${gameId}`);
 
-    if (!projectChatDiv) {
-        projectChatDiv = document.createElement('div');
-        projectChatDiv.id = `messageFormeight-${projectId}`;
-        projectChatDiv.className = 'project-chat';
-        document.getElementById('messageContainers').appendChild(projectChatDiv);
+    if (!gameChatDiv) {
+        gameChatDiv = document.createElement('div');
+        gameChatDiv.id = `messageFormeight-${gameId}`;
+        gameChatDiv.className = 'game-chat';
+        document.getElementById('messageContainers').appendChild(gameChatDiv);
     }
 
-    projectChatDiv.innerHTML += htmlContent;
+    gameChatDiv.innerHTML += htmlContent;
 }
 
 /**
@@ -260,13 +260,13 @@ export function addEventListenerToAllAccordions() {
 }
 
 /**
- * Scrolls to the bottom of the selected project's chat div.
+ * Scrolls to the bottom of the selected game's chat div.
  */
 function scrollToBottom() {
-    const projectId = document.getElementById('chatTypeDropdown').value;
-    const projectChatDiv = document.getElementById(`messageFormeight-${projectId}`);
-    if (projectChatDiv) {
-        projectChatDiv.scrollTop = projectChatDiv.scrollHeight;
+    const gameId = document.getElementById('chatTypeDropdown').value;
+    const gameChatDiv = document.getElementById(`messageFormeight-${gameId}`);
+    if (gameChatDiv) {
+        gameChatDiv.scrollTop = gameChatDiv.scrollHeight;
     }
 }
 

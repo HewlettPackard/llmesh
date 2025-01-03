@@ -11,7 +11,7 @@
         "--gradient-start": "rgb(224, 224, 224)",
         "--gradient-middle": "rgb(183, 183, 183)",
         "--gradient-end": "rgb(224, 224, 224)",
-        "--chat-type-project": "white",
+        "--chat-type-game": "white",
         "--bot-message": "#ad2a4d",
         "--bot-text": "white",
         "--table-lines": "white",
