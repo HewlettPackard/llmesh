@@ -214,7 +214,7 @@ class WhoAmI(BaseGame):
         Play the game.
 
         :param message: Message to be processed by the model.
-        :return: Result object containing the status of the clear operation.
+        :return: Result object containing the status of the play operation.
         """
         result = self.game.run(message)
         self.result.status = result.status
@@ -224,12 +224,12 @@ class WhoAmI(BaseGame):
             self.result.error_message = result.error_message
         return self.result
 
-    def set_settings(self, settings) -> 'BaseGame.Result':
+    def set_settings(self, settings) -> 'WhoAmI.Result':
         """
         Set the settings of the game.
 
         :param settings: Settings of the game.
-        :return: Result object containing the status of the clear operation.
+        :return: Result object containing the status of the set operation.
         """
         try:
             self.result.status = "success"
@@ -246,11 +246,11 @@ class WhoAmI(BaseGame):
             logger.error(self.result.error_message)
         return self.result
 
-    def get_settings(self) -> 'BaseGame.Result':
+    def get_settings(self) -> 'WhoAmI.Result':
         """
         Get the settings of the game.
 
-        :return: Result object containing the status of the clear operation.
+        :return: Result object containing the status of the get operation.
         """
         self.result.status = "success"
         self.result.settings = self._settings

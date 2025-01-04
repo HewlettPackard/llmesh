@@ -26,20 +26,24 @@ games:
       tools:
         type: LangChainStructured
       verbose: true
-  # - type: FantasiaGenesis
-  #   name: "Fantasia Genesis"
-  #   chat:
-  #     type: TBD
+  - type: FantasiaGenesis
+    name: "Fantasia Genesis"
+    chat:
+      type: TBD
+      rules_prompt: $PROMPT{fantasia_rules}
+      tools:
+        type: LangChainStructured
+      verbose: true
 
 prompts:
   type: JinjaTemplate
   environment: examples/app_games/prompts/
   templates:
-    chat_system_prompt: chat_system_prompt.txt
     chat_error_message: chat_error_message.txt
     whoami_prompt: whoami_prompt.txt
     whoami_rules: whoami_rules.txt
     whoami_secret_identity: whoami_secret_identity.txt
+    fantasia_rules: fantasia_rules.txt
 
 logger:
   name: ATHON

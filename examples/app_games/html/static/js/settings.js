@@ -17,8 +17,8 @@ async function populateSettingOptions() {
         if (games.length === 0) {
             displayNoSettingsAvailable(selectElement, container);
         } else {
-            addSelectedGame(selectElement, games);
-            updateFormFields(games[0].id); // Automatically load settings for the first available setting
+            const gameId = addSelectedGame(selectElement, games);
+            updateFormFields(gameId); // Automatically load settings for the first available setting
         }
     } catch (error) {
         console.error(error.message);
@@ -52,6 +52,7 @@ function addSelectedGame(selectElement, games) {
         option.textContent = game.name;
         selectElement.appendChild(option);
     }
+    return game.id
 }
 
 /**
@@ -109,6 +110,9 @@ function createFormField(container, field) {
                 const option = document.createElement('option');
                 option.value = optionData.value;
                 option.textContent = optionData.text;
+                if (optionData.selected) {
+                    option.selected = true;
+                }
                 formElement.appendChild(option);
             });
             break;

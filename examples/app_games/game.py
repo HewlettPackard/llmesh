@@ -13,6 +13,8 @@ based on the document type.
 from typing import Type, Dict, Any
 from examples.app_games.games.who_am_i import (
     WhoAmI)
+from examples.app_games.games.fantasia_genesis import (
+    FantasiaGenesis)
 
 
 class Game:  # pylint: disable=R0903
@@ -23,6 +25,7 @@ class Game:  # pylint: disable=R0903
 
     _games: Dict[str, Type] = {
         'WhoAmI': WhoAmI,
+        'FantasiaGenesis': FantasiaGenesis,
     }
 
     @staticmethod
