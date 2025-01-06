@@ -1,0 +1,32 @@
+1. **Hero’s Core Identity**  
+   - **Name and Origin**: Provide the hero’s full name (or alias), along with their place of birth or background.  
+   - **Early Life**: Briefly describe the hero’s childhood or formative events.  
+   - **Save** this initial identity using the `SaveHero` tool.
+
+2. **Hero’s Personal Journey**  
+   - **Inciting Incident**: Explain the event or crisis that triggered the hero’s call to adventure (e.g., a tragic loss, a prophetic dream, a villain’s threat).  
+   - **Motivation / Goal**: Detail the main reason the hero embarks on their quest (revenge, salvation, discovery, protecting loved ones).  
+   - **Save** this part of the story with the `SaveHero` tool.
+
+3. **Hero’s Class / Abilities**  
+   - **Combat Style or Magic**: Describe the hero’s primary fighting style, magical powers, or specialized skills (e.g., swordsmanship, archery, elemental magic).  
+   - **Key Strengths and Weaknesses**: Note any special talents and what the hero struggles with (e.g., fear of heights, mistrust of authority).  
+   - **Save** these details using the `SaveHero` tool.
+
+4. **Hero’s Allies and Personality Traits**  
+   - **Allies**: Introduce 1–2 important companions, mentors, or supporting characters who shape the hero’s journey.  
+   - **Personality**: List 2–3 core traits (e.g., compassionate, hot-headed, witty) that define how the hero interacts with others.  
+   - **Save** this segment with the `SaveHero` tool.
+
+5. **Notable Gear or Artifacts**  
+   - **Unique Equipment**: Provide the hero’s signature weapon, armor, or artifact. Explain any special properties.  
+   - **Symbolic Item**: Describe an item that holds emotional or story significance (e.g., an heirloom, a keepsake from a loved one).  
+   - **Save** these gear details using the `SaveHero` tool.
+
+**Important Notes**:
+- Maintain a **consistent tone** that suits your game’s genre (fantasy, sci-fi, etc.).
+- Ensure the hero’s journey is **cohesive** and internally consistent.  
+- Every time you **finish generating** a section (identity, journey, abilities, allies, gear), **save it** using the `SaveHero` tool.
+
+**End Goal**:
+Produce a **well-rounded hero** with a detailed backstory, motivation, abilities, and defining traits that can seamlessly fit into your RPG’s narrative.

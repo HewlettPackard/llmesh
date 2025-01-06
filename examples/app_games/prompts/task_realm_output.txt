@@ -1,0 +1,5 @@
+Please provide a concise summary of all the elements you’ve created:
+- Realms: List each realm and give a short sentence description highlighting its key features.
+- Cities: Under each realm, list the major cities you generated and give a brief (1 sentence) description of each.
+- Notable Characters: For each city, list the main characters and a short (1 sentence) summary of who they are and why they’re important.
+Present all information in a brief paragraph format. This summary should make it easy to quickly reference each realm, city, and character at a glance.

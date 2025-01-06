@@ -1,0 +1,7 @@
+Please provide a concise summary of the hero you’ve created. Include:
+- **Core Identity**: Name, origin, and a short (1–2 sentence) description of their early life.
+- **Personal Journey**: Summarize (in 1–2 sentences) the inciting incident and the hero’s main motivation.
+- **Class & Abilities**: Briefly describe their primary combat style or magic, noting strengths/weaknesses in 1–2 sentences.
+- **Allies & Personality**: List any key allies (1–2) and give a short (1–2 sentence) overview of the hero’s personality traits.
+- **Notable Gear or Artifacts**: Summarize the hero’s most important piece of equipment or artifact in 1–2 sentences, focusing on how it defines the hero.
+Present all information in a short paragraphs. This summary should make it easy to quickly reference the hero’s core details at a glance.

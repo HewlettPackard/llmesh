@@ -1,0 +1,3 @@
+Using the following user settings: '{settings}', create a detailed realm for an RPG.
+Include information on its geography, history, key locations (e.g., cities), and notable characters.
+After generating these details, use your available tools to save or store all relevant information for future reference and retrieval.

@@ -7,19 +7,33 @@
 This is the class related to the 'Fantasia Genesis' game
 """
 
-import random
-import string
+import sys
 from typing import Any
-from langchain.tools import StructuredTool
-from langchain.schema import SystemMessage, HumanMessage
-from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.agents.tool_repository import ToolRepository
+from crewai.tools import BaseTool
 from self_serve_platform.agents.task_force import TaskForce
+from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger
 from examples.app_games.games.base import BaseGame
+# Import tool classes needed to resolve properly the config file
+from examples.app_games.games.fantasia_genesis_tools import (  # pylint: disable=W0611
+    SaveWorld,
+    SaveHero,
+    GetWorld,
+    GetHero,
+    GetRules)
 
 
+setup = {
+    "tool": {
+        "module": sys.modules[__name__],
+        "base_class": BaseTool
+    }
+}
+CONFIG = Config(
+    'examples/app_games/config.yaml',
+    setup_parameters=setup
+).get_settings()
+SETUP_CONFIG = CONFIG["games"][1]["chat"]["setup"]
 logger = Logger().get_logger()
 
 
@@ -29,9 +43,6 @@ class FantasiaGenesis(BaseGame):
     """
 
     _world = None
-    _player = None
-    _story = None
-    _situation = None
     _settings = {
         "Difficulty": {
             "Options": ["Easy", "Medium", "Hard"],
@@ -62,8 +73,8 @@ class FantasiaGenesis(BaseGame):
         self.config = FantasiaGenesis.Config(**config)
         self.result = FantasiaGenesis.Result()
         self._init_settings()
-        self._init_tools()
-        self.game = self._init_game()
+        self.setup = self._init_setup()
+        #TODO: check if world exist and initialize variable
 
     def _init_settings(self):
         """
@@ -76,43 +87,13 @@ class FantasiaGenesis(BaseGame):
         self._settings["Alignment"]["Selected"] = "Chaotic Neutral"
         self._settings["Player Background"] = ""
 
-    def _init_tools(self):
+    def _init_setup(self) -> Any:
         """
-        Initialize the tools inside the repository.
-        """
-        tool_repository = ToolRepository.create(self.config.chat["tools"])
-        self._init_tool_rules(tool_repository)
+        Initialize and return the game setup instance.
 
-    def _init_tool_rules(self, tool_repository):
+        :return: Game setup instance.
         """
-        Add the tool rules inside the repository.
-        """
-        tool_object = StructuredTool.from_function(
-            name="FantasiaGenesisRules",
-            func=self._tool_get_rules,
-            description="Uses this tool to get the rules of the game"
-        )
-        tool_metadata = {
-            "id": 1,
-            "game": "FantasiaGenesis"
-        }
-        tool_repository.add_tool(tool_object, tool_metadata)
-
-    def _tool_get_rules(self) -> str:
-        """
-        A tool that return the rules.
-        """
-        return self.config.chat["rules_prompt"]
-
-    def _init_game(self) -> Any:
-        """
-        Initialize and return the game instance.
-
-        :return: Game instance.
-        """
-        # TODO: add code
-        logger.error("work in progress")
-        return None
+        return TaskForce.create(SETUP_CONFIG)
 
     def play(self, message) -> 'FantasiaGenesis.Result':
         """
@@ -121,13 +102,27 @@ class FantasiaGenesis(BaseGame):
         :param message: Message to be processed by the model.
         :return: Result object containing the status of the play operation.
         """
-        result = self.game.run(message)
-        self.result.status = result.status
-        if result.status == "success":
-            self.result.completion = result.completion
-        else:
-            self.result.error_message = result.error_message
-        return self.result
+        if self._world is None:
+            settings = self._get_selected_settings()
+            result = self.setup.run({"settings": settings})
+            logger.debug(f"Fantasia created: {result.completion}")
+        # TODO: play task force
+        return "Pippo"
+
+    def _get_selected_settings(self) -> dict:
+        """
+        Get the selected settings.
+
+        :return: Dict of settings
+        """
+        return {
+            "Difficulty": self._settings["Difficulty"]["Selected"],
+            "World": self._settings["World"]["Selected"],
+            "World Description": self._settings["World Description"],
+            "Skills": self._settings["Skills"]["Selected"],
+            "Alignment": self._settings["Alignment"]["Selected"],
+            "Player Background": self._settings["Player Background"]
+        }
 
     def set_settings(self, settings) -> 'FantasiaGenesis.Result':
         """
@@ -139,20 +134,28 @@ class FantasiaGenesis(BaseGame):
         try:
             self.result.status = "success"
             self._world = None
-            self._player = None
-            self._story = None
-            self._situation = None
-            self._settings["Difficulty"]["Selected"] = settings["Difficulty"]
-            self._settings["World"]["Selected"] = settings["World"]
-            self._settings["World Description"] = settings["World Description"]
-            self._settings["Skills"]["Selected"] = settings["Skills"]
-            self._settings["Alignment"]["Selected"] = settings["Alignment"]
-            self._settings["Player Background"] = settings["Player Background"]
+            self._set_selected_settings(settings)
+            #TODO: prompt engineering
+            result = self.setup.run({"settings": settings})
+            logger.debug(f"Fantasia created: {result.completion}")
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
             self.result.error_message = f"An error occurred while updating the settings: {e}"
             logger.error(self.result.error_message)
         return self.result
+
+    def _set_selected_settings(self, settings):
+        """
+        Set the selected settings.
+
+        :param: Dict of settings
+        """
+        self._settings["Difficulty"]["Selected"] = settings["Difficulty"]
+        self._settings["World"]["Selected"] = settings["World"]
+        self._settings["World Description"] = settings["World Description"]
+        self._settings["Skills"]["Selected"] = settings["Skills"]
+        self._settings["Alignment"]["Selected"] = settings["Alignment"]
+        self._settings["Player Background"] = settings["Player Background"]
 
     def get_settings(self) -> 'FantasiaGenesis.Result':
         """

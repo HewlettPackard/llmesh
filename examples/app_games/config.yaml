@@ -29,11 +29,63 @@ games:
   - type: FantasiaGenesis
     name: "Fantasia Genesis"
     chat:
-      type: TBD
       rules_prompt: $PROMPT{fantasia_rules}
-      tools:
-        type: LangChainStructured
-      verbose: true
+      world_db:
+        type: ChromaCollection
+        path: examples/app_games/data
+        collection: FantasiaWorld
+      hero_db:
+        type: ChromaCollection
+        path: examples/app_games/data
+        collection: FantasiaWorld
+      loader:
+        type: ChromaForSentences
+      retriever:  
+        type: ChromaForSentences
+        n_results: 3
+      setup:
+        type: CrewAIMultiAgent
+        plan_type: Sequential
+        memory: false
+        tasks:
+          - description: $PROMPT{task_build_realm}
+            expected_output: $PROMPT{task_realm_output}
+            agent: 
+              role: "Realm Builder"
+              goal: $PROMPT{agent_realm_builder_goal}
+              backstory: $PROMPT{agent_realm_builder_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{SaveWorld}
+              - $TOOL{GetWorld}
+          - description: $PROMPT{task_forge_hero}
+            expected_output: $PROMPT{task_hero_output}
+            agent: 
+              role: "Hero Forger"
+              goal: $PROMPT{agent_hero_forger_goal}
+              backstory: $PROMPT{agent_hero_forger_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{SaveHero}
+              - $TOOL{GetHero}
+              - $TOOL{GetWorld}
+        llm:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o-mini
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0.7  
+      play:
+        type: CrewAIMultiAgent
+        plan_type: Sequential
+        memory: false
+        tasks:
+          - description: "TO DO"
+        llm:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o-mini
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0.7
+
 
 prompts:
   type: JinjaTemplate
@@ -44,6 +96,14 @@ prompts:
     whoami_rules: whoami_rules.txt
     whoami_secret_identity: whoami_secret_identity.txt
     fantasia_rules: fantasia_rules.txt
+    task_build_realm: task_build_realm.txt
+    task_realm_output: task_realm_output.txt
+    agent_realm_builder_goal: agent_realm_builder_goal.txt
+    agent_realm_builder_backstory: agent_realm_builder_backstory.txt
+    task_forge_hero: task_forge_hero.txt
+    task_hero_output: task_hero_output.txt
+    agent_hero_forger_goal: agent_hero_forger_goal.txt
+    agent_hero_forger_backstory: agent_hero_forger_backstory.txt
 
 logger:
   name: ATHON

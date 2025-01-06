@@ -1,0 +1,27 @@
+1. **Invent a brief yet cohesive world history** that explains how this world came to be, including major events and conflicts.  
+   - **Create this history**, and **save it** using the `SaveWorld` tool.
+
+2. **Divide the world into 2 distinct realms or regions**. For each realm, describe:
+   - The environment or landscape (e.g., forests, deserts, seas).
+   - Any special resources, wonders, or unique cultural traits.
+   - **Generate each realm individually**, and **save** its details via the `SaveWorld` tool before moving to the next.
+
+3. **For each realm, create 2 major cities**. Provide:
+   - A short background or founding story.
+   - Key defining features (e.g., architectural style, notable exports, local culture).
+   - **Generate each city separately**, and **save** its info using the `SaveWorld` tool.
+
+4. **For each city, introduce 1 main characters** who are well-known worldwide. For each character, describe:
+   - Their backstory and how they rose to fame.
+   - Their role or influence within the city/realm.
+   - Any signature skills, items, or personality traits.
+   - **Create each character one by one**, and **save** the character’s data using the `SaveWorld` tool.
+
+**Important Notes**:
+- Keep the tone consistent with the user’s chosen theme or style.
+- The world and its story should be **internally consistent**.
+- Combine imaginative details, but ensure **each realm, city, and character** feels like part of the same cohesive setting.
+- **Each time you finish generating an element** (world history segment, realm, city, or character), **use the ‘SaveWorld’ tool** to store the newly created data.
+
+**End Goal**:
+Produce a **richly described world** with enough history, locations, and characters to serve as a strong foundation for an RPG storyline or campaign.
