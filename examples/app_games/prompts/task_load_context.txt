@@ -1,0 +1,5 @@
+Using the provided context: '{context}', retrieve all relevant information from the RPG world, hero, or game rules.
+Search for details related to the context provided, ensuring that your output includes only the most pertinent and meaningful information.
+- If the context relates to the world, retrieve details about its geography, history, cities, realms, or notable characters.
+- If the context refers to the hero, provide details about their backstory, current situation, skills, and any notable events that involve them.
+- If the context pertains to game rules, retrieve the necessary mechanics, guidelines, or logic that apply to the given situation.

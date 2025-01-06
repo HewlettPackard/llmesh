@@ -1,0 +1,9 @@
+Using the following user settings: '{settings}', forge a detailed hero for an RPG. Include information on:
+- Name and Origin (backstory, formative experiences)
+- Inciting Incident (what spurs the hero to action)
+- Motivation/Goal (the hero’s driving purpose)
+- Core Abilities (combat style, magic, notable skills)
+- Strengths & Weaknesses (both personal and practical)
+- Key Allies or Companions (people who shape the hero’s journey)
+- Important Gear or Artifacts (signature items that define the hero)
+After generating these details, use your available tools to save or store all relevant information for future reference and retrieval.

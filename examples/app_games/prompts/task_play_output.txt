@@ -1,0 +1,4 @@
+Provide a concise message describing the result of the action:  
+- If it’s a **"Think"** action, summarize the relevant information the hero knows or remembers in **few sentences**.  
+- If it’s a **"Do"** action, describe the outcome or consequence of the action in **few sentences**.  
+Ensure responses are logical, detailed, and aligned with the RPG’s setting. Skip unnecessary retrieval if sufficient context exists, and summarize results clearly to enhance gameplay.

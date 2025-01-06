@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid h-100">
+    <div class="row justify-content-center h-100">
+        <div class="col-md-8 col-xl-6 chat">
+            <div class="card">
+                {% include 'components/chat_header.html' %}
+                <div id="messageContainers" class="card-body msg_card_body">
+                    <!-- Message divs for each game will be appended here -->
+                </div>
+                <div class="card-footer">
+                    {% include 'components/chat_input_form.html' %}
+                </div>
+                {% include 'components/settings_modal.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Theme Selection Dropdown -->
+<select id="themeSelector" onchange="applyTheme(this.value)">
+    <option value="athonet">Athonet</option>
+    <option value="hpe">HPE</option>
+    <option value="intelligen">Intelligen</option>
+</select>
+
+{% endblock %}
