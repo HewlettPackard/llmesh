@@ -27,7 +27,8 @@ from examples.app_games.games.fantasia_genesis_tools import (  # pylint: disable
     SaveHero,
     GetWorld,
     GetHero,
-    GetRules)
+    GetRules,
+    PlayLottery)
 
 
 setup = {
@@ -87,8 +88,8 @@ class FantasiaGenesis(BaseGame):
         self.config = FantasiaGenesis.Config(**config)
         self.result = FantasiaGenesis.Result()
         self._init_settings()
-        self.setup = self._init_setup()
         self.memory = self._init_memory()
+        self.setup = self._init_setup()
         self.game = self._init_game()
 
     def _init_settings(self):
@@ -140,22 +141,8 @@ class FantasiaGenesis(BaseGame):
             if self._world is None:
                 self._world =  self._create_world()
                 self._situation = self._update_situation([], self._world)
-            context = {
-                "situation": self._situation,
-                "message": message,
-                "chat_history": self._get_messages({"input": message}),
-                "difficulty": self._settings["Difficulty"]["Selected"]
-            }
-            #TODO: create crew flow and tool for randomness
-            result = self.game.run({"context": context})
-            self.result.completion = result.completion
-            self._save_messages({"input": message}, {"output": result.completion})
-            self._situation = self._update_situation(
-                [
-                    f"input: {message}",
-                    f"output: {result.completion}"
-                ],
-                self._situation)
+            result = self._run_game(message)
+            self.result.completion =  self._save_context(result, message)
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
             self.result.error_message = f"An error occurred while playing the game: {e}"
@@ -198,6 +185,35 @@ class FantasiaGenesis(BaseGame):
         messages = self.memory.load_memory_variables(inputs)
         return get_buffer_string(messages["chat_history"])
 
+    def _run_game(self, message):
+        """
+        Run the gam.
+
+        :return: Crew Result
+        """
+        context = {
+            "situation": self._situation,
+            "message": message,
+            "chat_history": self._get_messages({"input": message}),
+            "difficulty": self._settings["Difficulty"]["Selected"]
+        }
+        return self.game.run({"context": context})
+
+    def _save_context(self, result, message):
+        """
+        Save the new context after the run.
+
+        :return: Crew completion
+        """
+        self._save_messages({"input": message}, {"output": result.completion})
+        self._situation = self._update_situation(
+            [
+                f"input: {message}",
+                f"output: {result.completion}"
+            ],
+            self._situation)
+        return result.completion
+
     def _save_messages(self, inputs, outputs):
         """
         Save the memory messages.
@@ -227,7 +243,6 @@ class FantasiaGenesis(BaseGame):
             situation = situation
         )
         return result.content
-
 
     def set_settings(self, settings) -> 'FantasiaGenesis.Result':
         """

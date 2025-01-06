@@ -1,0 +1,4 @@
+Please provide a concise summary of all the relevant elements retrieved based on the context provided.
+This summary should make it easy to quickly reference the important aspects of the world, hero, or game rules in relation to the context provided.
+If no relevant information is found, indicate this and suggest possible areas for further input or exploration.
+Present all information as a brief paragraph format.

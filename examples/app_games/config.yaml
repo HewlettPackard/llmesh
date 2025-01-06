@@ -48,7 +48,8 @@ games:
         type: ChromaForSentences
       retriever:  
         type: ChromaForSentences
-        n_results: 5
+        expansion_type: None
+        n_results: 3
       setup:
         type: CrewAIMultiAgent
         plan_type: Sequential
@@ -85,12 +86,33 @@ games:
         plan_type: Sequential
         memory: false
         tasks:
-          - description: "TO DO"
+          - description: $PROMPT{task_load_context}
+            expected_output: $PROMPT{task_load_output}
+            agent: 
+              role: "Context Loader"
+              goal: $PROMPT{agent_context_loader_goal}
+              backstory: $PROMPT{agent_context_loader_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{GetRules}
+              - $TOOL{GetHero}
+              - $TOOL{GetWorld}
+              - $TOOL{SaveHero}
+              - $TOOL{SaveWorld}
+          - description: $PROMPT{task_play_game}
+            expected_output: $PROMPT{task_play_output}
+            agent: 
+              role: "Action Handler"
+              goal: $PROMPT{agent_action_handler_goal}
+              backstory: $PROMPT{agent_action_handler_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{PlayLottery}
         llm:
           type: LangChainChatOpenAI
           model_name: gpt-4o-mini
           api_key: $ENV{OPENAI_API_KEY}
-          temperature: 0.7
+          temperature: 0
 
 
 prompts:
@@ -111,6 +133,14 @@ prompts:
     task_hero_output: task_hero_output.txt
     agent_hero_forger_goal: agent_hero_forger_goal.txt
     agent_hero_forger_backstory: agent_hero_forger_backstory.txt
+    task_load_context: task_load_context.txt
+    task_load_output: task_load_output.txt
+    agent_context_loader_goal: agent_context_loader_goal.txt
+    agent_context_loader_backstory: agent_context_loader_backstory.txt
+    task_play_game: task_play_game.txt
+    task_play_output: task_play_output.txt
+    agent_action_handler_goal: agent_action_handler_goal.txt
+    agent_action_handler_backstory: agent_action_handler_backstory.txt
 
 logger:
   name: ATHON

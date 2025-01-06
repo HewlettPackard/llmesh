@@ -7,6 +7,7 @@
 This file contains the tools related to the 'Fantasia Genesis' game
 """
 
+import random
 from datetime import datetime, timezone
 from typing import Type, Any
 from pydantic import BaseModel, Field
@@ -94,6 +95,24 @@ class GetRules(BaseTool):
     def _run(self, query: Any) -> str:  # pylint: disable=W0221
         logger.debug(query)
         return RULES_PROMPT
+
+
+class PlayToolInput(BaseModel):
+    "Input schema for Play tool"
+
+    difficulty: Any = Field(..., description="Level of difficulty")
+
+
+class PlayLottery(BaseTool):
+    "Class of the PlayLottery tool"
+
+    name: str = "FantasiaGenesisLottery"
+    description: str = "Tool to get the lottery result"
+    args_schema: Type[BaseModel] = PlayToolInput
+
+    def _run(self, difficulty: Any) -> str:  # pylint: disable=W0221
+        logger.debug(difficulty)
+        return random.randint(1, 100)
 
 
 def _save_element(storage_config, element):

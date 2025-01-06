@@ -1,0 +1,3 @@
+Using the provided context: **'{context}'**, determine the specified action, which can be:  
+- **Think**: Retrieve and provide information the hero knows or remembers about the topic.  
+- **Do**: Interpret the action, evaluate its feasibility, determine its outcome, and describe its consequences.  
