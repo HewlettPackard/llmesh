@@ -30,6 +30,12 @@ games:
     name: "Fantasia Genesis"
     chat:
       rules_prompt: $PROMPT{fantasia_rules}
+      situation_prompt: $PROMPT{fantasia_situation}
+      memory:
+        type: LangChainBufferWindow
+        memory_key: chat_history
+        window: 10
+        return_messages: true
       world_db:
         type: ChromaCollection
         path: examples/app_games/data
@@ -42,7 +48,7 @@ games:
         type: ChromaForSentences
       retriever:  
         type: ChromaForSentences
-        n_results: 3
+        n_results: 5
       setup:
         type: CrewAIMultiAgent
         plan_type: Sequential
@@ -96,6 +102,7 @@ prompts:
     whoami_rules: whoami_rules.txt
     whoami_secret_identity: whoami_secret_identity.txt
     fantasia_rules: fantasia_rules.txt
+    fantasia_situation: fantasia_situation.txt
     task_build_realm: task_build_realm.txt
     task_realm_output: task_realm_output.txt
     agent_realm_builder_goal: agent_realm_builder_goal.txt

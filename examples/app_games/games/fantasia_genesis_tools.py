@@ -113,7 +113,7 @@ def _save_element(storage_config, element):
 def _get_text(key, element):
     if isinstance(element, str):
         text = element
-    elif isinstance(element, dict) and key in element and "description" in element[key]:    
+    elif isinstance(element, dict) and key in element and "description" in element[key]:
         text = element[key]["description"]
     else:
         text = str(element)
