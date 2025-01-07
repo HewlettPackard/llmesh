@@ -218,8 +218,14 @@ function convertImagesToHtml(text) {
  * @returns {string} The text with converted accordions.
  */
 function convertCodeToAccordion(text) {
-    const regex = /<p><code>(.*?)<\/code><\/p>/gs;
-    return text.replace(regex, `<br><button class='accordion'><b>CODE</b></button><div class='panel'><code>$1</code></div>`);
+    const regex = /<code>(.*?)<\/code>/gs;
+    return text.replace(regex, `
+        <br/>
+        <button class="accordion"><b>INFORMATION</b></button>
+        <div class="panel">
+          <code>$1</code>
+        </div>
+      `);
 }
 
 /**
@@ -249,15 +255,20 @@ export function addEventListenerToAllAccordions() {
     const accordions = document.querySelectorAll('.accordion');
     accordions.forEach(accordion => {
         if (!accordion.hasEventListener) {
-            accordion.addEventListener("click", function() {
+            accordion.addEventListener("click", function () {
                 this.classList.toggle("active");
-                const panel = this.nextElementSibling;
-                panel.style.display = panel.style.display === "block" ? "none" : "block";
+                // Search for the next `.panel` relative to the button
+                let panel = this.parentElement.parentElement.querySelector('.panel');
+                // Toggle panel visibility if a valid `.panel` is found
+                if (panel) {
+                    panel.style.display = panel.style.display === "block" ? "none" : "block";
+                }
             });
             accordion.hasEventListener = true; // Mark as having an event listener
         }
     });
 }
+
 
 /**
  * Scrolls to the bottom of the selected game's chat div.

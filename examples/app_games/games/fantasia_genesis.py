@@ -57,6 +57,7 @@ class FantasiaGenesis(BaseGame):
     """
 
     _world = None
+    _story= None
     _situation = None
     _settings = {
         "Difficulty": {
@@ -139,7 +140,7 @@ class FantasiaGenesis(BaseGame):
         try:
             self.result.status = "success"
             if self._world is None:
-                self._world =  self._create_world()
+                self._create_world()
                 self._situation = self._update_situation([], self._world)
             result = self._run_game(message)
             self.result.completion =  self._save_context(result, message)
@@ -152,14 +153,13 @@ class FantasiaGenesis(BaseGame):
     def _create_world(self):
         """
         Reset game and create a new world using Setup Task Force.
-
-        :return: string success
         """
         self.reset()
         settings = self._get_selected_settings()
         result = self.setup.run({"settings": settings})
-        logger.debug(f"Fantasia created: {result.completion}")
-        return result.completion
+        self._world = self.setup.crew.tasks[0].output.raw
+        self._story = result.completion
+        logger.debug(f"Fantasia created: {self._world}\n{self._story}")
 
     def _get_selected_settings(self) -> dict:
         """
@@ -212,7 +212,7 @@ class FantasiaGenesis(BaseGame):
                 f"output: {result.completion}"
             ],
             self._situation)
-        return result.completion
+        return self._create_game_response(result.completion)
 
     def _save_messages(self, inputs, outputs):
         """
@@ -221,6 +221,9 @@ class FantasiaGenesis(BaseGame):
         self.memory.save_context(inputs, outputs)
 
     def _update_situation(self, memories, situation):
+        """
+        Update the situation with LLM.
+        """
         chat_model = ChatModel.create(MODEL_CONFIG)
         prompt_render = PromptRender.create(PROMPT_CONFIG)
         messages = [
@@ -232,6 +235,9 @@ class FantasiaGenesis(BaseGame):
         return result.content
 
     def _get_situation_prompt(self, prompt_render, memories, situation):
+        """
+        Render the prompt
+        """
         result = prompt_render.render(
             (
                 "The messagges are:\n" 
@@ -243,6 +249,19 @@ class FantasiaGenesis(BaseGame):
             situation = situation
         )
         return result.content
+
+    def _create_game_response(self, completion):
+        """
+        Create the Game response with world and story info
+        """
+        return (
+            f"{completion}"
+            "<code>"
+            f"SITUATION:\n{self._situation}\n\n"
+            f"STORY:\n{self._story}\n\n"
+            f"WORLD:\n{self._world}"
+            "</code>"
+        )
 
     def set_settings(self, settings) -> 'FantasiaGenesis.Result':
         """
