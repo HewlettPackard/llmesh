@@ -17,6 +17,8 @@ from self_serve_platform.rag.data_extractors.pymupdf_for_sections import (
     PyMuPdfForSectionsDataExtractor)
 from self_serve_platform.rag.data_extractors.pandas_read_excel import (
     PandasReadExcelExtractor)
+from self_serve_platform.rag.data_extractors.markitdown_for_sections import (
+    MarkitdownForSectionsDataExtractor)
 
 
 class DataExtractor:  # pylint: disable=R0903
@@ -29,6 +31,7 @@ class DataExtractor:  # pylint: disable=R0903
         'UnstructuredForSections': UnstructuredSectionsDataExtractor,
         'PyMuPdfForSections': PyMuPdfForSectionsDataExtractor,
         'PandasReadExcel': PandasReadExcelExtractor,
+        'MarkitdownForSections': MarkitdownForSectionsDataExtractor,
     }
 
     @staticmethod
