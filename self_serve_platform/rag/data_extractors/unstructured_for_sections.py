@@ -17,6 +17,8 @@ from bs4 import BeautifulSoup
 from docx import Document
 from unstructured.partition.docx import partition_docx
 from unstructured.partition.pdf import partition_pdf
+from unstructured.partition.pptx import partition_pptx
+from unstructured.partition.xlsx import partition_xlsx
 from unstructured.partition.html import partition_html
 from pydantic import Field
 from self_serve_platform.rag.data_extractors.base import BaseDataExtractor
@@ -88,25 +90,54 @@ class UnstructuredSectionsDataExtractor(BaseDataExtractor):  # pylint: disable=R
     def _partition_document(self, file_path: str):
         if self.config.extract_text is False:
             logger.warning("Not possible parsing only images with unstructured")
-        if self.config.document_type == "Docx":
+        document_type = self._get_document_type(file_path)
+        if document_type == "Docx":
             logger.debug("Partitioning Docx document.")
             elements = partition_docx(file_path)
             if self.config.extract_image:
                 logger.warning("Image extraction is not implemented for Docx files.")
-        elif self.config.document_type == "Pdf":
+        elif document_type == "Pdf":
             logger.debug("Partitioning Pdf document.")
             kwargs = self._get_partition_pdf_kwargs()
             elements = partition_pdf(file_path, **kwargs)
-        elif self.config.document_type == "Html":
+        elif document_type == "Html":
             logger.debug("Partitioning Html document.")
             html_content = self._get_html_content(file_path)
             elements = partition_html(text=html_content)
+        elif document_type == "Pptx":
+            logger.debug("Partitioning Pptx document.")
+            elements = partition_pptx(file_path)
+            if self.config.extract_image:
+                logger.warning("Image extraction is not implemented for Pptx files.")
+        elif document_type == "Xlsx":
+            logger.debug("Partitioning Xlsx document.")
+            elements = partition_xlsx(file_path)
+            if self.config.extract_image:
+                logger.warning("Image extraction is not implemented for Xlsx files.")
         else:
             logger.error("Unsupported document type.")
             elements = None
         self._log_element_distribution(elements)
         elements = self._skip_border_elements(elements)
         return self._create_element_list(elements, file_path)
+
+    def _get_document_type(self, file_path: str):
+        if self.config.document_type == "Auto":
+            logger.debug("Auto-detecting document type based on file extension.")
+            file_extension = file_path.split('.')[-1].lower()
+            if file_extension == "docx":
+                return "Docx"
+            if file_extension == "pdf":
+                return "Pdf"
+            if file_extension in {"html", "htm"}:
+                return "Html"
+            if file_extension == "pptx":
+                return "Pptx"
+            if file_extension == "xlsx":
+                return "Xlsx"
+            logger.error("Unsupported file extension for auto-detection.")
+            return "Unsupported"
+        return self.config.document_type
 
     def _get_partition_pdf_kwargs(self):
         kwargs = {}
@@ -124,6 +155,15 @@ class UnstructuredSectionsDataExtractor(BaseDataExtractor):  # pylint: disable=R
             html_content = file.read()
         return html_content
 
+    def _log_element_distribution(self, elements):
+        type_counts = {}
+        for element in elements:
+            element_type = type(element).__name__
+            type_counts[element_type] = type_counts.get(element_type, 0) + 1
+        logger.debug("Distribution of element types:")
+        for element_type, count in type_counts.items():
+            logger.debug(f"{element_type}: {count}")
+
     def _skip_border_elements(self, elements):
         if elements is None:
             return None
@@ -135,15 +175,6 @@ class UnstructuredSectionsDataExtractor(BaseDataExtractor):  # pylint: disable=R
             return elements[self.config.skip_start_elements:]
         else:
             return elements[self.config.skip_start_elements:-self.config.skip_end_elements]  # pylint: disable=E1130
-
-    def _log_element_distribution(self, elements):
-        type_counts = {}
-        for element in elements:
-            element_type = type(element).__name__
-            type_counts[element_type] = type_counts.get(element_type, 0) + 1
-        logger.debug("Distribution of element types:")
-        for element_type, count in type_counts.items():
-            logger.debug(f"{element_type}: {count}")
 
     def _create_element_list(self, elements, file_path: str):
         logger.info("Parsing all elements.")

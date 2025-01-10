@@ -26,7 +26,7 @@ class BaseDataExtractor(abc.ABC):  # pylint: disable=R0903
             description="Type of the extractor deployment."
         )
         document_type: str = Field(
-            "Pdf",
+            "Auto",
             description="Type of document."
         )
         cache_elements_to_file: Optional[bool] = Field(

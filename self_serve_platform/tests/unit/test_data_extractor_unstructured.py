@@ -9,7 +9,7 @@ handles files correctly, including error handling and caching.
 """
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
 import pytest
 from self_serve_platform.rag.data_extractor import DataExtractor
 from self_serve_platform.rag.data_extractors.unstructured_for_sections import (
@@ -387,6 +387,76 @@ def test_include_text_as_html(html_extractor, sample_html_path):  # pylint: disa
         elem['text'].startswith("<") and elem['text'].endswith(">")
         for elem in result.elements), \
         "Text elements were not extracted as HTML when `include_text_as_html` is True"
+
+
+@pytest.mark.parametrize(
+    "file_name, expected_partition_func_name",
+    [
+        ("self_serve_platform/tests/unit/test_data/sample_docx_for_test.docx", "partition_docx"),
+        ("self_serve_platform/tests/unit/test_data/sample_pdf_for_test.pdf", "partition_pdf"),
+        ("self_serve_platform/tests/unit/test_data/sample_html_for_test.html", "partition_html"),
+        ("self_serve_platform/tests/unit/test_data/sample_pptx_for_test.pptx", "partition_pptx"),
+        ("self_serve_platform/tests/unit/test_data/sample_xlsx_for_test.xlsx", "partition_xlsx"),
+    ],
+)
+@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache")
+@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger")
+def test_parse_auto_document_type(
+    mock_get_logger,
+    mock_file_cache,
+    file_name,
+    expected_partition_func_name,
+    unstructured_config,  # pylint: disable=W0621
+):
+    """
+    Test that when `document_type` is set to "Auto", the correct partition function
+    is called based on the file extension.
+    """
+    # 1. Set the doc type to "Auto".
+    unstructured_config["document_type"] = "Auto"
+    # 2. Patch the relevant partition functions. We can patch them all and only one will be called.
+    func_name = expected_partition_func_name
+    with patch(
+        f"self_serve_platform.rag.data_extractors.unstructured_for_sections.{func_name}"
+    ) as mock_partition_func:
+        mock_logger = MagicMock()
+        mock_get_logger.return_value = mock_logger
+        # Mock the partitioning behavior
+        mock_elements = [MagicMock()]
+        mock_partition_func.return_value = mock_elements
+        # Set up the cache mock
+        mock_file_cache_instance = mock_file_cache.return_value
+        mock_file_cache_instance.is_cached.return_value = False
+        # 3. Create the extractor and parse
+        auto_extractor = UnstructuredSectionsDataExtractor(unstructured_config)
+        result = auto_extractor.parse(file_name)
+        # 4. Assertions
+        assert result.status == "success"
+        assert result.elements is not None
+        if func_name != "partition_html":
+            mock_partition_func.assert_called_once_with(ANY)
+
+
+@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache")
+@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger")
+def test_parse_auto_unsupported_extension(
+    mock_get_logger,
+    mock_file_cache,
+    unstructured_config  # pylint: disable=W0621
+):
+    """
+    Test that when `document_type` is "Auto" but the file extension is unsupported,
+    the extractor gracefully returns a failure status.
+    """
+    unstructured_config["document_type"] = "Auto"
+    mock_logger = MagicMock()
+    mock_get_logger.return_value = mock_logger
+    mock_file_cache_instance = mock_file_cache.return_value
+    mock_file_cache_instance.is_cached.return_value = False
+    auto_extractor = UnstructuredSectionsDataExtractor(unstructured_config)
+    # This file extension is not in your auto-detection logic.
+    result = auto_extractor.parse("sample.xyz")
+    assert result.status == "failure"
 
 
 if __name__ == "__main__":
