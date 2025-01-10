@@ -155,6 +155,15 @@ class UnstructuredSectionsDataExtractor(BaseDataExtractor):  # pylint: disable=R
             html_content = file.read()
         return html_content
 
+    def _log_element_distribution(self, elements):
+        type_counts = {}
+        for element in elements:
+            element_type = type(element).__name__
+            type_counts[element_type] = type_counts.get(element_type, 0) + 1
+        logger.debug("Distribution of element types:")
+        for element_type, count in type_counts.items():
+            logger.debug(f"{element_type}: {count}")
+
     def _skip_border_elements(self, elements):
         if elements is None:
             return None
@@ -166,15 +175,6 @@ class UnstructuredSectionsDataExtractor(BaseDataExtractor):  # pylint: disable=R
             return elements[self.config.skip_start_elements:]
         else:
             return elements[self.config.skip_start_elements:-self.config.skip_end_elements]  # pylint: disable=E1130
-
-    def _log_element_distribution(self, elements):
-        type_counts = {}
-        for element in elements:
-            element_type = type(element).__name__
-            type_counts[element_type] = type_counts.get(element_type, 0) + 1
-        logger.debug("Distribution of element types:")
-        for element_type, count in type_counts.items():
-            logger.debug(f"{element_type}: {count}")
 
     def _create_element_list(self, elements, file_path: str):
         logger.info("Parsing all elements.")
