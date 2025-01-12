@@ -31,13 +31,9 @@ class MilvusForSentenceDataRetriever(BaseDataRetriever):  # pylint: disable=R090
             ...,
             description="Embedding function to be used for the query"
         )
-        expansion_type: Optional[str] = Field(
-            "Group",
-            description="Type of expansion to use for retrieving data "
-        )
-        group_size: Optional[int] = Field(
-            5,
-            description="Number of chunk to consider in the group."
+        output_fields: Optional[List] = Field(
+            ['text', 'header'],
+            description="Fields to return"
         )
 
     class Result(BaseDataRetriever.Result):
@@ -72,9 +68,9 @@ class MilvusForSentenceDataRetriever(BaseDataRetriever):  # pylint: disable=R090
         """
         try:
             self.result.status = "success"
-            initial_results = self._retrieve_chunks(collection, query)
-            expanded_results = self._expand_results(initial_results)
-            self._process_results(expanded_results)
+            query_embedding = self.config.embedding_function.encode_documents([query])  # pylint: disable=E1101
+            results = self._retrieve_chunks(collection, query_embedding)
+            self._process_results(results[0])
             logger.debug("Successfully retrieved elements from the collection.")
         except Exception as e:  # pylint: disable=W0718
             self.result.status = "failure"
@@ -84,68 +80,20 @@ class MilvusForSentenceDataRetriever(BaseDataRetriever):  # pylint: disable=R090
             logger.error(self.result.error_message)
         return self.result
 
-    def _retrieve_chunks(self, collection: Dict, query: str):
-        # Perform a vector search using Milvus based on the query's embedding
-        query_embedding = self.config.embedding_function.encode_documents(query)  # pylint: disable=E1101
+    def _retrieve_chunks(self, collection: Dict, query_embedding: Any):
         # Prepare the common arguments for the search
         search_kwargs = {
             "collection_name": collection["name"],
             "anns_field": "embedding",
-            "data": [query_embedding],
+            "data": query_embedding,
             "limit": self.config.n_results
         }
-        # Conditionally add group-related arguments
-        if self.config.expansion_type == "Group":
-            search_kwargs["group_by_field"] = "header"
-            search_kwargs["group_size"] = self.config.group_size
-            search_kwargs["strict_group_size"] = True
+        if self.config.output_fields:
+            search_kwargs["output_fields"] = self.config.output_fields
         # Perform the search, unpacking the keyword arguments
         results = collection["client"].search(**search_kwargs)
+        logger.debug(f'Retrieved {len(results)}')
         return results
-
-    def _expand_results(self, results: Any):
-        if self.config.expansion_type == "Group":
-            logger.debug("Expanding results by header group.")
-            expanded_results = self._expand_with_group(results)
-        else:
-            logger.debug("Returning raw results without expansion.")
-            expanded_results = results[0]
-        return expanded_results
-
-    def _expand_with_group(self, results: Any):
-        # 1. Group items by the 'header' from their entity
-        grouped = defaultdict(list)
-        for record in results[0]:
-            header = record["entity"].get("header", "")
-            grouped[header].append(record)
-        merged_results = []
-        # 2. For each header group:
-        #    - gather all text
-        #    - find the item with the lowest distance
-        #    - use that item's metadata as the "base"
-        #    - replace the text field with merged text
-        for header, items in grouped.items():
-            # Gather all text for this header
-            texts = []
-            for item in items:
-                text = item["entity"].get("text", "")
-                texts.append(text)
-            # Merge the text any way you prefer (e.g., join with space or newline)
-            merged_text = "\n".join(texts)
-            # Find the item with the lowest distance in this group
-            lowest_distance_item = min(items, key=lambda x: x["distance"])
-            # Build the new merged item using the metadata from the lowest-distance item
-            # and the merged text
-            merged_item = {
-                "id": lowest_distance_item["id"],
-                "distance": lowest_distance_item["distance"],
-                "entity": {
-                    **lowest_distance_item["entity"],
-                    "text": merged_text,
-                }
-            }
-            merged_results.append(merged_item)
-        return merged_results
 
     def _process_results(self, results: Dict):
         documents = [r['entity']['text'] for r in results]

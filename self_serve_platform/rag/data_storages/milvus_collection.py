@@ -81,7 +81,11 @@ class MilvusCollectionDataStorage(BaseDataStorage):  # pylint: disable=R0903
         elif self.config.reset:
             milvus_client.drop_collection(collection_name=collection_name)
             self._create_collection(milvus_client)
-        return collection_name
+        collection = {
+            "client": milvus_client,
+            "name": collection_name,
+        }
+        return collection
 
     def _create_collection(self, client):
         """
@@ -92,10 +96,9 @@ class MilvusCollectionDataStorage(BaseDataStorage):  # pylint: disable=R0903
         schema = self._create_collection_schema()
         index_params = self._create_indexes(client)
         client.create_collection(
-            name=self.config.collection,
+            collection_name=self.config.collection,
             schema=schema,
             index_params=index_params,
-            enable_dynamic_field=True
         )
 
     def _create_collection_schema(self):
@@ -109,7 +112,7 @@ class MilvusCollectionDataStorage(BaseDataStorage):  # pylint: disable=R0903
             dtype=DataType.INT64,
             description="int64",
             is_primary=True,
-            auto_id=True
+            auto_id=True,
         )
         embedding_field = FieldSchema(
             name="embedding",
@@ -126,7 +129,10 @@ class MilvusCollectionDataStorage(BaseDataStorage):  # pylint: disable=R0903
             is_primary=False
         )
         fields=[id_field, embedding_field, text_field]
-        return CollectionSchema(fields=fields, description="Vector dB used in the platform")
+        return CollectionSchema(
+            fields=fields,
+            description="Vector dB used in the platform",
+            enable_dynamic_field=True)
 
     def _create_indexes(self, client):
         """
@@ -136,10 +142,6 @@ class MilvusCollectionDataStorage(BaseDataStorage):  # pylint: disable=R0903
         :return: The collection indexes.
         """
         index_params = client.prepare_index_params()
-        index_params.add_index(
-            field_name="id",
-            index_type="STL_SORT"
-        )
         index_params.add_index(
             field_name="embedding",
             index_type="AUTOINDEX",

@@ -80,10 +80,7 @@ class MilvusForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
             # Extract embedding first
             embedding = metadata.pop('embedding', None)  # Remove 'embedding' from metadata
             # Validate embedding
-            if (
-                embedding is None
-                or not isinstance(embedding, list)
-                or not all(isinstance(i, (int, float)) for i in embedding)):
+            if embedding is None:
                 raise ValueError(f"Invalid or missing embedding for element: {text}")
             embeddings.append(embedding)
             # Validate remaining metadata (excluding embedding)
