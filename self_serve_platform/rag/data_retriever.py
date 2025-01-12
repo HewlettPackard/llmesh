@@ -15,6 +15,8 @@ from self_serve_platform.rag.data_retrievers.chroma_for_sentences import (
     ChromaForSentenceDataRetriever)
 from self_serve_platform.rag.data_retrievers.qdrant_for_sentences import (
     QdrantForSentenceDataRetriever)
+from self_serve_platform.rag.data_retrievers.milvus_for_sentences import (
+    MilvusForSentenceDataRetriever)
 
 
 class DataRetriever:  # pylint: disable=R0903
@@ -26,6 +28,7 @@ class DataRetriever:  # pylint: disable=R0903
     _retrievers: Dict[str, Type] = {
         'ChromaForSentences': ChromaForSentenceDataRetriever,
         'QdrantForSentences': QdrantForSentenceDataRetriever,
+        'MilvusForSentences': MilvusForSentenceDataRetriever,
     }
 
     @staticmethod

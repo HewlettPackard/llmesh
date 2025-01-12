@@ -15,6 +15,8 @@ from self_serve_platform.rag.data_loaders.chroma_for_sentences import (
     ChromaForSentenceDataLoader)
 from self_serve_platform.rag.data_loaders.qdrant_for_sentences import (
     QdrantForSentenceDataLoader)
+from self_serve_platform.rag.data_loaders.milvus_for_sentences import (
+    MilvusForSentenceDataLoader)
 
 
 class DataLoader:  # pylint: disable=R0903
@@ -26,6 +28,7 @@ class DataLoader:  # pylint: disable=R0903
     _loaders: Dict[str, Type] = {
         'ChromaForSentences': ChromaForSentenceDataLoader,
         'QdrantForSentences': QdrantForSentenceDataLoader,
+        'MilvusForSentences': MilvusForSentenceDataLoader,
     }
 
     @staticmethod

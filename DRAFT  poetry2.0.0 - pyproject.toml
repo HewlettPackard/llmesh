@@ -1,3 +1,7 @@
+#TO DO:
+# - Wait Poetry 2 stable
+# - Limit version number on all dependencies
+
 [project]
 name = "llmesh"
 requires-python = ">=3.11,<3.13"
