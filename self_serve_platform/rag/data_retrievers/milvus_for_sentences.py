@@ -9,6 +9,7 @@ This module provides functionality to:
 """
 
 from typing import Optional, List, Dict, Any
+from collections import defaultdict
 from pydantic import Field
 from self_serve_platform.rag.data_retrievers.base import BaseDataRetriever
 from self_serve_platform.system.log import Logger
@@ -71,8 +72,9 @@ class MilvusForSentenceDataRetriever(BaseDataRetriever):  # pylint: disable=R090
         """
         try:
             self.result.status = "success"
-            results = self._retrieve_chunks(collection, query)
-            self._process_results(results)
+            initial_results = self._retrieve_chunks(collection, query)
+            expanded_results = self._expand_results(initial_results)
+            self._process_results(expanded_results)
             logger.debug("Successfully retrieved elements from the collection.")
         except Exception as e:  # pylint: disable=W0718
             self.result.status = "failure"
@@ -96,17 +98,63 @@ class MilvusForSentenceDataRetriever(BaseDataRetriever):  # pylint: disable=R090
         if self.config.expansion_type == "Group":
             search_kwargs["group_by_field"] = "header"
             search_kwargs["group_size"] = self.config.group_size
+            search_kwargs["strict_group_size"] = True
         # Perform the search, unpacking the keyword arguments
         results = collection["client"].search(**search_kwargs)
         return results
 
+    def _expand_results(self, results: Any):
+        if self.config.expansion_type == "Group":
+            logger.debug("Expanding results by header group.")
+            expanded_results = self._expand_with_group(results)
+        else:
+            logger.debug("Returning raw results without expansion.")
+            expanded_results = results[0]
+        return expanded_results
 
-    #TODO: fix and debug
+    def _expand_with_group(self, results: Any):
+        # 1. Group items by the 'header' from their entity
+        grouped = defaultdict(list)
+        for record in results[0]:
+            header = record["entity"].get("header", "")
+            grouped[header].append(record)
+        merged_results = []
+        # 2. For each header group:
+        #    - gather all text
+        #    - find the item with the lowest distance
+        #    - use that item's metadata as the "base"
+        #    - replace the text field with merged text
+        for header, items in grouped.items():
+            # Gather all text for this header
+            texts = []
+            for item in items:
+                text = item["entity"].get("text", "")
+                texts.append(text)
+            # Merge the text any way you prefer (e.g., join with space or newline)
+            merged_text = "\n".join(texts)
+            # Find the item with the lowest distance in this group
+            lowest_distance_item = min(items, key=lambda x: x["distance"])
+            # Build the new merged item using the metadata from the lowest-distance item
+            # and the merged text
+            merged_item = {
+                "id": lowest_distance_item["id"],
+                "distance": lowest_distance_item["distance"],
+                "entity": {
+                    **lowest_distance_item["entity"],
+                    "text": merged_text,
+                }
+            }
+            merged_results.append(merged_item)
+        return merged_results
+
     def _process_results(self, results: Dict):
-        documents = [r.payload['text'] for r in results]
-        metadatas = [{k: v for k, v in r.payload.items() if k != 'text'} for r in results]
-        embeddings = [r.vector for r in results]
-        distances = [r.score for r in results]
+        documents = [r['entity']['text'] for r in results]
+        metadatas = [
+            {k: v for k, v in r['entity'].items() if k not in ('text', 'embedding')}
+            for r in results
+        ]
+        embeddings = [r['entity']['embedding'] for r in results]
+        distances = [r['distance'] for r in results]
         if documents and metadatas:
             combined_result = self._combine_elements(documents, metadatas, embeddings, distances)
             self.result.elements = combined_result["elements"]
