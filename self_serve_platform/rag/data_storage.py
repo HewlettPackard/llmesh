@@ -15,6 +15,8 @@ from self_serve_platform.rag.data_storages.chroma_collection import (
     ChromaCollectionDataStorage)
 from self_serve_platform.rag.data_storages.qdrant_collection import (
     QdrantCollectionDataStorage)
+from self_serve_platform.rag.data_storages.milvus_collection import (
+    MilvusCollectionDataStorage)
 
 
 class DataStorage:  # pylint: disable=R0903
@@ -26,6 +28,7 @@ class DataStorage:  # pylint: disable=R0903
     _storages: Dict[str, Type] = {
         'ChromaCollection': ChromaCollectionDataStorage,
         'QdrantCollection': QdrantCollectionDataStorage,
+        'MilvusCollection': MilvusCollectionDataStorage,
     }
 
     @staticmethod

@@ -43,7 +43,7 @@ projects:
       cert_verify: false
     tools:
       - "https://127.0.0.1:5005/"     # OpenAPIManager
-      - "https://127.0.0.1:5006/"     # IMSExpert
+      - "https://127.0.0.1:5006/"     # TelcoExpert
   - name: "Project Meteo"
     memory:
       type: LangChainBuffer
