@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
@@ -47,5 +52,8 @@ jobs:
       - name: Install dependencies
         run: poetry install --all-extras
 
+      - name: Set environment variables
+        run: echo "OPENAI_API_KEY=test_api_key" >> $GITHUB_ENV
+
       - name: Run tests
-        run: poetry run pytest --maxfail=100 --disable-warnings -v --ignore self_serve_platform/tests/integration
+        run: poetry run pytest --maxfail=10 --disable-warnings -v --ignore self_serve_platform/tests/integration
