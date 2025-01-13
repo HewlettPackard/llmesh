@@ -71,7 +71,7 @@ To use the complete setup, including examples and demo applications, follow thes
 2. **Install Dependencies**: All dependencies required by the platform are specified in the `pyproject.toml` file. Use the following commands to install them:
 
    ```bash
-   pip install poetry
+   pip install poetry==1.8.5
    poetry install --all-extras
    ```
 

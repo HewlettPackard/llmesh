@@ -23,6 +23,7 @@ from athon.chat import ChatModel
         "type": "LangChainChatOpenAI",
         "model_name": "gpt-4o-mini",
         "api_key": os.getenv("OPENAI_API_KEY"),
+        "https_verify": True,
     },
     {
         "type": "LangChainChatGoogleGenAI",
