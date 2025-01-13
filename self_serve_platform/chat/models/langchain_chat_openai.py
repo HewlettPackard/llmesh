@@ -12,6 +12,7 @@ This module allows to:
 
 import os
 from typing import Optional, Dict, Any
+import httpx
 from pydantic import Field
 from langchain_openai import ChatOpenAI
 from self_serve_platform.system.log import Logger
@@ -37,6 +38,10 @@ class LangChainChatOpenAIModel(BaseChatModel):
         seed: Optional[int] = Field(
             None,
             description="Seed for model randomness."
+        )
+        https_verify: Optional[bool] = Field(
+            None,
+            description="Flag to enable or disable the TLS verification."
         )
 
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -73,6 +78,8 @@ class LangChainChatOpenAIModel(BaseChatModel):
             args["seed"] = self.config.seed
         if self.config.base_url is not None:
             args["base_url"] = self.config.base_url
+        if self.config.https_verify is not None:
+            args["http_client"] = httpx.Client(verify=self.config.https_verify)
         return args
 
     def invoke(self, message: str) -> 'LangChainChatOpenAIModel.Result':
