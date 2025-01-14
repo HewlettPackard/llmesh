@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HPE Tools - Minimal Configuration Page</title>
+  <style>
+    /* HPE-inspired color palette and minimal styling */
+    :root {
+      --hpe-green: #00b388; /* Primary HPE green */
+      --hpe-light-grey: #f2f2f2;
+      --hpe-dark-grey: #333333;
+      --hpe-gray-button: #808080; /* Gray for Cancel and Reset buttons */
+      --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+      background-color: var(--hpe-light-grey);
+      color: var(--hpe-dark-grey);
+    }
+
+    /* Top Bar */
+    header {
+      background-color: var(--hpe-green);
+      color: #fff;
+      padding: 1rem;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .logo img {
+      max-height: 40px;
+      margin-right: 1rem;
+    }
+    .top-bar h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      text-align: center;
+      flex: 1;
+    }
+
+    /* Main Content Layout using Flex or Grid */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1rem;
+      padding: 1rem;
+      min-height: calc(100vh - 180px); /* Adjust for header+footer */
+    }
+
+    /* First Column */
+    .first-column,
+    .second-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .section {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+    }
+    .section h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+    }
+    .section p {
+      margin: 0.75rem 0;
+    }
+
+    /* Configurable Part */
+    .configurable-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+    }
+    .configurable-field label {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .configurable-field select,
+    .configurable-field textarea,
+    .configurable-field input[type="text"] {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--hpe-dark-grey);
+      box-shadow: var(--box-shadow);
+      transition: box-shadow 0.2s ease;
+    }
+    .configurable-field select:hover,
+    .configurable-field textarea:hover,
+    .configurable-field input[type="text"]:hover {
+      box-shadow: 0 0 0 2px rgba(0, 179, 136, 0.2);
+    }
+    .configurable-field select:focus,
+    .configurable-field textarea:focus,
+    .configurable-field input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 179, 136, 0.3);
+    }
+
+    /* Parameter Configuration Fields */
+    fieldset.parameter-config {
+      border: 1px solid var(--hpe-dark-grey);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    fieldset.parameter-config legend {
+      font-weight: bold;
+      padding: 0 0.5rem;
+    }
+    .parameter-config .param-field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+    .parameter-config .param-field label {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .parameter-config .param-field input {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid var(--hpe-dark-grey);
+      box-shadow: var(--box-shadow);
+      transition: box-shadow 0.2s ease;
+    }
+    .parameter-config .param-field input:hover {
+      box-shadow: 0 0 0 2px rgba(0, 179, 136, 0.2);
+    }
+    .parameter-config .param-field input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 179, 136, 0.3);
+    }
+
+    .btn-remove-config {
+      background-color: var(--hpe-gray-button);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+    .btn-remove-config:hover {
+      background-color: #6e6e6e;
+    }
+
+    /* Add Parameter Button */
+    .btn-add-config {
+      background-color: var(--hpe-green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 1rem;
+      align-self: flex-start;
+    }
+    .btn-add-config:hover {
+      background-color: #009c75; /* Darken on hover */
+    }
+
+    /* Footer */
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1rem;
+      border-top: 3px solid var(--hpe-green);
+      background-color: transparent;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      transition: background-color 0.2s ease;
+    }
+    .btn-cancel {
+      background-color: #fff;
+      color: var(--hpe-dark-grey);
+      border: 1px solid var(--hpe-dark-grey);
+    }
+    .btn-cancel:hover {
+      background-color: #e6e6e6;
+    }
+    .btn-reset {
+      background-color: #fff;
+      color: var(--hpe-dark-grey);
+      border: 1px solid var(--hpe-dark-grey);
+    }
+    .btn-reset:hover {
+      background-color: #e6e6e6;
+    }
+    .btn-apply {
+      background-color: var(--hpe-green);
+      color: #fff;
+      border: 1px solid var(--hpe-green);
+    }
+    .btn-apply:hover {
+      background-color: #009c75;
+    }
+
+    /* Responsive Breakpoint */
+    @media (max-width: 768px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    function addParameterConfig() {
+      const container = document.getElementById('parameter-config-container');
+      const config = document.createElement('fieldset');
+      config.className = 'parameter-config';
+      config.innerHTML = `
+        <legend>Parameter Configuration</legend>
+        <div class="param-field">
+          <label for="param1">Parameter 1</label>
+          <input type="text" placeholder="Value for Parameter 1" />
+        </div>
+        <div class="param-field">
+          <label for="param2">Parameter 2</label>
+          <input type="text" placeholder="Value for Parameter 2" />
+        </div>
+        <div class="param-field">
+          <label for="param3">Parameter 3</label>
+          <input type="text" placeholder="Value for Parameter 3" />
+        </div>
+        <div class="param-field">
+          <label for="param4">Parameter 4</label>
+          <input type="text" placeholder="Value for Parameter 4" />
+        </div>
+        <button type="button" class="btn-remove-config" onclick="removeParameterConfig(this)">Remove</button>
+      `;
+      container.appendChild(config);
+    }
+
+    function removeParameterConfig(button) {
+      const config = button.parentElement;
+      config.remove();
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="top-bar">
+      <!-- Left-aligned logo -->
+      <div class="logo">
+        <img src="https://via.placeholder.com/100x40.png" alt="HPE Logo" />
+      </div>
+      <!-- Centered Title -->
+      <h1>LLM Agenti Tool Mesh - Backpanel</h1>
+    </div>
+  </header>
+
+  <main>
+    <!-- First Column -->
+    <div class="first-column">
+      <!-- Tool Dropdown and Description Section -->
+      <section class="section">
+        <div class="configurable-field">
+          <label for="tool-select">Select the LLM Agentic Tool:</label>
+          <select id="tool-select">
+            <option selected disabled>Select a Tool</option>
+            <option>Tool A</option>
+            <option>Tool B</option>
+            <option>Tool C</option>
+          </select>
+        </div>
+        <h2>Description</h2>
+        <p>
+          This section can contain details about the currently selected tool,
+          its purpose, and general usage instructions.
+        </p>
+        <h2>Arguments</h2>
+        <p>
+          Here you can list or describe any arguments or flags available to 
+          the tool.
+          <ul>
+            <li>Arg1</li>
+            <li>Arg2</li>
+            <li>Arg3</li>
+          </ul>
+        </p>
+      </section>
+    </div>
+
+    <!-- Second Column -->
+    <div class="second-column">
+      <!-- Configurable Part Section -->
+      <section class="section">
+        <h2>Configuration</h2>
+        <div id="parameter-config-container">
+          <!-- Text Area Field -->
+          <div class="configurable-field">
+            <label for="tool-textarea">System Prompt:</label>
+            <textarea id="tool-textarea" rows="6" placeholder="Enter your notes..."></textarea>
+          </div>
+          <!-- Combo Box Field -->
+          <div class="configurable-field">
+            <label for="tool-combobox">Select an LLM:</label>
+            <select id="tool-combobox">
+              <option>Option 1</option>
+              <option>Option 2</option>
+              <option>Option 3</option>
+            </select>
+          </div>
+          <!-- Initial Parameter Config (4 fields) -->
+          <fieldset class="parameter-config">
+            <legend>Interface Configuration</legend>
+            <div class="param-field">
+              <label for="param1">Parameter 1</label>
+              <input type="text" id="param1" placeholder="Value for Parameter 1" />
+            </div>
+            <div class="param-field">
+              <label for="param2">Parameter 2</label>
+              <input type="text" id="param2" placeholder="Value for Parameter 2" />
+            </div>
+            <div class="param-field">
+              <label for="param3">Parameter 3</label>
+              <input type="text" id="param3" placeholder="Value for Parameter 3" />
+            </div>
+            <div class="param-field">
+              <label for="param4">Parameter 4</label>
+              <input type="text" id="param4" placeholder="Value for Parameter 4" />
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Add Parameter Button -->
+        <button type="button" class="btn-add-config" onclick="addParameterConfig()">
+          + Add Parameter Configuration
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <button class="btn-cancel">Cancel</button>
+    <button class="btn-reset">Reset to Default</button>
+    <button class="btn-apply">Apply</button>
+  </footer>
+</body>
+</html>

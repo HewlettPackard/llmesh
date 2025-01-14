@@ -25,13 +25,13 @@ logger = Logger().configure(LOG_CONFIG).get_logger()
 
 
 @AthonTool(config, logger)
-def basic_copywriter(original_text: str) -> str:
+def basic_copywriter(input_string: str) -> str:
     """
     Improve the text using the LLM as an expert copywriter
     """
     # Log info of function
     logger.info("Tool BasicCopywriter started")
-    paragraph = _improve_text(original_text)
+    paragraph = _improve_text(input_string)
     return paragraph
 
 def _improve_text(info):
