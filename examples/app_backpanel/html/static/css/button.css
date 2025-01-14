@@ -1,0 +1,67 @@
+/* Buttons */
+button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 50px; /* Fully rounded buttons */
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid var(--hpe-green);
+    background: #fff;
+    color: var(--hpe-green);
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: var(--hpe-green);
+    color: #fff;
+}
+
+.btn-reset {
+    margin-right: auto; /* Align reset button to the left */
+}
+
+.btn-remove-config {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 50px; /* Fully rounded buttons */
+    cursor: pointer;
+    font-weight: 600;
+    border: 1px solid var(--hpe-red);
+    background: #fff;
+    color: var(--hpe-red);
+    transition: all 0.2s ease;
+    float: right;
+}
+
+.btn-remove-config:hover {
+    background: var(--hpe-red);
+    color: #fff;
+}
+
+/* Footer Buttons */
+footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1rem;
+    border-top: 3px solid var(--hpe-green);
+    background-color: transparent;
+}
+.btn-cancel, .btn-reset {
+    background-color: #fff;
+    color: var(--hpe-dark-grey);
+    border: 1px solid var(--hpe-dark-grey);
+}
+.btn-cancel:hover, .btn-reset:hover {
+    background-color: #e6e6e6;
+}
+.btn-apply {
+    background-color: var(--hpe-green);
+    color: #fff;
+    border: 1px solid var(--hpe-green);
+}
+.btn-apply:hover {
+    background-color: #009c75;
+}

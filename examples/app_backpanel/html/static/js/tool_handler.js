@@ -125,6 +125,8 @@ function loadTools() {
             });
 
             let options = data.map(tool => `<option value="${tool.id}">${tool.name}</option>`).join('');
+            if (options == "")
+                options = "<option selected disabled>No Tool Available</option>"
             document.getElementById('toolSelection').innerHTML = options;
             document.getElementById('toolSelection').dispatchEvent(new Event('change'));
         });
@@ -143,5 +145,6 @@ function getToolType(toolId) {
  */
 function clearToolDetailsAndSettings() {
     document.getElementById('toolDetails').innerHTML = '';
-    document.getElementById('toolSettings').innerHTML = '';
+    document.getElementById('toolConfiguration').innerHTML = '';
+    document.getElementById('toolInterface').innerHTML = '';
 }

@@ -5,17 +5,15 @@
 function appendPromptToolDetails(tool) {
     const toolDetails = document.getElementById('toolDetails');
     let manifest = tool.settings.tool
-    const descriptionDetails = `<h5>Description:</h5><p>${manifest.description}</p>`;
+    const descriptionDetails = `<h1>Description</h1><p style="margin-bottom: 1rem;">${manifest.description}</p>`;
     toolDetails.insertAdjacentHTML('beforeend', descriptionDetails);
 
-    let argumentsDetails = '<h5>Arguments:</h5>';
+    let argumentsDetails = '<h1>Arguments</h1><ul style="margin-bottom: 1rem; padding-left: 20px;">';
     manifest.arguments.forEach(argument => {
-        argumentsDetails += `<p>&#x2022; ${argument.description}</p>`;
+        argumentsDetails += `<li><b>${argument.name} (${argument.type}):</b> ${argument.description}</li>`;
     });
+    argumentsDetails += '</ul>'
     toolDetails.insertAdjacentHTML('beforeend', argumentsDetails);
-
-    const interfaceDetails = '<h5>Settings:</h5>';
-    toolDetails.insertAdjacentHTML('beforeend', interfaceDetails);
 }
 
 /**
@@ -23,44 +21,60 @@ function appendPromptToolDetails(tool) {
  * @param {Object} tool - The tool object containing settings.
  */
 function generatePromptToolSettingsForm(tool) {
-    let settingsForm = '<div id="InterfacesAccordion" class="accordion">';
-    let manifest = tool.settings.tool
-    settingsForm += generateSystemPromptAccordion();
-    settingsForm += generateLLMAccordion();
-    settingsForm += generateInterfaceFields(manifest);
-    settingsForm += '</div>';
-    document.getElementById('toolSettings').innerHTML = settingsForm;
-    bindLlmEvents();
-    bindAddRemoveEvents();
-    attachTypeChangeHandlers(manifest);
+    generatePromptToolConfigurationForm(tool)
+    generatePromptToolInterfaceForm(tool)
+    attachTypeChangeHandlers(tool.settings.tool);
+}
+
+/**
+ * Generates the configuration form.
+ * @param {Object} tool - The tool object containing settings.
+ */
+function generatePromptToolConfigurationForm(tool) {
+    let settingsForm = ''
+    settingsForm += generateSystemPromptForm();
+    settingsForm += generateLLMForm();
+    document.getElementById('toolConfiguration').innerHTML = settingsForm;
     let functionSettings = tool.settings.function
     populateSystemPrompt(functionSettings.system_prompt);
     let options = tool.options
     populateLLMOptions(options.llms, functionSettings.llm);
+    bindLlmEvents();
 }
 
 /**
- * Generates the System Prompt accordion section.
+ * Generates the interface form.
+ * @param {Object} tool - The tool object containing settings.
+*/
+function generatePromptToolInterfaceForm(tool) {
+    let manifest = tool.settings.tool
+    let settingsForm = `
+        <div class="interface-header">
+            <h1>Interface</h1>
+            <button type="button" class="btn-add-config">
+            + Add
+            </button>
+        </div>`;
+    settingsForm += generateInterfaceFields(manifest);
+    document.getElementById('toolInterface').innerHTML = settingsForm;
+    bindAddRemoveEvents();
+}
+
+/**
+ * Generates the System Prompt form section.
  * @returns {string} The HTML for the System Prompt accordion.
  */
-function generateSystemPromptAccordion() {
+function generateSystemPromptForm() {
     return `
-        <div>
-            <div id="headingSystemPrompt">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapseSystemPrompt" aria-expanded="true" aria-controls="collapseSystemPrompt">
-                        System Prompt
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseSystemPrompt" class="collapse" aria-labelledby="headingSystemPrompt" data-parent="#InterfacesAccordion">
-                <div>
-                    <textarea class="form-control" id="system_prompt_textarea" rows="6"></textarea>
-                </div>
-                <button type="button" class="btn btn-secondary llm-button" id="llmButton" style="margin: 10px 0px;">
-                    Improve with LLM
-                </button>
-            </div>
+        <div class="interface-header">
+            <h1>Configuration</h1>
+            <button type="button" class="btn-llm-improve" id="llmButton" style="float: right;">
+                * LLM
+            </button>
+        </div>
+        <div class="configurable-field" style="margin-bottom: 0.5rem;">
+            <label for="tool-textarea">System Prompt</label>
+            <textarea id="system_prompt_textarea" rows="6" placeholder="Enter your notes..."></textarea>
         </div>`;
 }
 
@@ -125,26 +139,18 @@ function bindLlmEvents() {
 }
 
 /**
- * Generates the LLM accordion section.
+ * Generates the LLM form section.
  * @returns {string} The HTML for the LLM accordion.
  */
-function generateLLMAccordion() {
+function generateLLMForm() {
     return `
-        <div>
-            <div id="headingLLM">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapseLLM" aria-expanded="true" aria-controls="collapseLLM">
-                        LLM
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseLLM" class="collapse" aria-labelledby="headingLLM" data-parent="#InterfacesAccordion">
-                <div>
-                    <select class="form-control" id="llm_select">
-                        <option value="placeholder1">Placeholder</option>
-                    </select>
-                </div>
-            </div>
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="llm_select">LLM</label>
+            <select id="llm_select">
+                <option>Placeholder</option>
+                <option>Option 2</option>
+                <option>Option 3</option>
+            </select>
         </div>`;
 }
 
@@ -160,7 +166,7 @@ function generateInterfaceFields(toolConfig) {
         interfaceFields += createInterfaceField(key, value.name, value.label, value.type);
     });
 
-    interfaceFields += createAddButton();
+    //interfaceFields += createAddButton();
 
     return interfaceFields
 }
@@ -175,26 +181,18 @@ function generateInterfaceFields(toolConfig) {
  */
 function createInterfaceField(key, name = "new_name", label = 'New Field Label', type = 'input') {
     return `
-        <div id="interfaceField_${key}">
-            <div id="heading${key}">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
-                        Interface Field ${Number(key)+1}
-                    </button>
-                </h5>
-            </div>
-            <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#InterfacesAccordion">
-                <div>
-                    ${createNameInput(key, name)}
-                    ${createLabelInput(key, label)}
-                    ${createTypeSelect(key, type)}
-                    <div class="form-group field_${key}_additional" style="margin: 0;"></div>
-                    <button type="button" class="btn btn-secondary remove-interface-button" data-key="${key}">
-                        Remove Interface Field ${Number(key)+1}
-                    </button>
-                </div>
-            </div>
-        </div>`;
+    <fieldset class="parameter-config">
+        <legend>Interface Field-${Number(key)+1}</legend>
+        <div class="param-row">
+            ${createNameInput(key, name)}
+            ${createLabelInput(key, label)}
+        </div>
+        <div class="param-row">
+            ${createTypeSelect(key, type)}
+            <div class="param-field form-group field_${key}_additional" style="margin: 0;"></div>
+        </div>
+        <button type="button" class="btn-remove-config" onclick="removeParameterConfig(this)">- Cut</button>
+    </fieldset>`;
 }
 
 /** 
@@ -205,13 +203,9 @@ function createInterfaceField(key, name = "new_name", label = 'New Field Label',
  */ 
 function createNameInput(key, name) {
     return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
-                <input type="text" class="form-control" id="${key}_name" value="${name}">
-            </div>
-            <div class="form-group col-md-3">
-                <name for="${key}_name">Name</name>
-            </div>
+        <div class="param-field">
+            <label for="${key}_name">Name</label>
+            <input type="text" id="${key}_name" value="${name}" />
         </div>`;
 }
 
@@ -223,13 +217,9 @@ function createNameInput(key, name) {
  */ 
 function createLabelInput(key, label) {
     return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
-                <input type="text" class="form-control" id="${key}_label" value="${label}">
-            </div>
-            <div class="form-group col-md-3">
-                <label for="${key}_label">Label</label>
-            </div>
+        <div class="param-field">
+            <label for="${key}_label">Label</label>
+            <input type="text" id="${key}_label" value="${label}" />
         </div>`;
 }
 
@@ -245,16 +235,12 @@ function createTypeSelect(key, selectedType) {
     ).join('');
     
     return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
+            <div class="param-field configurable-field">
+                <label for="${key}_type">Type</label>
                 <select class="form-control" id="${key}_type">
                     ${options}
                 </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="${key}_type">Type</label>
-            </div>
-        </div>`;
+            </div>`;
 }
 
 /** 
@@ -376,24 +362,15 @@ function handleAdditionalFields(key, type, value) {
     let additionalFields = '';
     if (type === 'select') {
         additionalFields += `
-            <div class="form-row">
-                <div class="form-group col-md-9">
-                    <input type="text" class="form-control" id="${key}_options" value="${value.options || ''}">
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="${key}_options">Options</label>
-                </div>
-            </div>
-            <small>Use ; to separate options. E.g., Option1;Option2;Option3</small>`;
+            <div class="param-field">
+                <label for="${key}_options">Options</label>
+                <input type="text" id="${key}_options" placeholder="${value.options || 'E.g., Option1;Option2;Option3'}" />
+            </div>`;
     } else if (type === 'textarea') {
         additionalFields += `
-            <div class="form-row">
-                <div class="form-group col-md-9">
-                    <input type="number" class="form-control" id="${key}_rows" value="${value.rows || 3}">
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="${key}_rows">Rows</label>
-                </div>
+            <div class="param-field">
+                <label for="${key}_rows">Rows</label>
+                <input type="text" id="${key}_rows" value="${value.rows || 3}" />
             </div>`;
     }
     document.querySelector(`.field_${key}_additional`).innerHTML = additionalFields;

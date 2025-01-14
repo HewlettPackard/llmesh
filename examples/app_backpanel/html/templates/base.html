@@ -1,41 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Panel{% endblock %}</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ favicon_link }}" sizes="32x32">
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">      
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" crossorigin="anonymous">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="static/css/layout.css"/>
-    <link rel="stylesheet" type="text/css" href="static/css/card_header.css"/>
-    <link rel="stylesheet" type="text/css" href="static/css/card_body.css"/>
-    <link rel="stylesheet" type="text/css" href="static/css/card_footer.css"/>
-    {% block head %}{% endblock %}
-</head>
-<body data-customer-type="{{ theme }}">
-    <!-- Common Navbar or Header could go here -->
-    {% block content %}{% endblock %}
-    <!-- Common Footer could go here -->
-    
-    <!-- Common JavaScript Files -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    {% block scripts %}
-    <!-- Dynamic Theme JavaScript -->
-    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
-    <script>
-        // Get the theme variable from the session passed from Flask
-        const currentTheme = "{{ theme }}";
-        // Apply the theme
-        applyTheme(currentTheme);
-    </script>
-    <!-- Custom JavaScript -->
-    <script type="module" src="{{ url_for('static', filename='js/tool_handler.js') }}"></script>
-    {% endblock %}
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}LLM Agenti Tool Mesh - Backpanel{% endblock %}</title>
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="{{ favicon_link }}" sizes="32x32">
+        <!-- Custom CSS -->
+        <link rel="stylesheet" type="text/css" href="static/css/layout.css"/>
+        <link rel="stylesheet" type="text/css" href="static/css/top_bar.css"/>
+        <link rel="stylesheet" type="text/css" href="static/css/body.css"/>
+        <link rel="stylesheet" type="text/css" href="static/css/button.css"/>
+        {% block head %}{% endblock %}
+    </head>
+    <body data-customer-type="{{ theme }}">
+        <!-- Common Navbar or Header could go here -->
+        {% block content %}{% endblock %}
+        <!-- Common Footer could go here -->
+        
+        {% block scripts %}
+        <!-- Dynamic Theme JavaScript -->
+        <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+        <script>
+            // Get the theme variable from the session passed from Flask
+            const currentTheme = "{{ theme }}";
+            // Apply the theme
+            applyTheme(currentTheme);
+        </script>
+        <!-- Custom JavaScript -->
+        <script type="module" src="{{ url_for('static', filename='js/tool_handler.js') }}"></script>
+        {% endblock %}
+
+        {% block foot %}{% endblock %}
+    </body>
 </html>

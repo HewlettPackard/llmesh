@@ -1,26 +1,39 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Admin Panel
+LLM Agenti Tool Mesh - Backpanel
+{% endblock %}
+
+{% block head %}
+<header>
+    <div class="top-bar">
+        <!-- Left-aligned logo -->
+        <div class="logo">
+            <img src="https://via.placeholder.com/100x40.png" alt="HPE Logo" />
+        </div>
+        <!-- Centered Title -->
+        <h1>LLM Agenti Tool Mesh - Backpanel</h1>
+    </div>
+</header>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid h-100">
-    <div class="row justify-content-center h-100">
-        <div class="col-md-8 col-xl-6 panel">
-            <div class="card">
-                {% include 'components/card_header.html' %} <!-- Include the card header component -->
-                <div class="card-body">
-                    {% include 'components/tool_details.html' %} <!-- Include tool details section -->
-                    {% include 'components/tool_settings.html' %} <!-- Include tool settings form -->
-
-                    <div id="loading-spinner" class="spinner-overlay" style="display: none;">
-                        <div class="spinner"></div>
-                    </div>  
-                </div>
-                {% include 'components/card_footer.html' %} <!-- Include the card footer component -->
-            </div>
-        </div>
+<main>
+    {% include 'components/tool_column.html' %}
+    <div class="second-column">
+        {% include 'components/configuration_box.html' %}
+        {% include 'components/interface_box.html' %}
+        <div id="loading-spinner" class="spinner-overlay" style="display: none;">
+            <div class="spinner"></div>
+        </div>  
     </div>
-</div>
+</main>
+{% endblock %}
+
+{% block foot %}
+<footer>
+    <button class="btn-reset">Reset to Default</button>
+    <button class="btn-cancel">Cancel</button>
+    <button class="btn-apply">Apply</button>
+</footer>
 {% endblock %}

@@ -17,7 +17,7 @@ tool:
   return_direct: true
   interface:
     fields:
-      - name: input_string
+      - name: text
         label: "Insert the text to improve"
         type: textarea
         rows: 6
