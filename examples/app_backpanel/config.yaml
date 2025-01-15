@@ -52,6 +52,61 @@ tools:
         config: config.yaml
       prompts:
         system_prompt: system_prompt.txt
+  - name: TelcoExpert
+    type: RagTool
+    base_url: https://127.0.0.1:5006/
+    version: 
+      min_version: "1.0.0"  # Versions >= 1.0.0 are supported
+      max_version: "2.0.0"  # Versions < 2.0.0 are supported
+    extractors:
+    - label: Unstructured - Sections from Docx
+      settings:      
+        type: UnstructuredForSections
+        document_type: Docx
+        extraction_type: SectionWithHeader
+    trasformations:
+    - RemoveMultipleSpaces
+    - ReplaceTabsWithSpaces
+    - TransformInSectionByHeader
+    - RemoveTitleElementsOnly
+    - TransformInChunk
+    storages:
+    - label: Chroma - Local Instance
+      settings:  
+        type: ChromaCollection
+        path: examples/tool_rag/data
+        collection: Telco3GPP5GStandards
+    - label: Milvus - Local Instance
+      settings:  
+        type: MilvusCollection
+        path: examples/tool_rag/data/milvus.db
+        collection: Telco3GPP5GStandards
+    llms:
+      - label: ChatGPT-4o
+        settings:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0  
+          seed: 42
+      - label: Gemini-1.5-Pro
+        settings:
+          type: LangChainChatGoogleGenAI
+          model_name: gemini-1.5-pro
+          api_key: $ENV{GOOGLE_API_KEY}
+          temperature: 0
+      - label: Claude-3.5-Sonnet
+        settings:
+          type: LangChainChatAnthropic
+          model_name: claude-3-5-sonnet-20240620
+          api_key: $ENV{ANTHROPIC_API_KEY}
+          temperature: 0
+    default:
+      path: examples/app_backpanel/tools/tool_rag/
+      files: 
+        config: config.yaml
+      prompts:
+        system_prompt: query_espantion.txt
 
 function:
   discovery:

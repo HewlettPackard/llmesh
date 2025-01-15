@@ -90,7 +90,7 @@ def _load_elements(collection, elements):
 
 def _augment_query_generated(query):
     prompts = [
-        SystemMessage(content = _get_prompt("query_espantion")),
+        SystemMessage(content = config["function"]["query_espantion"]),
         HumanMessage(content = query)
     ]
     content = _invoke_llm(prompts)

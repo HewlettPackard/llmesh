@@ -3,6 +3,10 @@
  * @param {Object} tool - The tool object containing details.
  */
 function appendPromptToolDetails(tool) {
+    // Show configuration & interface and restore detail width
+    document.getElementById('toolConfigurationBox').style.display = 'block';
+    document.getElementById('toolInterfaceBox').style.display = 'block';
+
     const toolDetails = document.getElementById('toolDetails');
     let manifest = tool.settings.tool
     const descriptionDetails = `<h1>Description</h1><p style="margin-bottom: 1rem;">${manifest.description}</p>`;
