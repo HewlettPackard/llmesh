@@ -51,13 +51,40 @@ function generatePromptToolInterfaceForm(tool) {
     let settingsForm = `
         <div class="interface-header">
             <h1>Interface</h1>
-            <button type="button" class="btn-add-config">
+            <button type="button" class="btn-add-config" id="addInterfaceButton">
             + Add
             </button>
         </div>`;
     settingsForm += generateInterfaceFields(manifest);
     document.getElementById('toolInterface').innerHTML = settingsForm;
     bindAddRemoveEvents();
+}
+
+/**
+ * Attaches change event handlers to the type dropdowns.
+ * @param {Object} toolConfig - The tool configuration object.
+ */
+function attachTypeChangeHandlers(toolConfig) {
+    // Select all elements with the ID pattern *_type
+    const typeElements = document.querySelectorAll('[id$="_type"]'); // Matches all elements ending with "_type"
+    
+    typeElements.forEach(typeElement => {
+        const key = typeElement.id.replace('_type', ''); // Extract the key from the ID
+        const value = toolConfig.interface?.fields?.[key] || {}; // Use config value if it exists, or default to an empty object
+
+
+        // Attach change event listener if not already attached
+        if (!typeElement.hasAttribute('data-handler-attached')) {
+            typeElement.addEventListener('change', function() {
+                handleAdditionalFields(key, this.value, value);
+            });
+            // Mark this element as having the event handler attached
+            typeElement.setAttribute('data-handler-attached', 'true');
+        }
+
+        // Initial call to set up additional fields based on current type
+        handleAdditionalFields(key, typeElement.value, value);
+    });
 }
 
 /**
@@ -76,6 +103,42 @@ function generateSystemPromptForm() {
             <label for="tool-textarea">System Prompt</label>
             <textarea id="system_prompt_textarea" rows="6" placeholder="Enter your notes..."></textarea>
         </div>`;
+}
+
+/**
+ * Generates the LLM form section.
+ * @returns {string} The HTML for the LLM accordion.
+ */
+function generateLLMForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="llm_select">LLM</label>
+            <select id="llm_select">
+                <option>Placeholder</option>
+                <option>Option 2</option>
+                <option>Option 3</option>
+            </select>
+        </div>`;
+}
+
+/**
+ * Populates the system prompt textarea.
+ * @param {string} systemPrompt - The system prompt text.
+ */
+function populateSystemPrompt(systemPrompt) {
+    document.getElementById('system_prompt_textarea').value = systemPrompt;
+}
+
+/**
+ * Populates the LLM options dropdown.
+ * @param {Array} llmOptions - Array of LLM option objects.
+ */
+function populateLLMOptions(llmOptions, llmSelected) {
+    const llmSelect = document.getElementById('llm_select');
+    llmSelect.innerHTML = llmOptions.map(option => {
+        const isSelected = option.settings.type === llmSelected.type ? 'selected' : '';
+        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
+    }).join('');
 }
 
 /**
@@ -139,36 +202,38 @@ function bindLlmEvents() {
 }
 
 /**
- * Generates the LLM form section.
- * @returns {string} The HTML for the LLM accordion.
- */
-function generateLLMForm() {
-    return `
-        <div class="configurable-field" style="margin-bottom: 1rem;">
-            <label for="llm_select">LLM</label>
-            <select id="llm_select">
-                <option>Placeholder</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-            </select>
-        </div>`;
-}
-
-/**
  * Generates interface fields for the settings form.
  * @param {Object} toolConfig - The tool configuration object.
  * @returns {string} The HTML for the interface fields.
  */
 function generateInterfaceFields(toolConfig) {
-    let interfaceFields = '';
+    let interfaceFields = '<div id="interfaceFieldsContainer">';
 
     Object.entries(toolConfig.interface.fields).forEach(([key, value]) => {
         interfaceFields += createInterfaceField(key, value.name, value.label, value.type);
     });
 
-    //interfaceFields += createAddButton();
+    interfaceFields += '</div>';
 
     return interfaceFields
+}
+
+/**
+ * Function to bind events for add and remove buttons
+ */ 
+function bindAddRemoveEvents() {
+    // Bind add button
+    const addButton = document.getElementById('addInterfaceButton');
+    if (addButton) {
+        addButton.onclick = addInterfaceField;
+    }
+
+    // Bind remove buttons
+    document.querySelectorAll('.remove-interface-button').forEach(button => {
+        button.onclick = function () {
+            removeInterfaceField(button.dataset.key);
+        };
+    });
 }
 
 /** 
@@ -181,7 +246,7 @@ function generateInterfaceFields(toolConfig) {
  */
 function createInterfaceField(key, name = "new_name", label = 'New Field Label', type = 'input') {
     return `
-    <fieldset class="parameter-config">
+    <fieldset class="parameter-config" id="interfaceField_${key}">
         <legend>Interface Field-${Number(key)+1}</legend>
         <div class="param-row">
             ${createNameInput(key, name)}
@@ -191,7 +256,7 @@ function createInterfaceField(key, name = "new_name", label = 'New Field Label',
             ${createTypeSelect(key, type)}
             <div class="param-field form-group field_${key}_additional" style="margin: 0;"></div>
         </div>
-        <button type="button" class="btn-remove-config" onclick="removeParameterConfig(this)">- Cut</button>
+        <button type="button" data-key="${key}" class="btn-remove-config remove-interface-button">- Cut</button>
     </fieldset>`;
 }
 
@@ -253,18 +318,6 @@ function capitalize(word) {
 }
 
 /** 
- * Function to create the "Add New Interface Field" button
- * @returns {string} The HTML for the Add button.
- */
-function createAddButton() {
-    return `
-            <button type="button" class="btn btn-primary" id="addInterfaceButton" style="margin: 15px 0px 10px 0px;">
-                Add New Interface Field
-            </button>
-        `;
-}
-
-/** 
  * Function to remove an interface field by key
  */
 function removeInterfaceField(key) {
@@ -279,7 +332,7 @@ function removeInterfaceField(key) {
  */
 function addInterfaceField() {
     // Determine the maximum field number currently in use
-    const interfaceFields = document.querySelectorAll('#InterfacesAccordion > div[id^="interfaceField_"]');
+    const interfaceFields = document.querySelectorAll('fieldset[id^="interfaceField_"]');
     let newCounter = 0;
 
     // Check if interfaceFields is empty
@@ -300,56 +353,27 @@ function addInterfaceField() {
     }
 
     const key = `${newCounter}`;
-    const newField = createInterfaceField(key);
+    const newFieldHtml = createInterfaceField(key);
 
-    // Find the "Add New Interface Field" button
-    const addButton = document.getElementById('addInterfaceButton');
-    if (addButton) {
-        // Insert the new field before the "Add New Interface Field" button
-        addButton.insertAdjacentHTML('beforebegin', newField);
+    // Parse the HTML string into a DOM Node
+    const template = document.createElement('template');
+    template.innerHTML = newFieldHtml.trim(); // Trim to remove extra whitespace
+
+    const newField = template.content.firstChild;
+
+    // Find the container to append the new field
+    const container = document.getElementById('interfaceFieldsContainer');
+    if (container) {
+        // Append the new field to the container
+        container.appendChild(newField);
+    } else {
+        console.error('Interface Fields container not found');
     }
+
 
     // Re-bind events for dynamically added elements
     bindAddRemoveEvents();
     attachTypeChangeHandlers({});
-}
-
-/**
- * Function to bind events for add and remove buttons
- */ 
-function bindAddRemoveEvents() {
-    // Bind add button
-    const addButton = document.getElementById('addInterfaceButton');
-    if (addButton) {
-        addButton.onclick = addInterfaceField;
-    }
-
-    // Bind remove buttons
-    document.querySelectorAll('.remove-interface-button').forEach(button => {
-        button.onclick = function () {
-            removeInterfaceField(button.dataset.key);
-        };
-    });
-}
-
-/**
- * Populates the system prompt textarea.
- * @param {string} systemPrompt - The system prompt text.
- */
-function populateSystemPrompt(systemPrompt) {
-    document.getElementById('system_prompt_textarea').value = systemPrompt;
-}
-
-/**
- * Populates the LLM options dropdown.
- * @param {Array} llmOptions - Array of LLM option objects.
- */
-function populateLLMOptions(llmOptions, llmSelected) {
-    const llmSelect = document.getElementById('llm_select');
-    llmSelect.innerHTML = llmOptions.map(option => {
-        const isSelected = option.settings.type === llmSelected.type ? 'selected' : '';
-        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
-    }).join('');
 }
 
 /**
@@ -374,33 +398,6 @@ function handleAdditionalFields(key, type, value) {
             </div>`;
     }
     document.querySelector(`.field_${key}_additional`).innerHTML = additionalFields;
-}
-
-/**
- * Attaches change event handlers to the type dropdowns.
- * @param {Object} toolConfig - The tool configuration object.
- */
-function attachTypeChangeHandlers(toolConfig) {
-    // Select all elements with the ID pattern *_type
-    const typeElements = document.querySelectorAll('[id$="_type"]'); // Matches all elements ending with "_type"
-    
-    typeElements.forEach(typeElement => {
-        const key = typeElement.id.replace('_type', ''); // Extract the key from the ID
-        const value = toolConfig.interface?.fields?.[key] || {}; // Use config value if it exists, or default to an empty object
-
-
-        // Attach change event listener if not already attached
-        if (!typeElement.hasAttribute('data-handler-attached')) {
-            typeElement.addEventListener('change', function() {
-                handleAdditionalFields(key, this.value, value);
-            });
-            // Mark this element as having the event handler attached
-            typeElement.setAttribute('data-handler-attached', 'true');
-        }
-
-        // Initial call to set up additional fields based on current type
-        handleAdditionalFields(key, typeElement.value, value);
-    });
 }
 
 /**
