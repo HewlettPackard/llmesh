@@ -8,6 +8,6 @@
         "--hpe-light-grey": "#f2f2f2",
         "--hpe-dark-grey": "#333333",
         "--hpe-gray-button": "#808080",
-        "--box-shadow": "0 2px 6px rgba(0, 0, 0, 0.1)",
+        "--box-shadow": "0 2px 6px rgba(0, 0, 0, 0.1)"
     }
 }

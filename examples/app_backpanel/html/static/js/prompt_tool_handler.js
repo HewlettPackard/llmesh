@@ -370,7 +370,6 @@ function addInterfaceField() {
         console.error('Interface Fields container not found');
     }
 
-
     // Re-bind events for dynamically added elements
     bindAddRemoveEvents();
     attachTypeChangeHandlers({});

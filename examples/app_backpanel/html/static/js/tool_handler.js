@@ -42,6 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(`Unsupported tool type '${toolType}'`);
                     return;
                 }
+
+                // Show configuration & interface and restore detail width
+                document.getElementById('toolConfigurationBox').style.display = 'block';
+                document.getElementById('toolInterfaceBox').style.display = 'block';
+                document.getElementById('toolDetails').innerHTML = ''
+
                 handlers.appendDetails(tool);
                 handlers.generateSettingsForm(tool);
             });
@@ -144,7 +150,12 @@ function getToolType(toolId) {
  * Clears existing tool details and settings.
  */
 function clearToolDetailsAndSettings() {
-    document.getElementById('toolDetails').innerHTML = '';
+    // Get the relevant elements
+    document.getElementById('toolDetails').innerHTML = '<p>No tool discovered. Please check their endpoint and connection.</p>';
     document.getElementById('toolConfiguration').innerHTML = '';
     document.getElementById('toolInterface').innerHTML = '';
+
+    // Hide configuration and interface
+    document.getElementById('toolConfigurationBox').style.display = 'none';
+    document.getElementById('toolInterfaceBox').style.display = 'none';
 }
