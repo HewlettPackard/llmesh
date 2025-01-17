@@ -10,12 +10,13 @@ This module provides functionality to:
 """
 
 from typing import Optional, List
-import umap
+import umap.umap_ as umap
 import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from pydantic import Field
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import (
+    SentenceTransformerEmbeddingFunction)
 from self_serve_platform.rag.data_retrievers.base import BaseDataRetriever
 from self_serve_platform.system.log import Logger
 

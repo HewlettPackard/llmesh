@@ -9,6 +9,13 @@ import {
     collectPromptToolSettings,
     applyPromptToolSettings
 } from './prompt_tool_handler.js';
+// Import the RagTool handlers
+import {
+    appendRagToolDetails,
+    generateRagToolSettingsForm,
+    collectRagToolSettings,
+    applyRagToolSettings
+} from './rag_tool_handler.js';
 
 
 // Handlers for different tool types
@@ -18,6 +25,12 @@ const toolHandlers = {
         generateSettingsForm: generatePromptToolSettingsForm,
         collectSettings: collectPromptToolSettings,
         applySettings: applyPromptToolSettings
+    },
+    'RagTool': {
+        appendDetails: appendRagToolDetails,
+        generateSettingsForm: generateRagToolSettingsForm,
+        collectSettings: collectRagToolSettings,
+        applySettings: applyRagToolSettings
     },
     // Others tool types
 };

@@ -48,9 +48,9 @@ function:
       model_name: gpt-4o
       api_key: $ENV{OPENAI_API_KEY}
       temperature: 0  
+      seed: 42
     rerank_model: cross-encoder/ms-marco-MiniLM-L-6-v2
     summary_chunks: 5
-      seed: 42
   query_espantion: $PROMPT(query_espantion)
   debug:
     load_files: false

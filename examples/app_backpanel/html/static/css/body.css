@@ -49,6 +49,11 @@
     font-weight: normal; /* Remove bold from labels */
 }
 
+#toolConfigurationBox {
+    max-height: 750px; /* Prevent it from exceeding the height of the left container */
+    overflow-y: auto; /* Enable vertical scrolling if content overflows */
+}
+
 .configurable-field select,
 .configurable-field textarea,
 .configurable-field input[type="text"] {

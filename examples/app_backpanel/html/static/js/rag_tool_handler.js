@@ -2,10 +2,9 @@
  * Appends tool details to the DOM.
  * @param {Object} tool - The tool object containing details.
  */
-function appendPromptToolDetails(tool) {
+function appendRagToolDetails(tool) {
     // Show configuration & interface and restore detail width
     document.getElementById('toolConfigurationBox').style.display = 'block';
-    document.getElementById('toolInterfaceBox').style.display = 'block';
 
     const toolDetails = document.getElementById('toolDetails');
     let manifest = tool.settings.tool
@@ -24,96 +23,195 @@ function appendPromptToolDetails(tool) {
  * Generates the settings form.
  * @param {Object} tool - The tool object containing settings.
  */
-function generatePromptToolSettingsForm(tool) {
-    generatePromptToolConfigurationForm(tool)
-    generatePromptToolInterfaceForm(tool)
-    attachTypeChangeHandlers(tool.settings.tool);
+function generateRagToolSettingsForm(tool) {
+    generateInjectionToolConfigurationForm(tool)
+    generateRetrievalToolConfigurationForm(tool)
 }
 
 /**
- * Generates the configuration form.
+ * Generates the configuration injection form.
  * @param {Object} tool - The tool object containing settings.
  */
-function generatePromptToolConfigurationForm(tool) {
-    let settingsForm = ''
-    settingsForm += generateSystemPromptForm();
-    settingsForm += generateLLMForm();
+function generateInjectionToolConfigurationForm(tool) {
+    let settingsForm = `
+    <div class="interface-header">
+        <h1>Configuration</h1>
+    </div>
+    <fieldset class="parameter-config" id="injectionSettings">
+        <legend>Injection</legend>
+        <div>`
+    settingsForm += generateExtractorForm();
+    settingsForm += generateActionsForm();
+    settingsForm += generateStorageForm();
+    settingsForm += generateFilesForm();
+    settingsForm += generateButtons() 
+    settingsForm += '</div></fieldset>'
     document.getElementById('toolConfiguration').innerHTML = settingsForm;
     let functionSettings = tool.settings.function
-    populateSystemPrompt(functionSettings.system_prompt);
+    let fileSettings = tool.settings.data
     let options = tool.options
-    populateLLMOptions(options.llms, functionSettings.llm);
-    bindLlmEvents();
+    populateExtractorOptions(options.extractors, functionSettings.rag.extractor);
+    populateActionsCheckboxes(options.trasformations, functionSettings.rag.actions);
+    populateStorageOptions(options.storages, functionSettings.rag.storage);
+    populateFilesCheckboxes(fileSettings.files);
+        //TODO: bindLoadResetEvents();
 }
 
 /**
- * Generates the interface form.
- * @param {Object} tool - The tool object containing settings.
-*/
-function generatePromptToolInterfaceForm(tool) {
-    let manifest = tool.settings.tool
-    let settingsForm = `
-        <div class="interface-header">
-            <h1>Interface</h1>
-            <button type="button" class="btn-add-config" id="addInterfaceButton">
-            + Add
-            </button>
-        </div>`;
-    settingsForm += generateInterfaceFields(manifest);
-    document.getElementById('toolInterface').innerHTML = settingsForm;
-    bindAddRemoveEvents();
-}
-
-/**
- * Attaches change event handlers to the type dropdowns.
- * @param {Object} toolConfig - The tool configuration object.
+ * Generates the Extractor form section.
+ * @returns {string} The HTML for the LLM form.
  */
-function attachTypeChangeHandlers(toolConfig) {
-    // Select all elements with the ID pattern *_type
-    const typeElements = document.querySelectorAll('[id$="_type"]'); // Matches all elements ending with "_type"
-    
-    typeElements.forEach(typeElement => {
-        const key = typeElement.id.replace('_type', ''); // Extract the key from the ID
-        const value = toolConfig.interface?.fields?.[key] || {}; // Use config value if it exists, or default to an empty object
-
-
-        // Attach change event listener if not already attached
-        if (!typeElement.hasAttribute('data-handler-attached')) {
-            typeElement.addEventListener('change', function() {
-                handleAdditionalFields(key, this.value, value);
-            });
-            // Mark this element as having the event handler attached
-            typeElement.setAttribute('data-handler-attached', 'true');
-        }
-
-        // Initial call to set up additional fields based on current type
-        handleAdditionalFields(key, typeElement.value, value);
-    });
-}
-
-/**
- * Generates the System Prompt form section.
- * @returns {string} The HTML for the System Prompt accordion.
- */
-function generateSystemPromptForm() {
+function generateExtractorForm() {
     return `
-        <div class="interface-header">
-            <h1>Configuration</h1>
-            <button type="button" class="btn-llm-improve" id="llmButton" style="float: right;">
-                * LLM
-            </button>
-        </div>
-        <div class="configurable-field" style="margin-bottom: 0.5rem;">
-            <label for="tool-textarea">System Prompt</label>
-            <textarea id="system_prompt_textarea" rows="9" placeholder="Enter your notes..."></textarea>
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="extractor_select">Extractor</label>
+            <select id="extractor_select">
+                <option>Placeholder</option>
+            </select>
         </div>`;
+}
+
+/**
+ * Generates the Actions form section with multiple visible options for selection.
+ * @returns {string} The HTML for the LLM accordion with checkboxes.
+ */
+function generateActionsForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="actions_checkboxes">Trasformations</label>
+            <div id="actions_checkboxes">
+                <div>
+                    <input type="checkbox" id="action_option1"value="Placeholder">
+                    <label for="action_option1" style="font-size: 1rem;">Placeholder</label>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Generates the Storage form section.
+ * @returns {string} The HTML for the LLM form.
+ */
+function generateStorageForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="storage_select">Storage</label>
+            <select id="storage_select">
+                <option>Placeholder</option>
+            </select>
+        </div>`;
+}
+
+/**
+ * Generates the Files form section with multiple visible options for selection.
+ * @returns {string} The HTML for the LLM with checkboxes.
+ */
+function generateFilesForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="files_checkboxes">Files</label>
+            <div id="files_checkboxes">
+                <div>
+                    <input type="checkbox" id="file_option1" name="asction" value="Placeholder">
+                    <label for="file_option1" style="font-size: 1rem;">Placeholder</label>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Generates the injection Buttons.
+ * @returns {string} The HTML for the buttons.
+ */
+function generateButtons() {
+    return `
+    <div>
+        <button type="button" class="btn-remove-config reset-interface-button">Reset dB</button>
+        <button type="button" class="btn-load-config load-interface-button">Load Files</button>
+    </div>`;
+}
+
+/**
+ * Populates the Extractor options dropdown.
+ * @param {Array} extractorOptions - Array of Extractor option objects.
+ */
+function populateExtractorOptions(extractorOptions, extractorSelected) {
+    const extractorSelect = document.getElementById('extractor_select');
+    extractorSelect.innerHTML = extractorOptions.map(option => {
+        const isSelected = option.settings.type === extractorSelected.type ? 'selected' : '';
+        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
+    }).join('');
+}
+
+/**
+ * Populates the Extractor options dropdown.
+ * @param {Array} trasformationOptions - Array of actions.
+ */
+function populateActionsCheckboxes(trasformationOptions, actionsSelected) {
+    const trasformationSelect = document.getElementById('actions_checkboxes');
+    trasformationSelect.innerHTML = trasformationOptions.map((option, index) => {
+        const isChecked = actionsSelected.includes(option) ? 'checked' : '';
+        return `
+    <div>
+        <input type="checkbox" id="action_${index}" value="${option}" ${isChecked}>
+        <label for="action_${index}" style="font-size: 1rem;">${option}</label>
+    </div>`;
+    }).join('');
+}
+
+/**
+ * Populates the Storage options dropdown.
+ * @param {Array} storageOptions - Array of Storage option objects.
+ */
+function populateStorageOptions(storageOptions, storageSelected) {
+    const storageSelect = document.getElementById('storage_select');
+    storageSelect.innerHTML = storageOptions.map(option => {
+        const isSelected = option.settings.type === storageSelected.type ? 'selected' : '';
+        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
+    }).join('');
+}
+
+/**
+ * Populates the Extractor options dropdown.
+ * @param {Array} filesSelected - Array of Files.
+ */
+function populateFilesCheckboxes(filesSelected) {
+    const filesSelect = document.getElementById('files_checkboxes');
+    filesSelect.innerHTML = filesSelected.map((option, index) => {
+        return `
+    <div>
+        <input type="checkbox" id="file_${index}" value="${option.source}" checked>
+        <label for="file_${index}" style="font-size: 1rem;">${option.source}</label>
+    </div>`;
+    }).join('');
+}
+
+/**
+ * Generates the configuration retrieval form.
+ * @param {Object} tool - The tool object containing settings.
+ */
+function generateRetrievalToolConfigurationForm(tool) {
+    let settingsForm = `
+    <fieldset class="parameter-config" id="retrievalSettings">
+        <legend>Retrieval</legend><div>`
+    settingsForm += generateLlmForm();
+    settingsForm += generateSystemForm();
+    settingsForm += generateChunksForm();
+    settingsForm += '</div></fieldset>'
+    document.getElementById('toolConfiguration').innerHTML += settingsForm;
+    let functionSettings = tool.settings.function
+    let options = tool.options
+    populateLLMOptions(options.llms, functionSettings.rag.llm_model);
+    populateSystemPrompt(functionSettings.query_espantion);
+    populateChunks(functionSettings.rag.retriever.n_results, functionSettings.rag.summary_chunks)
+        //bindLlmEvents();
 }
 
 /**
  * Generates the LLM form section.
  * @returns {string} The HTML for the LLM accordion.
  */
-function generateLLMForm() {
+function generateLlmForm() {
     return `
         <div class="configurable-field" style="margin-bottom: 1rem;">
             <label for="llm_select">LLM</label>
@@ -124,11 +222,29 @@ function generateLLMForm() {
 }
 
 /**
- * Populates the system prompt textarea.
- * @param {string} systemPrompt - The system prompt text.
+ * Generates the System Prompt form section.
+ * @returns {string} The HTML for the System Prompt accordion.
  */
-function populateSystemPrompt(systemPrompt) {
-    document.getElementById('system_prompt_textarea').value = systemPrompt;
+function generateSystemForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 0.5rem;">
+            <label for="tool-textarea">Query Augmentation Prompt</label>
+            <textarea id="system_prompt_textarea" rows="9" placeholder="Enter your notes..."></textarea>
+        </div>`;
+}
+
+/**
+ * Generates the Chunk form section.
+ * @returns {string} The HTML for the Chunk inputs.
+ */
+function generateChunksForm() {
+    return `
+        <div class="configurable-field">
+            <label for="chunk_number">Retrieved Chunks</label>
+            <input type="text" id="chunk_number"/>
+            <label for="rerank_number">Reranked Chunks</label>
+            <input type="text" id="rerank_number"/>
+        </div>`;
 }
 
 /**
@@ -141,6 +257,33 @@ function populateLLMOptions(llmOptions, llmSelected) {
         const isSelected = option.settings.type === llmSelected.type ? 'selected' : '';
         return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
     }).join('');
+}
+
+/**
+ * Populates the system prompt textarea.
+ * @param {string} systemPrompt - The system prompt text.
+ */
+function populateSystemPrompt(systemPrompt) {
+    document.getElementById('system_prompt_textarea').value = systemPrompt;
+}
+
+/**
+ * Populates the retrieved chunks.
+ * @param {string} n_chunk - The retrieved chunks.
+ * @param {string} r_chunk - The reranked chunks.
+ */
+function populateChunks(n_chunk, r_chunk) {
+    // Find the input fields by their IDs
+    const chunkInput = document.getElementById('chunk_number');
+    const rerankInput = document.getElementById('rerank_number');
+
+    // Set the values of the input fields
+    if (chunkInput) {
+        chunkInput.value = n_chunk;
+    }
+    if (rerankInput) {
+        rerankInput.value = r_chunk;
+    }
 }
 
 /**
@@ -405,7 +548,7 @@ function handleAdditionalFields(key, type, value) {
  * Collects settings from the form inputs.
  * @returns {Object} The settings object.
  */
-function collectPromptToolSettings() {
+function collectRagToolSettings() {
     const settings = {};
     settings['llm'] = document.getElementById('llm_select').value;
     settings['system_prompt'] = document.getElementById('system_prompt_textarea').value;
@@ -439,7 +582,7 @@ function collectPromptToolSettings() {
  * @param {string} toolId - The ID of the selected tool.
  * @param {Object} settings - The settings object to save.
  */
-function applyPromptToolSettings(toolId, settings) {
+function applyRagToolSettings(toolId, settings) {
     fetch(`/tools/${toolId}/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -452,8 +595,8 @@ function applyPromptToolSettings(toolId, settings) {
 }
 
 export {
-    appendPromptToolDetails,
-    generatePromptToolSettingsForm,
-    collectPromptToolSettings,
-    applyPromptToolSettings
+    appendRagToolDetails,
+    generateRagToolSettingsForm,
+    collectRagToolSettings,
+    applyRagToolSettings
 };

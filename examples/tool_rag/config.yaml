@@ -51,7 +51,7 @@ function:
       seed: 42
     rerank_model: cross-encoder/ms-marco-MiniLM-L-6-v2
     summary_chunks: 5
-  query_espantion: $PROMPT(query_espantion)
+  query_espantion: $PROMPT{query_espantion}
   debug:
     load_files: false
 
