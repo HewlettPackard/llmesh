@@ -15,6 +15,10 @@ from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger
 from self_serve_platform.system.tool_server import ToolDiscovery
 from self_serve_platform.chat.prompt_render import PromptRender
+from self_serve_platform.rag.data_extractor import DataExtractor
+from self_serve_platform.rag.data_transformer import DataTransformer
+from self_serve_platform.rag.data_storage import DataStorage
+from self_serve_platform.rag.data_loader import DataLoader
 from examples.app_backpanel.tool_manager.base import ToolManager
 
 
@@ -209,10 +213,45 @@ class RagTool(ToolManager):
         }
         base_url = self.tool_info.get('base_url')
         tool_discovery = ToolDiscovery(CONFIG["function"]["discovery"])
-        return tool_discovery.set_settings(base_url, config)
+        response = tool_discovery.set_settings(base_url, config)
+        tool_info = tool_discovery.get_settings(base_url)
+        self. _load_files_into_db(tool_info)
+        return response
 
     def _get_options(self, options, label):
         for llm in self.tool_info["options"][options]:
             if llm.get("label") == label:
                 return llm.get("settings")
         return None
+
+    def _load_files_into_db(self, config):
+        collection = self._get_collection(config)
+        for file in config["data"]["files"]:
+            logger.info(f"Load file {file['source']}")
+            file_name = file["source"]
+            file_path = config["data"]["path"] + file_name
+            elements = self._extract_file(config, file_path)
+            transformed_elements = self._transform_elements(config, elements)
+            self._load_elements(config, collection, transformed_elements)
+
+    def _get_collection(self, config):
+        config["function"]["rag"]["storage"]["reset"] = True
+        data_storage= DataStorage.create(config["function"]["rag"]["storage"])
+        result = data_storage.get_collection()
+        return result.collection
+
+    def _extract_file(self, config, file_path):
+        data_extractor = DataExtractor.create(config["function"]["rag"]["extractor"])
+        result = data_extractor.parse(file_path)
+        return result.elements
+
+    def _transform_elements(self, config, elements):
+        data_transformer = DataTransformer.create(config["function"]["rag"]["transformer"])
+        actions = config["function"]["rag"]["actions"]
+        result = data_transformer.process(actions, elements)
+        return result.elements
+
+    def _load_elements(self, config, collection, elements):
+        data_loader = DataLoader.create(config["function"]["rag"]["loader"])
+        result = data_loader.insert(collection, elements)
+        logger.debug(result.status)

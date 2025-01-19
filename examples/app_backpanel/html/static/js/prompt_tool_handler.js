@@ -447,7 +447,9 @@ function applyPromptToolSettings(toolId, settings) {
     })
     .then(response => response.json())
     .then(response => {
+        const spinner = document.getElementById('loading-spinner');
         alert(response.message);
+        spinner.style.display = 'none';
     });
 }
 

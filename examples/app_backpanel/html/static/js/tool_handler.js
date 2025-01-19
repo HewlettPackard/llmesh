@@ -70,9 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Unsupported tool type '${toolType}'`);
             return;
         }
-        const settings = handlers.collectSettings();
-        if (settings) {
-            handlers.applySettings(toolId, settings);
+        // Start spinner
+        const spinner = document.getElementById('loading-spinner');
+        if (spinner) {
+            spinner.style.display = 'flex';
+        }
+        try {
+            const settings = handlers.collectSettings();
+            if (settings) {
+                handlers.applySettings(toolId, settings);
+            }
+        } catch (error) {
+            console.error("Request error:", error);
+            alert("An error occurred while applying the new settings. Please check your connection and try again.");
         }
     });
 

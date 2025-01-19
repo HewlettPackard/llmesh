@@ -44,7 +44,7 @@ function generateInjectionToolConfigurationForm(tool) {
     settingsForm += generateActionsForm();
     settingsForm += generateStorageForm();
     settingsForm += generateFilesForm();
-    settingsForm += generateButtons() 
+    //settingsForm += generateButtons() 
     settingsForm += '</div></fieldset>'
     document.getElementById('toolConfiguration').innerHTML = settingsForm;
     let functionSettings = tool.settings.function
@@ -54,7 +54,7 @@ function generateInjectionToolConfigurationForm(tool) {
     populateActionsCheckboxes(options.trasformations, functionSettings.rag.actions);
     populateStorageOptions(options.storages, functionSettings.rag.storage);
     populateFilesCheckboxes(options.files, fileSettings.files);
-        //TODO: bindLoadResetEvents();
+    //bindLoadResetEvents();
 }
 
 /**
@@ -288,163 +288,6 @@ function populateChunks(n_chunk, r_chunk) {
 }
 
 /**
- * Function to bind events for add and remove buttons
- */ 
-function bindAddRemoveEvents() {
-    // Bind add button
-    const addButton = document.getElementById('addInterfaceButton');
-    if (addButton) {
-        addButton.onclick = addInterfaceField;
-    }
-
-    // Bind remove buttons
-    document.querySelectorAll('.remove-interface-button').forEach(button => {
-        button.onclick = function () {
-            removeInterfaceField(button.dataset.key);
-        };
-    });
-}
-
-/** 
- * Helper function to create a single interface field
- * @param {int} key - The interface key
- * @param {string} name - The name of interface
- * @param {string} label - The label of interface
- * @param {string} type - The type of interface
- * @returns {string} The HTML for the interface
- */
-function createInterfaceField(key, name = "new_name", label = 'New Field Label', type = 'input') {
-    return `
-    <fieldset class="parameter-config" id="interfaceField_${key}">
-        <legend>Interface Field-${Number(key)+1}</legend>
-        <div class="param-row">
-            ${createNameInput(key, name)}
-            ${createLabelInput(key, label)}
-        </div>
-        <div class="param-row">
-            ${createTypeSelect(key, type)}
-            <div class="param-field form-group field_${key}_additional" style="margin: 0;"></div>
-        </div>
-        <button type="button" data-key="${key}" class="btn-remove-config remove-interface-button">- Cut</button>
-    </fieldset>`;
-}
-
-/** 
- * Helper function to create the name input field
- * @param {int} key - The interface key
- * @param {string} name - The name of interface
- * @returns {string} The HTML for the label
- */ 
-function createNameInput(key, name) {
-    return `
-        <div class="param-field">
-            <label for="${key}_name">Name</label>
-            <input type="text" id="${key}_name" value="${name}" />
-        </div>`;
-}
-
-/** 
- * Helper function to create the label input field
- * @param {int} key - The interface key
- * @param {string} label - The label of interface
- * @returns {string} The HTML for the label
- */ 
-function createLabelInput(key, label) {
-    return `
-        <div class="param-field">
-            <label for="${key}_label">Label</label>
-            <input type="text" id="${key}_label" value="${label}" />
-        </div>`;
-}
-
-/** 
- * Helper function to create the type select dropdown
- * @param {int} key - The interface key
- * @param {string} selectedType - The type of interface
- * @returns {string} The HTML for the Type selection
- */ 
-function createTypeSelect(key, selectedType) {
-    const options = ['input', 'select', 'textarea'].map(type =>
-        `<option value="${type}"${selectedType === type ? ' selected' : ''}>${capitalize(type)}</option>`
-    ).join('');
-    
-    return `
-            <div class="param-field configurable-field">
-                <label for="${key}_type">Type</label>
-                <select class="form-control" id="${key}_type">
-                    ${options}
-                </select>
-            </div>`;
-}
-
-/** 
- * Function to capitalize the first letter of a word
- * @param {string} word - The word to modify
- * @returns {string} The word modified
- */
-function capitalize(word) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-/** 
- * Function to remove an interface field by key
- */
-function removeInterfaceField(key) {
-    const fieldElement = document.getElementById(`interfaceField_${key}`);
-    if (fieldElement) {
-        fieldElement.remove();
-    }
-}
-
-/**
- * Function to add a new interface field with default input type
- */
-function addInterfaceField() {
-    // Determine the maximum field number currently in use
-    const interfaceFields = document.querySelectorAll('fieldset[id^="interfaceField_"]');
-    let newCounter = 0;
-
-    // Check if interfaceFields is empty
-    if (interfaceFields.length === 0) {
-        // If no fields exist, start the counter at 1
-        newCounter = 0;
-    } else {
-        // If fields exist, find the max counter and increment it
-        let maxCounter = 0;
-        interfaceFields.forEach(field => {
-            // Extract the number from the field's ID (e.g., "interfaceField_3" -> 3)
-            const fieldNum = parseInt(field.id.replace('interfaceField_', ''), 10);
-            if (fieldNum > maxCounter) {
-                maxCounter = fieldNum;
-            }
-        });
-        newCounter = maxCounter + 1;
-    }
-
-    const key = `${newCounter}`;
-    const newFieldHtml = createInterfaceField(key);
-
-    // Parse the HTML string into a DOM Node
-    const template = document.createElement('template');
-    template.innerHTML = newFieldHtml.trim(); // Trim to remove extra whitespace
-
-    const newField = template.content.firstChild;
-
-    // Find the container to append the new field
-    const container = document.getElementById('interfaceFieldsContainer');
-    if (container) {
-        // Append the new field to the container
-        container.appendChild(newField);
-    } else {
-        console.error('Interface Fields container not found');
-    }
-
-    // Re-bind events for dynamically added elements
-    bindAddRemoveEvents();
-    attachTypeChangeHandlers({});
-}
-
-/**
  * Collects settings from the form inputs.
  * @returns {Object} The settings object.
  */
@@ -478,7 +321,9 @@ function applyRagToolSettings(toolId, settings) {
     })
     .then(response => response.json())
     .then(response => {
+        const spinner = document.getElementById('loading-spinner');
         alert(response.message);
+        spinner.style.display = 'none';
     });
 }
 
