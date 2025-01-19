@@ -1,0 +1,23 @@
+/* Top Bar */
+header {
+    background-color: var(--hpe-green);
+    color: #fff;
+    padding: 1rem;
+}
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.logo img {
+    max-height: 40px;
+    margin-right: 1rem;
+}
+.top-bar h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    text-align: center;
+    flex: 1;
+}

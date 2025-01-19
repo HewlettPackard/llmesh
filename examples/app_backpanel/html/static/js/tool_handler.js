@@ -9,6 +9,13 @@ import {
     collectPromptToolSettings,
     applyPromptToolSettings
 } from './prompt_tool_handler.js';
+// Import the RagTool handlers
+import {
+    appendRagToolDetails,
+    generateRagToolSettingsForm,
+    collectRagToolSettings,
+    applyRagToolSettings
+} from './rag_tool_handler.js';
 
 
 // Handlers for different tool types
@@ -18,6 +25,12 @@ const toolHandlers = {
         generateSettingsForm: generatePromptToolSettingsForm,
         collectSettings: collectPromptToolSettings,
         applySettings: applyPromptToolSettings
+    },
+    'RagTool': {
+        appendDetails: appendRagToolDetails,
+        generateSettingsForm: generateRagToolSettingsForm,
+        collectSettings: collectRagToolSettings,
+        applySettings: applyRagToolSettings
     },
     // Others tool types
 };
@@ -42,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(`Unsupported tool type '${toolType}'`);
                     return;
                 }
+                document.getElementById('toolDetails').innerHTML = ''
                 handlers.appendDetails(tool);
                 handlers.generateSettingsForm(tool);
             });
@@ -56,9 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
             alert(`Unsupported tool type '${toolType}'`);
             return;
         }
-        const settings = handlers.collectSettings();
-        if (settings) {
-            handlers.applySettings(toolId, settings);
+        // Start spinner
+        const spinner = document.getElementById('loading-spinner');
+        if (spinner) {
+            spinner.style.display = 'flex';
+        }
+        try {
+            const settings = handlers.collectSettings();
+            if (settings) {
+                handlers.applySettings(toolId, settings);
+            }
+        } catch (error) {
+            console.error("Request error:", error);
+            alert("An error occurred while applying the new settings. Please check your connection and try again.");
         }
     });
 
@@ -85,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(`Unsupported tool type '${toolType}'`);
                 return;
             }
+            document.getElementById('toolDetails').innerHTML = ''
             handlers.appendDetails(tool);
             handlers.generateSettingsForm(tool);
         })
@@ -125,6 +150,8 @@ function loadTools() {
             });
 
             let options = data.map(tool => `<option value="${tool.id}">${tool.name}</option>`).join('');
+            if (options == "")
+                options = "<option selected disabled>No Tool Available</option>"
             document.getElementById('toolSelection').innerHTML = options;
             document.getElementById('toolSelection').dispatchEvent(new Event('change'));
         });
@@ -142,6 +169,12 @@ function getToolType(toolId) {
  * Clears existing tool details and settings.
  */
 function clearToolDetailsAndSettings() {
-    document.getElementById('toolDetails').innerHTML = '';
-    document.getElementById('toolSettings').innerHTML = '';
+    // Get the relevant elements
+    document.getElementById('toolDetails').innerHTML = '<p>No tools were found. Please verify the endpoint and ensure the connection is properly configured.</p>';
+    document.getElementById('toolConfiguration').innerHTML = '';
+    document.getElementById('toolInterface').innerHTML = '';
+
+    // Hide configuration and interface
+    document.getElementById('toolConfigurationBox').style.display = 'none';
+    document.getElementById('toolInterfaceBox').style.display = 'none';
 }

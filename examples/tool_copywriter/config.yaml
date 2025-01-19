@@ -9,15 +9,15 @@ tool:
   name: BasicCopywriter
   function: $FUNCTION{basic_copywriter}
   arguments:
-    - name: original_text
+    - name: input_string
       type: str
-      description: $PROMPT{field_original_text_description}
+      description: $PROMPT{field_input_string_description}
       default : null    
   description: $PROMPT{tool_description}
   return_direct: true
   interface:
     fields:
-      - name: original_text
+      - name: text
         label: "Insert the text to improve"
         type: textarea
         rows: 6
@@ -36,7 +36,7 @@ prompts:
   environment: examples/tool_copywriter/prompts/
   templates:
     tool_description: tool_description.txt
-    field_original_text_description: field_original_text_description.txt
+    field_input_string_description: field_input_string_description.txt
     system_prompt: system_prompt.txt
 
 logger:

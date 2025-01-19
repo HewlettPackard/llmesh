@@ -1,0 +1,2 @@
+Use the 'input_string' field to provide the text you want to improve,
+along with any optional instructions.

@@ -3,19 +3,21 @@
  * @param {Object} tool - The tool object containing details.
  */
 function appendPromptToolDetails(tool) {
+    // Show configuration & interface and restore detail width
+    document.getElementById('toolConfigurationBox').style.display = 'block';
+    document.getElementById('toolInterfaceBox').style.display = 'block';
+
     const toolDetails = document.getElementById('toolDetails');
     let manifest = tool.settings.tool
-    const descriptionDetails = `<h5>Description:</h5><p>${manifest.description}</p>`;
+    const descriptionDetails = `<h1>Description</h1><p style="margin-bottom: 1rem;">${manifest.description}</p>`;
     toolDetails.insertAdjacentHTML('beforeend', descriptionDetails);
 
-    let argumentsDetails = '<h5>Arguments:</h5>';
+    let argumentsDetails = '<h1>Arguments</h1><ul style="margin-bottom: 1rem; padding-left: 20px;">';
     manifest.arguments.forEach(argument => {
-        argumentsDetails += `<p>&#x2022; ${argument.description}</p>`;
+        argumentsDetails += `<li><b>${argument.name} (${argument.type}):</b> ${argument.description}</li>`;
     });
+    argumentsDetails += '</ul>'
     toolDetails.insertAdjacentHTML('beforeend', argumentsDetails);
-
-    const interfaceDetails = '<h5>Settings:</h5>';
-    toolDetails.insertAdjacentHTML('beforeend', interfaceDetails);
 }
 
 /**
@@ -23,45 +25,122 @@ function appendPromptToolDetails(tool) {
  * @param {Object} tool - The tool object containing settings.
  */
 function generatePromptToolSettingsForm(tool) {
-    let settingsForm = '<div id="InterfacesAccordion" class="accordion">';
-    let manifest = tool.settings.tool
-    settingsForm += generateSystemPromptAccordion();
-    settingsForm += generateLLMAccordion();
-    settingsForm += generateInterfaceFields(manifest);
-    settingsForm += '</div>';
-    document.getElementById('toolSettings').innerHTML = settingsForm;
-    bindLlmEvents();
-    bindAddRemoveEvents();
-    attachTypeChangeHandlers(manifest);
+    generatePromptToolConfigurationForm(tool)
+    generatePromptToolInterfaceForm(tool)
+    attachTypeChangeHandlers(tool.settings.tool);
+}
+
+/**
+ * Generates the configuration form.
+ * @param {Object} tool - The tool object containing settings.
+ */
+function generatePromptToolConfigurationForm(tool) {
+    let settingsForm = ''
+    settingsForm += generateSystemPromptForm();
+    settingsForm += generateLLMForm();
+    document.getElementById('toolConfiguration').innerHTML = settingsForm;
     let functionSettings = tool.settings.function
     populateSystemPrompt(functionSettings.system_prompt);
     let options = tool.options
     populateLLMOptions(options.llms, functionSettings.llm);
+    bindLlmEvents();
 }
 
 /**
- * Generates the System Prompt accordion section.
+ * Generates the interface form.
+ * @param {Object} tool - The tool object containing settings.
+*/
+function generatePromptToolInterfaceForm(tool) {
+    let manifest = tool.settings.tool
+    let settingsForm = `
+        <div class="interface-header">
+            <h1>Interface</h1>
+            <button type="button" class="btn-add-config" id="addInterfaceButton">
+            + Add
+            </button>
+        </div>`;
+    settingsForm += generateInterfaceFields(manifest);
+    document.getElementById('toolInterface').innerHTML = settingsForm;
+    bindAddRemoveEvents();
+}
+
+/**
+ * Attaches change event handlers to the type dropdowns.
+ * @param {Object} toolConfig - The tool configuration object.
+ */
+function attachTypeChangeHandlers(toolConfig) {
+    // Select all elements with the ID pattern *_type
+    const typeElements = document.querySelectorAll('[id$="_type"]'); // Matches all elements ending with "_type"
+    
+    typeElements.forEach(typeElement => {
+        const key = typeElement.id.replace('_type', ''); // Extract the key from the ID
+        const value = toolConfig.interface?.fields?.[key] || {}; // Use config value if it exists, or default to an empty object
+
+
+        // Attach change event listener if not already attached
+        if (!typeElement.hasAttribute('data-handler-attached')) {
+            typeElement.addEventListener('change', function() {
+                handleAdditionalFields(key, this.value, value);
+            });
+            // Mark this element as having the event handler attached
+            typeElement.setAttribute('data-handler-attached', 'true');
+        }
+
+        // Initial call to set up additional fields based on current type
+        handleAdditionalFields(key, typeElement.value, value);
+    });
+}
+
+/**
+ * Generates the System Prompt form section.
  * @returns {string} The HTML for the System Prompt accordion.
  */
-function generateSystemPromptAccordion() {
+function generateSystemPromptForm() {
     return `
-        <div>
-            <div id="headingSystemPrompt">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapseSystemPrompt" aria-expanded="true" aria-controls="collapseSystemPrompt">
-                        System Prompt
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseSystemPrompt" class="collapse" aria-labelledby="headingSystemPrompt" data-parent="#InterfacesAccordion">
-                <div>
-                    <textarea class="form-control" id="system_prompt_textarea" rows="6"></textarea>
-                </div>
-                <button type="button" class="btn btn-secondary llm-button" id="llmButton" style="margin: 10px 0px;">
-                    Improve with LLM
-                </button>
-            </div>
+        <div class="interface-header">
+            <h1>Configuration</h1>
+            <button type="button" class="btn-llm-improve" id="llmButton" style="float: right;">
+                * LLM
+            </button>
+        </div>
+        <div class="configurable-field" style="margin-bottom: 0.5rem;">
+            <label for="tool-textarea">System Prompt</label>
+            <textarea id="system_prompt_textarea" rows="9" placeholder="Enter your notes..."></textarea>
         </div>`;
+}
+
+/**
+ * Generates the LLM form section.
+ * @returns {string} The HTML for the LLM accordion.
+ */
+function generateLLMForm() {
+    return `
+        <div class="configurable-field" style="margin-bottom: 1rem;">
+            <label for="llm_select">LLM</label>
+            <select id="llm_select">
+                <option>Placeholder</option>
+            </select>
+        </div>`;
+}
+
+/**
+ * Populates the system prompt textarea.
+ * @param {string} systemPrompt - The system prompt text.
+ */
+function populateSystemPrompt(systemPrompt) {
+    document.getElementById('system_prompt_textarea').value = systemPrompt;
+}
+
+/**
+ * Populates the LLM options dropdown.
+ * @param {Array} llmOptions - Array of LLM option objects.
+ */
+function populateLLMOptions(llmOptions, llmSelected) {
+    const llmSelect = document.getElementById('llm_select');
+    llmSelect.innerHTML = llmOptions.map(option => {
+        const isSelected = option.settings.type === llmSelected.type ? 'selected' : '';
+        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
+    }).join('');
 }
 
 /**
@@ -125,207 +204,20 @@ function bindLlmEvents() {
 }
 
 /**
- * Generates the LLM accordion section.
- * @returns {string} The HTML for the LLM accordion.
- */
-function generateLLMAccordion() {
-    return `
-        <div>
-            <div id="headingLLM">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapseLLM" aria-expanded="true" aria-controls="collapseLLM">
-                        LLM
-                    </button>
-                </h5>
-            </div>
-            <div id="collapseLLM" class="collapse" aria-labelledby="headingLLM" data-parent="#InterfacesAccordion">
-                <div>
-                    <select class="form-control" id="llm_select">
-                        <option value="placeholder1">Placeholder</option>
-                    </select>
-                </div>
-            </div>
-        </div>`;
-}
-
-/**
  * Generates interface fields for the settings form.
  * @param {Object} toolConfig - The tool configuration object.
  * @returns {string} The HTML for the interface fields.
  */
 function generateInterfaceFields(toolConfig) {
-    let interfaceFields = '';
+    let interfaceFields = '<div id="interfaceFieldsContainer">';
 
     Object.entries(toolConfig.interface.fields).forEach(([key, value]) => {
         interfaceFields += createInterfaceField(key, value.name, value.label, value.type);
     });
 
-    interfaceFields += createAddButton();
+    interfaceFields += '</div>';
 
     return interfaceFields
-}
-
-/** 
- * Helper function to create a single interface field
- * @param {int} key - The interface key
- * @param {string} name - The name of interface
- * @param {string} label - The label of interface
- * @param {string} type - The type of interface
- * @returns {string} The HTML for the interface
- */
-function createInterfaceField(key, name = "new_name", label = 'New Field Label', type = 'input') {
-    return `
-        <div id="interfaceField_${key}">
-            <div id="heading${key}">
-                <h5 class="mb-0">
-                    <button type="button" class="btn btn-primary accordion-button" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
-                        Interface Field ${Number(key)+1}
-                    </button>
-                </h5>
-            </div>
-            <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#InterfacesAccordion">
-                <div>
-                    ${createNameInput(key, name)}
-                    ${createLabelInput(key, label)}
-                    ${createTypeSelect(key, type)}
-                    <div class="form-group field_${key}_additional" style="margin: 0;"></div>
-                    <button type="button" class="btn btn-secondary remove-interface-button" data-key="${key}">
-                        Remove Interface Field ${Number(key)+1}
-                    </button>
-                </div>
-            </div>
-        </div>`;
-}
-
-/** 
- * Helper function to create the name input field
- * @param {int} key - The interface key
- * @param {string} name - The name of interface
- * @returns {string} The HTML for the label
- */ 
-function createNameInput(key, name) {
-    return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
-                <input type="text" class="form-control" id="${key}_name" value="${name}">
-            </div>
-            <div class="form-group col-md-3">
-                <name for="${key}_name">Name</name>
-            </div>
-        </div>`;
-}
-
-/** 
- * Helper function to create the label input field
- * @param {int} key - The interface key
- * @param {string} label - The label of interface
- * @returns {string} The HTML for the label
- */ 
-function createLabelInput(key, label) {
-    return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
-                <input type="text" class="form-control" id="${key}_label" value="${label}">
-            </div>
-            <div class="form-group col-md-3">
-                <label for="${key}_label">Label</label>
-            </div>
-        </div>`;
-}
-
-/** 
- * Helper function to create the type select dropdown
- * @param {int} key - The interface key
- * @param {string} selectedType - The type of interface
- * @returns {string} The HTML for the Type selection
- */ 
-function createTypeSelect(key, selectedType) {
-    const options = ['input', 'select', 'textarea'].map(type =>
-        `<option value="${type}"${selectedType === type ? ' selected' : ''}>${capitalize(type)}</option>`
-    ).join('');
-    
-    return `
-        <div class="form-row">
-            <div class="form-group col-md-9">
-                <select class="form-control" id="${key}_type">
-                    ${options}
-                </select>
-            </div>
-            <div class="form-group col-md-3">
-                <label for="${key}_type">Type</label>
-            </div>
-        </div>`;
-}
-
-/** 
- * Function to capitalize the first letter of a word
- * @param {string} word - The word to modify
- * @returns {string} The word modified
- */
-function capitalize(word) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-/** 
- * Function to create the "Add New Interface Field" button
- * @returns {string} The HTML for the Add button.
- */
-function createAddButton() {
-    return `
-            <button type="button" class="btn btn-primary" id="addInterfaceButton" style="margin: 15px 0px 10px 0px;">
-                Add New Interface Field
-            </button>
-        `;
-}
-
-/** 
- * Function to remove an interface field by key
- */
-function removeInterfaceField(key) {
-    const fieldElement = document.getElementById(`interfaceField_${key}`);
-    if (fieldElement) {
-        fieldElement.remove();
-    }
-}
-
-/**
- * Function to add a new interface field with default input type
- */
-function addInterfaceField() {
-    // Determine the maximum field number currently in use
-    const interfaceFields = document.querySelectorAll('#InterfacesAccordion > div[id^="interfaceField_"]');
-    let newCounter = 0;
-
-    // Check if interfaceFields is empty
-    if (interfaceFields.length === 0) {
-        // If no fields exist, start the counter at 1
-        newCounter = 0;
-    } else {
-        // If fields exist, find the max counter and increment it
-        let maxCounter = 0;
-        interfaceFields.forEach(field => {
-            // Extract the number from the field's ID (e.g., "interfaceField_3" -> 3)
-            const fieldNum = parseInt(field.id.replace('interfaceField_', ''), 10);
-            if (fieldNum > maxCounter) {
-                maxCounter = fieldNum;
-            }
-        });
-        newCounter = maxCounter + 1;
-    }
-
-    const key = `${newCounter}`;
-    const newField = createInterfaceField(key);
-
-    // Find the "Add New Interface Field" button
-    const addButton = document.getElementById('addInterfaceButton');
-    if (addButton) {
-        // Insert the new field before the "Add New Interface Field" button
-        addButton.insertAdjacentHTML('beforebegin', newField);
-    }
-
-    // Re-bind events for dynamically added elements
-    bindAddRemoveEvents();
-    attachTypeChangeHandlers({});
 }
 
 /**
@@ -346,24 +238,143 @@ function bindAddRemoveEvents() {
     });
 }
 
-/**
- * Populates the system prompt textarea.
- * @param {string} systemPrompt - The system prompt text.
+/** 
+ * Helper function to create a single interface field
+ * @param {int} key - The interface key
+ * @param {string} name - The name of interface
+ * @param {string} label - The label of interface
+ * @param {string} type - The type of interface
+ * @returns {string} The HTML for the interface
  */
-function populateSystemPrompt(systemPrompt) {
-    document.getElementById('system_prompt_textarea').value = systemPrompt;
+function createInterfaceField(key, name = "new_name", label = 'New Field Label', type = 'input') {
+    return `
+    <fieldset class="parameter-config" id="interfaceField_${key}">
+        <legend>Interface Field-${Number(key)+1}</legend>
+        <div class="param-row">
+            ${createNameInput(key, name)}
+            ${createLabelInput(key, label)}
+        </div>
+        <div class="param-row">
+            ${createTypeSelect(key, type)}
+            <div class="param-field form-group field_${key}_additional" style="margin: 0;"></div>
+        </div>
+        <button type="button" data-key="${key}" class="btn-remove-config remove-interface-button">- Cut</button>
+    </fieldset>`;
+}
+
+/** 
+ * Helper function to create the name input field
+ * @param {int} key - The interface key
+ * @param {string} name - The name of interface
+ * @returns {string} The HTML for the label
+ */ 
+function createNameInput(key, name) {
+    return `
+        <div class="param-field">
+            <label for="${key}_name">Name</label>
+            <input type="text" id="${key}_name" value="${name}" />
+        </div>`;
+}
+
+/** 
+ * Helper function to create the label input field
+ * @param {int} key - The interface key
+ * @param {string} label - The label of interface
+ * @returns {string} The HTML for the label
+ */ 
+function createLabelInput(key, label) {
+    return `
+        <div class="param-field">
+            <label for="${key}_label">Label</label>
+            <input type="text" id="${key}_label" value="${label}" />
+        </div>`;
+}
+
+/** 
+ * Helper function to create the type select dropdown
+ * @param {int} key - The interface key
+ * @param {string} selectedType - The type of interface
+ * @returns {string} The HTML for the Type selection
+ */ 
+function createTypeSelect(key, selectedType) {
+    const options = ['input', 'select', 'textarea'].map(type =>
+        `<option value="${type}"${selectedType === type ? ' selected' : ''}>${capitalize(type)}</option>`
+    ).join('');
+    
+    return `
+            <div class="param-field configurable-field">
+                <label for="${key}_type">Type</label>
+                <select class="form-control" id="${key}_type">
+                    ${options}
+                </select>
+            </div>`;
+}
+
+/** 
+ * Function to capitalize the first letter of a word
+ * @param {string} word - The word to modify
+ * @returns {string} The word modified
+ */
+function capitalize(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+/** 
+ * Function to remove an interface field by key
+ */
+function removeInterfaceField(key) {
+    const fieldElement = document.getElementById(`interfaceField_${key}`);
+    if (fieldElement) {
+        fieldElement.remove();
+    }
 }
 
 /**
- * Populates the LLM options dropdown.
- * @param {Array} llmOptions - Array of LLM option objects.
+ * Function to add a new interface field with default input type
  */
-function populateLLMOptions(llmOptions, llmSelected) {
-    const llmSelect = document.getElementById('llm_select');
-    llmSelect.innerHTML = llmOptions.map(option => {
-        const isSelected = option.settings.type === llmSelected.type ? 'selected' : '';
-        return `<option value="${option.label}" ${isSelected}>${option.label}</option>`;
-    }).join('');
+function addInterfaceField() {
+    // Determine the maximum field number currently in use
+    const interfaceFields = document.querySelectorAll('fieldset[id^="interfaceField_"]');
+    let newCounter = 0;
+
+    // Check if interfaceFields is empty
+    if (interfaceFields.length === 0) {
+        // If no fields exist, start the counter at 1
+        newCounter = 0;
+    } else {
+        // If fields exist, find the max counter and increment it
+        let maxCounter = 0;
+        interfaceFields.forEach(field => {
+            // Extract the number from the field's ID (e.g., "interfaceField_3" -> 3)
+            const fieldNum = parseInt(field.id.replace('interfaceField_', ''), 10);
+            if (fieldNum > maxCounter) {
+                maxCounter = fieldNum;
+            }
+        });
+        newCounter = maxCounter + 1;
+    }
+
+    const key = `${newCounter}`;
+    const newFieldHtml = createInterfaceField(key);
+
+    // Parse the HTML string into a DOM Node
+    const template = document.createElement('template');
+    template.innerHTML = newFieldHtml.trim(); // Trim to remove extra whitespace
+
+    const newField = template.content.firstChild;
+
+    // Find the container to append the new field
+    const container = document.getElementById('interfaceFieldsContainer');
+    if (container) {
+        // Append the new field to the container
+        container.appendChild(newField);
+    } else {
+        console.error('Interface Fields container not found');
+    }
+
+    // Re-bind events for dynamically added elements
+    bindAddRemoveEvents();
+    attachTypeChangeHandlers({});
 }
 
 /**
@@ -376,54 +387,18 @@ function handleAdditionalFields(key, type, value) {
     let additionalFields = '';
     if (type === 'select') {
         additionalFields += `
-            <div class="form-row">
-                <div class="form-group col-md-9">
-                    <input type="text" class="form-control" id="${key}_options" value="${value.options || ''}">
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="${key}_options">Options</label>
-                </div>
-            </div>
-            <small>Use ; to separate options. E.g., Option1;Option2;Option3</small>`;
+            <div class="param-field">
+                <label for="${key}_options">Options</label>
+                <input type="text" id="${key}_options" placeholder="${value.options || 'E.g., Option1;Option2;Option3'}" />
+            </div>`;
     } else if (type === 'textarea') {
         additionalFields += `
-            <div class="form-row">
-                <div class="form-group col-md-9">
-                    <input type="number" class="form-control" id="${key}_rows" value="${value.rows || 3}">
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="${key}_rows">Rows</label>
-                </div>
+            <div class="param-field">
+                <label for="${key}_rows">Rows</label>
+                <input type="text" id="${key}_rows" value="${value.rows || 3}" />
             </div>`;
     }
     document.querySelector(`.field_${key}_additional`).innerHTML = additionalFields;
-}
-
-/**
- * Attaches change event handlers to the type dropdowns.
- * @param {Object} toolConfig - The tool configuration object.
- */
-function attachTypeChangeHandlers(toolConfig) {
-    // Select all elements with the ID pattern *_type
-    const typeElements = document.querySelectorAll('[id$="_type"]'); // Matches all elements ending with "_type"
-    
-    typeElements.forEach(typeElement => {
-        const key = typeElement.id.replace('_type', ''); // Extract the key from the ID
-        const value = toolConfig.interface?.fields?.[key] || {}; // Use config value if it exists, or default to an empty object
-
-
-        // Attach change event listener if not already attached
-        if (!typeElement.hasAttribute('data-handler-attached')) {
-            typeElement.addEventListener('change', function() {
-                handleAdditionalFields(key, this.value, value);
-            });
-            // Mark this element as having the event handler attached
-            typeElement.setAttribute('data-handler-attached', 'true');
-        }
-
-        // Initial call to set up additional fields based on current type
-        handleAdditionalFields(key, typeElement.value, value);
-    });
 }
 
 /**
@@ -472,7 +447,9 @@ function applyPromptToolSettings(toolId, settings) {
     })
     .then(response => response.json())
     .then(response => {
+        const spinner = document.getElementById('loading-spinner');
         alert(response.message);
+        spinner.style.display = 'none';
     });
 }
 
