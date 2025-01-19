@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(`Unsupported tool type '${toolType}'`);
                 return;
             }
+            document.getElementById('toolDetails').innerHTML = ''
             handlers.appendDetails(tool);
             handlers.generateSettingsForm(tool);
         })

@@ -131,6 +131,8 @@ class RagTool(ToolManager):
                 default_settings['function']['rag'])
             new_tool_info['settings']['function']['query_espantion'] = (
                 default_system_prompt)
+            new_tool_info['settings']['data']['files'] = (
+                default_settings['data']['files'])
         return new_tool_info
 
     def _get_default_system_prompt(self):
@@ -199,8 +201,11 @@ class RagTool(ToolManager):
             "function/query_espantion": tool_settings["query_espantion"],
             "function/rag/extractor": self._get_options("extractors", tool_settings["extractor"]),
             "function/rag/actions": tool_settings["actions"],
+            "function/rag/retriever/n_results": tool_settings["n_results"],
+            "function/rag/summary_chunks": tool_settings["summary_chunks"],
             "function/rag/storage": self._get_options("storages", tool_settings["storage"]),
-            "function/rag/llm": self._get_options("llms", tool_settings["llm"])
+            "function/rag/llm_model": self._get_options("llms", tool_settings["llm"]),
+            "data/files": [{"source": file_name} for file_name in tool_settings["files"]],
         }
         base_url = self.tool_info.get('base_url')
         tool_discovery = ToolDiscovery(CONFIG["function"]["discovery"])

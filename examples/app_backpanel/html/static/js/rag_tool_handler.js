@@ -53,7 +53,7 @@ function generateInjectionToolConfigurationForm(tool) {
     populateExtractorOptions(options.extractors, functionSettings.rag.extractor);
     populateActionsCheckboxes(options.trasformations, functionSettings.rag.actions);
     populateStorageOptions(options.storages, functionSettings.rag.storage);
-    populateFilesCheckboxes(fileSettings.files);
+    populateFilesCheckboxes(options.files, fileSettings.files);
         //TODO: bindLoadResetEvents();
 }
 
@@ -173,15 +173,17 @@ function populateStorageOptions(storageOptions, storageSelected) {
 
 /**
  * Populates the Extractor options dropdown.
+ * @param {Array} fileOptions - Array of actions.
  * @param {Array} filesSelected - Array of Files.
  */
-function populateFilesCheckboxes(filesSelected) {
+function populateFilesCheckboxes(fileOptions, filesSelected) {
     const filesSelect = document.getElementById('files_checkboxes');
-    filesSelect.innerHTML = filesSelected.map((option, index) => {
+    filesSelect.innerHTML = fileOptions.map((option, index) => {
+        const isChecked = filesSelected.some(file => file.source === option) ? 'checked' : '';
         return `
     <div>
-        <input type="checkbox" id="file_${index}" value="${option.source}" checked>
-        <label for="file_${index}" style="font-size: 1rem;">${option.source}</label>
+        <input type="checkbox" id="file_${index}" value="${option}" ${isChecked}>
+        <label for="file_${index}" style="font-size: 1rem;">${option}</label>
     </div>`;
     }).join('');
 }
@@ -204,7 +206,6 @@ function generateRetrievalToolConfigurationForm(tool) {
     populateLLMOptions(options.llms, functionSettings.rag.llm_model);
     populateSystemPrompt(functionSettings.query_espantion);
     populateChunks(functionSettings.rag.retriever.n_results, functionSettings.rag.summary_chunks)
-        //bindLlmEvents();
 }
 
 /**
@@ -284,83 +285,6 @@ function populateChunks(n_chunk, r_chunk) {
     if (rerankInput) {
         rerankInput.value = r_chunk;
     }
-}
-
-/**
- * Function to bind events for LLM button
- */ 
-function bindLlmEvents() {
-    // Bind LLM button
-    const llmButton = document.getElementById('llmButton');
-    const systemPromptTextarea = document.getElementById('system_prompt_textarea');
-
-    if (llmButton && systemPromptTextarea) {
-        llmButton.onclick = async function () {
-            // Get the text from the textarea
-            const promptText = systemPromptTextarea.value;
-
-            // Define the tool ID and endpoint
-            const toolId = document.getElementById('toolSelection').value; // Get toolId from the selected option
-            const url = `/tools/${toolId}/prompt`;
-
-            // Start spinner
-            const spinner = document.getElementById('loading-spinner');
-        
-            if (spinner) {
-                spinner.style.display = 'flex';
-            }
-
-            // Send a POST request with the prompt text
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prompt: promptText })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Response from LLM:", data);                    
-                    // Update the system prompt textarea with the improved prompt from the response
-                    if (data) {
-                        systemPromptTextarea.value = data;
-                    } else {
-                        console.warn("Improved prompt not found in response.");
-                    }
-                } else {
-                    console.error("Error in LLM request:", response.statusText);
-                    alert("Failed to improve prompt. Please try again.");
-                }
-            } catch (error) {
-                console.error("Request error:", error);
-                alert("An error occurred while improving the prompt. Please check your connection and try again.");
-            } finally {
-                // Hide the spinner after the request is complete (success or error)
-                spinner.style.display = 'none';
-            }
-        };
-    } else {
-        console.warn("LLM button or system prompt textarea not found.");
-    }
-}
-
-/**
- * Generates interface fields for the settings form.
- * @param {Object} toolConfig - The tool configuration object.
- * @returns {string} The HTML for the interface fields.
- */
-function generateInterfaceFields(toolConfig) {
-    let interfaceFields = '<div id="interfaceFieldsContainer">';
-
-    Object.entries(toolConfig.interface.fields).forEach(([key, value]) => {
-        interfaceFields += createInterfaceField(key, value.name, value.label, value.type);
-    });
-
-    interfaceFields += '</div>';
-
-    return interfaceFields
 }
 
 /**
@@ -521,59 +445,23 @@ function addInterfaceField() {
 }
 
 /**
- * Handles additional fields based on the type selected.
- * @param {string} key - The key identifier for the field.
- * @param {string} type - The type of the field.
- * @param {Object} value - The value object containing field details.
- */
-function handleAdditionalFields(key, type, value) {
-    let additionalFields = '';
-    if (type === 'select') {
-        additionalFields += `
-            <div class="param-field">
-                <label for="${key}_options">Options</label>
-                <input type="text" id="${key}_options" placeholder="${value.options || 'E.g., Option1;Option2;Option3'}" />
-            </div>`;
-    } else if (type === 'textarea') {
-        additionalFields += `
-            <div class="param-field">
-                <label for="${key}_rows">Rows</label>
-                <input type="text" id="${key}_rows" value="${value.rows || 3}" />
-            </div>`;
-    }
-    document.querySelector(`.field_${key}_additional`).innerHTML = additionalFields;
-}
-
-/**
  * Collects settings from the form inputs.
  * @returns {Object} The settings object.
  */
 function collectRagToolSettings() {
     const settings = {};
+    // Injection
+    settings['extractor'] = document.getElementById('extractor_select').value;
+    const actions_checkboxes = document.querySelectorAll('#actions_checkboxes input[type="checkbox"]:checked');
+    settings['actions'] = Array.from(actions_checkboxes).map(checkbox => checkbox.value);
+    settings['storage'] = document.getElementById('storage_select').value;
+    const files_checkboxes = document.querySelectorAll('#files_checkboxes input[type="checkbox"]:checked');
+    settings['files'] = Array.from(files_checkboxes).map(checkbox => checkbox.value);
+    // Retrieval
     settings['llm'] = document.getElementById('llm_select').value;
-    settings['system_prompt'] = document.getElementById('system_prompt_textarea').value;
-    settings['fields'] = [];
-
-    const fieldElements = document.querySelectorAll('[id$="_label"]');
-    fieldElements.forEach(labelElement => {
-        const key = labelElement.id.replace('_label', '');
-        const nameElement = document.getElementById(`${key}_name`);
-        const typeElement = document.getElementById(`${key}_type`);
-        const field = {
-            name: nameElement.value,
-            label: labelElement.value,
-            type: typeElement.value
-        };
-
-        const rowsElement = document.getElementById(`${key}_rows`);
-        if (rowsElement) field.rows = rowsElement.value;
-
-        const optionsElement = document.getElementById(`${key}_options`);
-        if (optionsElement) field.options = optionsElement.value;
-
-        settings['fields'].push(field);
-    });
-
+    settings['query_espantion'] = document.getElementById('system_prompt_textarea').value;
+    settings['n_results'] = document.getElementById('chunk_number').value;
+    settings['summary_chunks'] = document.getElementById('rerank_number').value;
     return settings;
 }
 

@@ -81,6 +81,10 @@ tools:
         type: MilvusCollection
         path: examples/tool_rag/data/milvus.db
         collection: Telco3GPP5GStandards
+    files:
+    - 23501-i60.docx
+    - 23502-i60.docx
+    - 23503-i60.docx
     llms:
       - label: ChatGPT-4o
         settings:
@@ -106,7 +110,7 @@ tools:
       files: 
         config: config.yaml
       prompts:
-        system_prompt: query_espantion.txt
+        query_espantion: query_espantion.txt
 
 function:
   discovery:

@@ -50,7 +50,7 @@
 }
 
 #toolConfigurationBox {
-    max-height: 750px; /* Prevent it from exceeding the height of the left container */
+    max-height: 730px; /* Prevent it from exceeding the height of the left container */
     overflow-y: auto; /* Enable vertical scrolling if content overflows */
 }
 
