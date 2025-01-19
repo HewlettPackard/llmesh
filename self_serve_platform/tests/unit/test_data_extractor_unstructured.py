@@ -18,6 +18,7 @@ from self_serve_platform.rag.data_extractors.unstructured_for_sections import (
 
 
 nltk.download('punkt')
+nltk.download('punkt_tab')
 
 
 @pytest.mark.parametrize("expected_config, expected_class", [
