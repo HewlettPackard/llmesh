@@ -11,9 +11,13 @@ handles files correctly, including error handling and caching.
 import os
 from unittest.mock import patch, MagicMock, ANY
 import pytest
+import nltk
 from self_serve_platform.rag.data_extractor import DataExtractor
 from self_serve_platform.rag.data_extractors.unstructured_for_sections import (
     UnstructuredSectionsDataExtractor)
+
+
+nltk.download('punkt')
 
 
 @pytest.mark.parametrize("expected_config, expected_class", [
