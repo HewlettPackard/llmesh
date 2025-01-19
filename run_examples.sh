@@ -60,7 +60,7 @@ done
 # List of app directories
 apps_directories=(
     "examples/app_memory"           #5010
-    # "examples/app_backpanel"        #5011
+    "examples/app_backpanel"        #5011
     "examples/app_chatbot"          #5001
 )
 
