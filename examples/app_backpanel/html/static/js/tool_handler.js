@@ -16,6 +16,13 @@ import {
     collectRagToolSettings,
     applyRagToolSettings
 } from './rag_tool_handler.js';
+// Import the AgentTool handlers
+import {
+    appendAgentToolDetails,
+    generateAgentToolSettingsForm,
+    collectAgentToolSettings,
+    applyAgentToolSettings
+} from './agent_tool_handler.js';
 
 
 // Handlers for different tool types
@@ -31,6 +38,12 @@ const toolHandlers = {
         generateSettingsForm: generateRagToolSettingsForm,
         collectSettings: collectRagToolSettings,
         applySettings: applyRagToolSettings
+    },
+    'AgentTool': {
+        appendDetails: appendAgentToolDetails,
+        generateSettingsForm: generateAgentToolSettingsForm,
+        collectSettings: collectAgentToolSettings,
+        applySettings: applyAgentToolSettings
     },
     // Others tool types
 };

@@ -111,6 +111,38 @@ tools:
         config: config.yaml
       prompts:
         query_espantion: query_espantion.txt
+  - name: OpenAPIManager
+    type: AgentTool
+    base_url: https://127.0.0.1:5005/
+    version: 
+      min_version: "1.0.0"  # Versions >= 1.0.0 are supported
+      max_version: "2.0.0"  # Versions < 2.0.0 are supported
+    llms:
+      - label: ChatGPT-4o-mini
+        settings:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o-mini
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0  
+          seed: 42
+      - label: ChatHPE-3.5
+        settings:
+          type: LangChainAzureChatOpenAI
+          azure_deployment: $ENV{HPE_DEPLOYMENT}
+          api_version: "2023-10-01-preview"
+          endpoint: $ENV{HPE_ENDPOINT}
+          api_key: $ENV{HPE_API_KEY}
+          temperature: 0  
+          seed: 42
+    plan_types:
+      - Sequential
+      - Hierarchical
+    tools:
+      - OpenApiManagerTool
+    default:
+      path: examples/app_backpanel/tools/tool_agents/
+      files: 
+        config: config.yaml
 
 function:
   discovery:

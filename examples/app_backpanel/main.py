@@ -20,6 +20,7 @@ from self_serve_platform.system.config import Config
 from self_serve_platform.system.log import Logger
 from examples.app_backpanel.tool_manager.prompt import PromptTool
 from examples.app_backpanel.tool_manager.rag import RagTool
+from examples.app_backpanel.tool_manager.agent import AgentTool
 
 
 # Supported Brands
@@ -28,6 +29,7 @@ BRANDS = ["athonet", "hpe"]
 TOOL_CLASSES = {
     'PromptTool': PromptTool,
     'RagTool': RagTool,
+    'AgentTool': AgentTool,
     # Add other tool types and their classes here
 }
 # Parse command-line arguments and start the application
