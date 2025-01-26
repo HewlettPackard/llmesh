@@ -327,7 +327,7 @@ class AthonTool:
             :return: The current settings as a JSON response.
             """
             return jsonify(self._mask_sensitive_data(
-                self.config,
+                self._serialize_config(self.config),
                 self.config["_sentitive_keys"])), 200
 
         @app.route("/settings", methods=['POST'])
@@ -362,6 +362,27 @@ class AthonTool:
             if file_type not in ["CONFIG", "PROMPT"]:
                 return jsonify({"message": "Invalid file type specified"}), 400
             return self._handle_save_file(file_type, file_name, file_content)
+
+    def _serialize_config(self, data):
+        """
+        Recursively traverse the data and replace non-serializable objects
+        with a placeholder string.
+        
+        Args:
+            data: The data structure to serialize (can be dict, list, etc.)
+        
+        Returns:
+            A serialized version of the data with non-serializable objects replaced.
+        """
+        if isinstance(data, dict):
+            return {key: self._serialize_config(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return [self._serialize_config(element) for element in data]
+        elif isinstance(data, (str, int, float, bool)) or data is None:
+            return data
+        else:
+            # Replace non-serializable objects with a placeholder
+            return f"$Object{{{data.__class__.__name__}}}"
 
     def _mask_sensitive_data(self, config, sensitive_keys):
         """

@@ -178,9 +178,12 @@ def extractor(config):  # pylint: disable=W0621
 def clear_image_folder(config):  # pylint: disable=W0621
     """
     Clears the image output folder before each test that involves image extraction.
+    excluding the .gitkeep file to ensure the directory is preserved in Git.
     """
     if os.path.exists(config["image_output_folder"]):
         for file in os.listdir(config["image_output_folder"]):
+            if file == ".gitkeep":
+                continue  # Skip deleting the .gitkeep file
             file_path = os.path.join(config["image_output_folder"], file)
             if os.path.isfile(file_path):
                 os.remove(file_path)
@@ -214,7 +217,7 @@ def test_check_no_image_extraction(sample_pdf_path, config):  # pylint: disable=
     config["extract_image"] = False
     extractor_no_image = UnstructuredSectionsDataExtractor(config)
     extractor_no_image.parse(sample_pdf_path)
-    assert os.listdir(config["image_output_folder"]) == [], \
+    assert os.listdir(config["image_output_folder"]) == [".gitkeep",], \
         "Images were extracted even when flag is False"
 
 
@@ -294,7 +297,7 @@ def test_check_no_image_docx_extraction(sample_docx_path, docx_config):  # pylin
     docx_config["extract_image"] = False
     extractor_no_image = UnstructuredSectionsDataExtractor(docx_config)
     extractor_no_image.parse(sample_docx_path)
-    assert os.listdir(docx_config["image_output_folder"]) == [], \
+    assert os.listdir(docx_config["image_output_folder"]) == ['.gitkeep',], \
         "Images were extracted even when flag is False"
 
 

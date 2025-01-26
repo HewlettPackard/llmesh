@@ -26,7 +26,7 @@ def app():
             'arguments': [{'name': 'x', 'type': 'int', 'description': 'A number'}]
         },
         "_file_path": "/path/to/config",
-        "_sentitive_keys": ("api_key", "secret", "password"),
+        "_sentitive_keys": ["api_key", "secret", "password"],
         "function": {"api_key": "api_key_value"},
         "prompts": {"environment": "/path/to/prompts"}
     }
