@@ -23,6 +23,8 @@ from self_serve_platform.chat.models.langchain_chat_mistralai import (
     LangChainChatMistralAIModel)
 from self_serve_platform.chat.models.langchain_chat_nvidia import (
     LangChainChatNvidiaModel)
+from self_serve_platform.chat.models.langchain_chat_vllm import (
+    LangChainChatVLLMModel)
 from self_serve_platform.chat.models.llamaindex_openai import (
     LlamaIndexOpenAIModel)
 
@@ -40,6 +42,7 @@ class ChatModel:  # pylint: disable=R0903
         'LangChainChatAnthropic': LangChainChatAnthropicModel,
         'LangChainChatMistralAI': LangChainChatMistralAIModel,
         'LangChainChatNvidia': LangChainChatNvidiaModel,
+        'LangChainChatVLLM': LangChainChatVLLMModel,
         'LlamaIndexOpenAI': LlamaIndexOpenAIModel,
     }
 
