@@ -18,19 +18,21 @@ llms:
     seed: 42
 
 tools:
-  path: src/tools
+  path: notebooks.meta_prompting.tools
   close_function: close_case
   modules:
-    - amf_ngap_status
-    - assign_dataprofile_user
-    - get_dataprofiles
-    - get_logs
-    - get_smf_location_supi
-    - get_specific_dataprofile
-    - get_specific_supi
-    - get_supis
-    - network_performance
-    - nf_profile
+    - get_order_status
+    - modify_order
+    - cancel_order
+    - track_shipment
+    - initiate_return
+    - check_refund
+    - process_refund
+    - order_history
+    - handle_complaint
+    - escalate_to_human
+    - update_account
+    - get_faq
     - case_resolution
 
 evaluation:
@@ -46,13 +48,13 @@ files:
   path: notebooks/meta_prompting/files/
   names:
     policy: input/ecommerce_customer_service.md
-    routine: p5g_routine.md
-    test_cases: p5g_routine_evals.csv
-    test_results: p5g_routine_results.csv
+    routine: output/ecommerce_agent_routine.md
+    test_cases: input/ecommerce_test_cases.csv
+    test_results: output/ecommerce_agent_results.csv
 
 prompts:
   type: JinjaTemplate
-  environment: notebooks/prompts/
+  environment: notebooks/meta_prompting/prompts/
   templates:
     customer_persona: customer_persona.txt
     agent_persona: agent_persona.txt

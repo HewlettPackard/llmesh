@@ -1,0 +1,19 @@
+Context,Request,Expected Function,Expected Inputs,Order ID,Modification Details,Reason,Refund Amount,Customer ID,Complaint Details,Issue Details,Update Type,New Value, FAQ Topic
+I want to check the status of my order.,What is the status of order 12345?,get_order_status,"{""order_id"": ""12345""}",12345,,,,,,,,,
+Can you tell me if my order has shipped?,Check the status of order 67890.,get_order_status,"{""order_id"": ""67890""}",67890,,,,,,,,,
+I need to change my shipping address.,Update shipping address for order 11122.,modify_order,"{""order_id"": ""11122"", ""modification_details"": ""New Address: 123 Main St""}",11122,New Address: 123 Main St,,,,,,,,
+Can I change the quantity of an item in my order?,Modify order 33344 to update item quantity.,modify_order,"{""order_id"": ""33344"", ""modification_details"": ""Increase item quantity to 3""}",33344,Increase item quantity to 3,,,,,,,,
+I want to cancel my recent order.,Cancel order 55566.,cancel_order,"{""order_id"": ""55566""}",55566,,,,,,,,,
+Can I cancel an order before it's shipped?,Request to cancel order 77788.,cancel_order,"{""order_id"": ""77788""}",77788,,,,,,,,,
+Where is my package?,Track shipment for order 99900.,track_shipment,"{""order_id"": ""99900""}",99900,,,,,,,,,
+Has my order been delivered?,Get tracking details for order 11223.,track_shipment,"{""order_id"": ""11223""}",11223,,,,,,,,,
+I need to return an item.,Initiate return for order 33445 due to defect.,initiate_return,"{""order_id"": ""33445"", ""reason"": ""Defective item""}",33445,,Defective item,,,,,,,
+Am I eligible for a refund?,Check refund eligibility for order 55667.,check_refund_eligibility,"{""order_id"": ""55667""}",55667,,,,,,,,,
+How do I get my money back?,Process refund for order 77889.,process_refund,"{""order_id"": ""77889"", ""refund_amount"": ""49.99""}",77889,,,49.99,,,,,,
+Can you show me my previous orders?,Retrieve order history for customer CUST001.,get_customer_order_history,"{""customer_id"": ""CUST001""}",,,,,CUST001,,,,,
+I received a damaged product.,File complaint for damaged item in order 99001.,handle_complaint,"{""complaint_details"": ""Damaged item received in order 99001""}",99001,,,,,Damaged item received in order 99001,,,,
+I need to speak with a manager.,Escalate issue with order 11234 to a human agent.,escalate_to_human,"{""issue_details"": ""Customer unsatisfied with resolution""}",11234,,,,,,Customer unsatisfied with resolution,,,
+I need to change my email address.,Update email for customer CUST002.,update_customer_account,"{""customer_id"": ""CUST002"", ""update_type"": ""email"", ""new_value"": ""newemail@example.com""}",,,,,CUST002,,,email,newemail@example.com,
+Can I reset my password?,Reset password for customer CUST003.,update_customer_account,"{""customer_id"": ""CUST003"", ""update_type"": ""password"", ""new_value"": ""newpassword123""}",,,,,CUST003,,,password,newpassword123,
+How do I return an item?,Retrieve FAQ response for return policy.,get_faq_response,"{""faq_topic"": ""returns""}",,,,,,,,,,returns
+What is the refund policy?,Retrieve FAQ response for refund policy.,get_faq_response,"{""faq_topic"": ""refunds""}",,,,,,,,,,refunds

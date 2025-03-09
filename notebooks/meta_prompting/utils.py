@@ -14,7 +14,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from athon.chat import PromptRender, ChatModel
 from athon.system import Config
 from self_serve_platform.system.file_cache import FileCache
-# from src.meta_prompting.tool_manager import load_tools
+from notebooks.meta_prompting.tool_manager import load_tools
 # from src.meta_prompting.persona_agent import PersonaAgent
 # from src.meta_prompting.agent_simulator import simluate_conversation
 
@@ -26,22 +26,22 @@ config = Config(config_path).get_settings()
 # Save  config variables
 FILES_PATH = config['files']['path']
 POLICY_FILE = FILES_PATH + config['files']['names']['policy']
+TOOL_PATH = re.sub(r"[\\/]", ".", config['tools']['path'])
+TOOL_CLOSE = config['tools']['close_function']
+TOOL_MODULES = config['tools']['modules']
+TOOLS_OBJECTS, TOOLS = load_tools(TOOL_PATH, TOOL_MODULES)
+PROMPT_CONFIG = config['prompts']
 # ROUTINE_FILE = FILES_PATH + config['files']['names']['routine']
 # TEST_CASES_FILE = FILES_PATH + config['files']['names']['test_cases']
 # TEST_RESULTS_FILE = FILES_PATH + config['files']['names']['test_results']
 # META_PROMPTING_LLM_CONFIG = config['llms']['meta_prompting']
 # AGENT_LLM_CONFIG = config['llms']['agent_persona']
 # CUSTOMER_LLM_CONFIG = config['llms']['customer_persona']
-# PROMPT_CONFIG = config['prompts']
 # CACHE_CONFIG = config['cache']
 # MAX_EVALUATION_LOOP = config['evaluation']['max_evaluations']
 # MAX_IMPROVMENT_LOOP = config['evaluation']['max_improvments']
 # MAX_TOKENS = config['evaluation']['max_tokens']
 # MIN_ACCURACY = config['evaluation']['min_accuracy']
-# TOOL_PATH = re.sub(r"[\\/]", ".", config['tools']['path'])
-# TOOL_CLOSE = config['tools']['close_function']
-# TOOL_MODULES = config['tools']['modules']
-# TOOLS_OBJECTS, TOOLS = load_tools(TOOL_PATH, TOOL_MODULES)
 # ENCODING = tiktoken.get_encoding("o200k_base")
 
 
@@ -49,14 +49,14 @@ def read_policy():
     "Read original policy file"
     return _read_file(POLICY_FILE)
 
-# def load_prompt(prompt, args=None):
-#     "Load the prompt"
-#     prompt_render = PromptRender.create(PROMPT_CONFIG)
-#     args = args or {}
-#     result = prompt_render.load(prompt, **args)
-#     if result.status == "success":
-#         return result.content
-#     raise ValueError(result.error_message)
+def load_prompt(prompt, args=None):
+    "Load the prompt"
+    prompt_render = PromptRender.create(PROMPT_CONFIG)
+    args = args or {}
+    result = prompt_render.load(prompt, **args)
+    if result.status == "success":
+        return result.content
+    raise ValueError(result.error_message)
 
 # def read_test_dataframe():
 #     "Read the Test Cases CSV file"
