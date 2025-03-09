@@ -1,0 +1,2518 @@
+Request,Context,Expected Function,Expected Inputs,Actual Function,Actual Inputs,Is Correct,Transcripts
+Get the status of the N2 interface between AMF and NGAP,I want to get the status of the N2 interface between AMF and NGAP,get_amf_ngap_status,{'nf': 'amf'},get_amf_ngap_status,{'nf': 'amf'},True,"* User: Get the status of the N2 interface between AMF and NGAP
+* Assistant: Please provide the network function name where the AMF-NGAP status is required.
+* User: The network function name is ""amf.""
+* Assistant: 
+* Tool: {
+  ""connected_at"": ""2025-02-11T18:25:21Z"",
+  ""id"": 80,
+  ""plmn"": ""00101"",
+  ""tac"": 1,
+  ""address"": ""10.132.0.10"",
+  ""ran_node_name"": ""UERANSIM-gnb-1-1-4""
+}
+* Assistant: The status of the N2 interface between AMF and NGAP is as follows:
+
+- **Connected At:** 2025-02-11T18:25:21Z
+- **ID:** 80
+- **PLMN:** 00101
+- **TAC:** 1
+- **Address:** 10.132.0.10
+- **RAN Node Name:** UERANSIM-gnb-1-1-4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for amf"
+What is the status of the interface between AMF and NGAP?,I need to check the status of the interface between AMF and NGAP,get_amf_ngap_status,{'nf': 'amf'},get_amf_ngap_status,{'nf': 'amf'},True,"* User: What is the status of the interface between AMF and NGAP?
+* Assistant: Please provide the network function name where the AMF-NGAP status is required.
+* User: The network function name is amf.
+* Assistant: 
+* Tool: {
+  ""connected_at"": ""2025-02-11T18:25:21Z"",
+  ""id"": 80,
+  ""plmn"": ""00101"",
+  ""tac"": 1,
+  ""address"": ""10.132.0.10"",
+  ""ran_node_name"": ""UERANSIM-gnb-1-1-4""
+}
+* Assistant: The status of the interface between AMF and NGAP is as follows:
+
+- **Connected At:** 2025-02-11T18:25:21Z
+- **ID:** 80
+- **PLMN:** 00101
+- **TAC:** 1
+- **Address:** 10.132.0.10
+- **RAN Node Name:** UERANSIM-gnb-1-1-4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for amf"
+Check the interface status between AMF and NGAP,I want to verify the status of the interface between AMF and NGAP,get_amf_ngap_status,{'nf': 'amf'},get_amf_ngap_status,{'nf': 'AMF'},False,"* User: Check the interface status between AMF and NGAP
+* Assistant: Please provide the network function name where the AMF-NGAP status is required.
+* User: The network function is AMF.
+* Assistant: 
+* Tool: {
+  ""connected_at"": ""2025-02-11T18:25:21Z"",
+  ""id"": 80,
+  ""plmn"": ""00101"",
+  ""tac"": 1,
+  ""address"": ""10.132.0.10"",
+  ""ran_node_name"": ""UERANSIM-gnb-1-1-4""
+}
+* Assistant: The AMF-NGAP status for the network function AMF is as follows:
+
+- **Connected At:** 2025-02-11T18:25:21Z
+- **ID:** 80
+- **PLMN:** 00101
+- **TAC:** 1
+- **Address:** 10.132.0.10
+- **RAN Node Name:** UERANSIM-gnb-1-1-4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for AMF"
+Retrieve the status of the N2 interface between AMF and NGAP,I need to confirm the current status of the N2 interface between AMF and NGAP,get_amf_ngap_status,{'nf': 'amf'},get_amf_ngap_status,{'nf': 'AMF'},False,"* User: Retrieve the status of the N2 interface between AMF and NGAP
+* Assistant: Please provide the network function name where the AMF-NGAP status is required.
+* User: The network function is AMF.
+* Assistant: 
+* Tool: {
+  ""connected_at"": ""2025-02-11T18:25:21Z"",
+  ""id"": 80,
+  ""plmn"": ""00101"",
+  ""tac"": 1,
+  ""address"": ""10.132.0.10"",
+  ""ran_node_name"": ""UERANSIM-gnb-1-1-4""
+}
+* Assistant: The status of the N2 interface between AMF and NGAP is as follows:
+
+- **Connected At:** 2025-02-11T18:25:21Z
+- **ID:** 80
+- **PLMN:** 00101
+- **TAC:** 1
+- **Address:** 10.132.0.10
+- **RAN Node Name:** UERANSIM-gnb-1-1-4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for AMF"
+Is the interface between AMF and NGAP active?,I want to monitor the status of the interface between AMF and NGAP,get_amf_ngap_status,{'nf': 'amf'},get_amf_ngap_status,{'nf': 'amf'},True,"* User: Is the interface between AMF and NGAP active?
+* Assistant: Please provide the network function name where the AMF-NGAP status is required.
+* User: The network function is amf.
+* Assistant: 
+* Tool: {
+  ""connected_at"": ""2025-02-11T18:25:21Z"",
+  ""id"": 80,
+  ""plmn"": ""00101"",
+  ""tac"": 1,
+  ""address"": ""10.132.0.10"",
+  ""ran_node_name"": ""UERANSIM-gnb-1-1-4""
+}
+* Assistant: The interface between AMF and NGAP is active. Here are the details:
+
+- **Connected At:** 2025-02-11T18:25:21Z
+- **ID:** 80
+- **PLMN:** 00101
+- **TAC:** 1
+- **Address:** 10.132.0.10
+- **RAN Node Name:** UERANSIM-gnb-1-1-4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for amf"
+Measure the latency in the HPE 5G Core,Track latency within the HPE 5G Core,get_network_performance,"{'nf': 'kpi', 'metric': 'latency'}",get_network_performance,"{'nf': 'kpi', 'metric': 'latency'}",True,"* User: Measure the latency in the HPE 5G Core
+* Assistant: Please provide the network function name and the specific KPI metric you want to track (e.g., latency, bandwidth, signal strength).
+* User: The network function is ""kpi"" and the metric I want to track is ""latency.""
+* Assistant: 
+* Tool: {
+  ""throughput"": {
+    ""measure"": 5,
+    ""unit"": ""mbps""
+  },
+  ""latency"": {
+    ""measure"": 3,
+    ""unit"": ""Mbps""
+  },
+  ""signal_strength"": {
+    ""measure"": 100,
+    ""unit"": ""dBm""
+  }
+}
+* Assistant: The latency measurement in the HPE 5G Core for the network function ""kpi"" is 3 Mbps. 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for kpi"
+Check the current throughput in the HPE 5G Core,Monitor bandwidth usage within the HPE 5G Core,get_network_performance,"{'nf': 'kpi', 'metric': 'throughput'}",get_network_performance,"{'nf': 'kpi', 'metric': 'throughput'}",True,"* User: Check the current throughput in the HPE 5G Core
+* Assistant: Please provide the network function name and the specific KPI metric you want to track (e.g., latency, bandwidth, signal strength).
+* User: The network function is ""kpi"" and the metric I want to track is ""throughput.""
+* Assistant: 
+* Tool: {
+  ""throughput"": {
+    ""measure"": 5,
+    ""unit"": ""mbps""
+  },
+  ""latency"": {
+    ""measure"": 3,
+    ""unit"": ""Mbps""
+  },
+  ""signal_strength"": {
+    ""measure"": 100,
+    ""unit"": ""dBm""
+  }
+}
+* Assistant: The current throughput in the HPE 5G Core is 5 Mbps. 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for kpi"
+Assess the signal strength in the HPE 5G Core,Observe signal strength within the HPE 5G Core,get_network_performance,"{'nf': 'kpi', 'metric': 'signal_strength'}",get_network_performance,"{'nf': 'kpi', 'metric': 'signal_strength'}",True,"* User: Assess the signal strength in the HPE 5G Core
+* Assistant: Please provide the network function name and the specific KPI metric you want to track (e.g., latency, bandwidth, signal strength).
+* User: The network function is ""kpi"" and the metric is ""signal_strength.""
+* Assistant: 
+* Tool: {
+  ""throughput"": {
+    ""measure"": 5,
+    ""unit"": ""mbps""
+  },
+  ""latency"": {
+    ""measure"": 3,
+    ""unit"": ""Mbps""
+  },
+  ""signal_strength"": {
+    ""measure"": 100,
+    ""unit"": ""dBm""
+  }
+}
+* Assistant: The signal strength for the network function ""kpi"" is measured at 100 dBm. 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for kpi"
+What is the current latency in the HPE 5G Core?,Analyze latency in the HPE 5G Core,get_network_performance,"{'nf': 'kpi', 'metric': 'latency'}",get_network_performance,"{'nf': 'kpi', 'metric': 'latency'}",True,"* User: What is the current latency in the HPE 5G Core?
+* Assistant: Please provide the network function name and the specific KPI metric you want to track (e.g., latency, bandwidth, signal strength).
+* User: The network function is ""kpi"" and the metric is ""latency.""
+* Assistant: 
+* Tool: {
+  ""throughput"": {
+    ""measure"": 5,
+    ""unit"": ""mbps""
+  },
+  ""latency"": {
+    ""measure"": 3,
+    ""unit"": ""Mbps""
+  },
+  ""signal_strength"": {
+    ""measure"": 100,
+    ""unit"": ""dBm""
+  }
+}
+* Assistant: The current latency in the HPE 5G Core for the network function ""kpi"" is 3 Mbps. 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for kpi"
+What is the current bandwidth usage in the HPE 5G Core?,Evaluate bandwidth usage in the HPE 5G Core,get_network_performance,"{'nf': 'kpi', 'metric': 'bandwidth'}",get_network_performance,"{'nf': 'kpi', 'metric': 'bandwidth'}",True,"* User: What is the current bandwidth usage in the HPE 5G Core?
+* Assistant: Please provide the network function name and the specific KPI metric you want to track (e.g., latency, bandwidth, signal strength).
+* User: The network function is ""kpi"" and the metric is ""bandwidth.""
+* Assistant: 
+* Tool: {
+  ""throughput"": {
+    ""measure"": 5,
+    ""unit"": ""mbps""
+  },
+  ""latency"": {
+    ""measure"": 3,
+    ""unit"": ""Mbps""
+  },
+  ""signal_strength"": {
+    ""measure"": 100,
+    ""unit"": ""dBm""
+  }
+}
+* Assistant: The current bandwidth usage in the HPE 5G Core is 5 Mbps. 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for kpi"
+Retrieve logs for the AUSF network function within the HPE 5G Core,I need to gather logs for a network function in the HPE 5G Core,get_logs,{'nf': 'ausf'},get_logs,{'nf': 'AUSF'},False,"* User: Retrieve logs for the AUSF network function within the HPE 5G Core
+* Assistant: Please specify the network function name from which you require the logs.
+* User: The network function name is AUSF.
+* Assistant: 
+* Tool: ['Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.808 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Received request', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.810 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Sent request', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Received response 201 - CREATED', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Sent response 200 - OK - result=AUTHENTICATION_SUCCESS']
+* Assistant: Here are the logs retrieved for the AUSF network function within the HPE 5G Core:
+
+1. **Feb 11 18:07:16** ngcore ausf[5871]: 18:07:16.808 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Received request
+
+2. **Feb 11 18:07:16** ngcore ausf[5871]: 18:07:16.810 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Sent request
+
+3. **Feb 11 18:07:16** ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Received response 201 - CREATED
+
+4. **Feb 11 18:07:16** ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Sent response 200 - OK - result=AUTHENTICATION_SUCCESS
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for AUSF"
+Access the logs for the AUSF network function in the HPE 5G Core,I'm looking for logs related to a specific network function in the HPE 5G Core,get_logs,{'nf': 'ausf'},get_logs,{'nf': 'AUSF'},False,"* User: Access the logs for the AUSF network function in the HPE 5G Core
+* Assistant: Please specify the network function name from which you require the logs.
+* User: The network function name is AUSF.
+* Assistant: 
+* Tool: ['Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.808 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Received request', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.810 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Sent request', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 out_iface=nudm-ueau out_opid=ConfirmAuth out_node=UDR:10.132.0.5:8081 supi=imsi-001010000000001 vplmn=001001 ] Received response 201 - CREATED', 'Feb 11 18:07:16 ngcore ausf[5871]: 18:07:16.822 [info] [application=ausf in_iface=nausf-auth in_opid=put_ue-authentications__authctxid__5g-aka-confirmation in_node=10.132.0.5 supi=imsi-001010000000001 vplmn=001001 ] Sent response 200 - OK - result=AUTHENTICATION_SUCCESS']
+* Assistant: Here are the logs for the AUSF network function in the HPE 5G Core:
+
+1. **Feb 11 18:07:16** - Received request
+   - Application: ausf
+   - Interface: nausf-auth
+   - Operation ID: put_ue-authentications__authctxid__5g-aka-confirmation
+   - Node: 10.132.0.5
+   - SUPI: imsi-001010000000001
+   - VPLMN: 001001
+
+2. **Feb 11 18:07:16** - Sent request
+   - Application: ausf
+   - Interface: nausf-auth
+   - Operation ID: put_ue-authentications__authctxid__5g-aka-confirmation
+   - Node: 10.132.0.5
+   - Out Interface: nudm-ueau
+   - Out Operation ID: ConfirmAuth
+   - Out Node: UDR:10.132.0.5:8081
+   - SUPI: imsi-001010000000001
+   - VPLMN: 001001
+
+3. **Feb 11 18:07:16** - Received response 201 - CREATED
+   - Application: ausf
+   - Interface: nausf-auth
+   - Operation ID: put_ue-authentications__authctxid__5g-aka-confirmation
+   - Node: 10.132.0.5
+   - SUPI: imsi-001010000000001
+   - VPLMN: 001001
+
+4. **Feb 11 18:07:16** - Sent response 200 - OK - result=AUTHENTICATION_SUCCESS
+   - Application: ausf
+   - Interface: nausf-auth
+   - Operation ID: put_ue-authentications__authctxid__5g-aka-confirmation
+   - Node: 10.132.0.5
+   - SUPI: imsi-001010000000001
+   - VPLMN: 001001
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for AUSF"
+Fetch logs for the UDM network function within the HPE 5G Core,It's necessary to obtain logs for a network function in the HPE 5G Core,get_logs,{'nf': 'udm'},get_logs,{'nf': 'udm'},True,"* User: Fetch logs for the UDM network function within the HPE 5G Core
+* Assistant: Please specify the network function name from which you require the logs.
+* User: The network function name is ""udm.""
+* Assistant: 
+* Tool: ['Feb 11 18:07:16 ngcore udr[1132]: 18:07:16.880 [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK', 'Feb 11 18:07:17 ngcore udr[1132]: 18:07:17.037 [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001 ] Received request - serving_plmn=00101}', 'Feb 11 18:07:17 ngcoreudr[1132]: 18:07:17.039 
+* Assistant: Here are the logs for the UDM network function within the HPE 5G Core:
+
+1. **Feb 11 18:07:16** - [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK
+2. **Feb 11 18:07:17** - [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001] Received request - serving_plmn=00101
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udm"
+Check the UDM network function logs within the HPE 5G Core,Can you provide the logs for a network function within the HPE 5G Core?,get_logs,{'nf': 'udm'},get_logs,{'nf': 'udm'},True,"* User: Check the UDM network function logs within the HPE 5G Core
+* Assistant: Please specify the network function name from which you require the logs.
+* User: The network function name is ""udm.""
+* Assistant: 
+* Tool: ['Feb 11 18:07:16 ngcore udr[1132]: 18:07:16.880 [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK', 'Feb 11 18:07:17 ngcore udr[1132]: 18:07:17.037 [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001 ] Received request - serving_plmn=00101}', 'Feb 11 18:07:17 ngcoreudr[1132]: 18:07:17.039 
+* Assistant: Here are the logs from the UDM network function:
+
+1. **Feb 11 18:07:16** - [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK
+2. **Feb 11 18:07:17** - [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001] Received request - serving_plmn=00101
+
+If you need more details or further assistance, please let me know!
+* User: Thank you for the logs. That will be all for now.
+* Assistant: 
+* Tool: Close case for udm"
+What are the UDM logs in the HPE 5G Core?,I want to view the logs of a specific network function in the HPE 5G Core,get_logs,{'nf': 'udm'},get_logs,{'nf': 'UDM'},False,"* User: What are the UDM logs in the HPE 5G Core?
+* Assistant: Could you please clarify your request regarding the UDM logs? Are you looking to retrieve specific logs from the UDM network function? If so, please specify the network function name from which you require the logs.
+* User: I am looking to view the logs of the UDM network function in the HPE 5G Core.
+* Assistant: Please specify the network function name from which you require the logs.
+* User: The network function I am looking for is the UDM (Unified Data Management) in the HPE 5G Core.
+* Assistant: 
+* Tool: ['Feb 11 18:07:16 ngcore udr[1132]: 18:07:16.880 [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK', 'Feb 11 18:07:17 ngcore udr[1132]: 18:07:17.037 [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001 ] Received request - serving_plmn=00101}', 'Feb 11 18:07:17 ngcoreudr[1132]: 18:07:17.039 
+* Assistant: Here are the logs from the UDM (Unified Data Management) network function in the HPE 5G Core:
+
+1. **Feb 11 18:07:16** - udr[1132]: 18:07:16.880 [info] [application=udr in_iface=nudr-dr in_opid=ReadAccessAndMobilityPolicyDatain_node=10.132.0.5 supi=imsi-001010000000001] Sent response 200 - OK
+2. **Feb 11 18:07:17** - udr[1132]: 18:07:17.037 [info] [application=udr in_iface=nudr-dr in_opid=QuerySmData in_node=10.132.0.5 supi=imsi-001010000000001] Received request - serving_plmn=00101
+
+If you need more details or further assistance, please let me know! Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: Thank you for the information. I have what I need regarding the UDM logs.
+* Assistant: 
+* Tool: Close case for UDM"
+Get the location of the UE imsi-001010000000001 of the PDU session 1,I'm looking to find the location of a target UE within the HPE 5G Core,get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",get_supi_location,"{'nf': 'SMF', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",False,"* User: Get the location of the UE imsi-001010000000001 of the PDU session 1
+* Assistant: Please provide the network function name from which you require the UE location information.
+* User: The network function I am using is the SMF.
+* Assistant: 
+* Tool: {
+  ""supi"": ""imsi-001010000000001"",
+  ""ue_ipv4_address"": ""10.101.0.103"",
+  ""dnn"": ""internet2"",
+  ""pdu_session_id"": 1,
+  ""pduSessionType"": ""IPV4"",
+  ""ueLocation"": {
+    ""tac"": ""000001"",
+    ""plmnId"": {
+      ""mcc"": ""001"",
+      ""mnc"": ""01""
+    },
+    ""nrCellId"": ""000000040""
+  }
+}
+* Assistant: The location information for the UE with ID **imsi-001010000000001** in PDU session **1** is as follows:
+
+- **UE IPv4 Address:** 10.101.0.103
+- **DNN:** internet2
+- **PDU Session ID:** 1
+- **PDU Session Type:** IPV4
+- **Location Information:**
+  - **TAC:** 000001
+  - **PLMN ID:**
+    - **MCC:** 001
+    - **MNC:** 01
+  - **NR Cell ID:** 000000040
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for SMF"
+Retrieve the location of the first UE in the PDU session 1,We need to retrieve the location of a target UE based on its SUPI ID and PDU session,get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1.0'}",False,"* User: Retrieve the location of the first UE in the PDU session 1
+* Assistant: Please provide the network function name and the user/device/UE ID (must start with ‘imsi-’) for which you require the location information. Additionally, please confirm the PDU Session ID, which you mentioned is 1.
+* User: The network function is ""smf,"" the SUPI ID is ""imsi-001010000000001,"" and the PDU Session ID is ""1.0.""
+* Assistant: 
+* Tool: {
+  ""supi"": ""imsi-001010000000001"",
+  ""ue_ipv4_address"": ""10.101.0.103"",
+  ""dnn"": ""internet2"",
+  ""pdu_session_id"": 1,
+  ""pduSessionType"": ""IPV4"",
+  ""ueLocation"": {
+    ""tac"": ""000001"",
+    ""plmnId"": {
+      ""mcc"": ""001"",
+      ""mnc"": ""01""
+    },
+    ""nrCellId"": ""000000040""
+  }
+}
+* Assistant: The location information for the UE with SUPI ID ""imsi-001010000000001"" in PDU Session ID ""1.0"" is as follows:
+
+- **UE IPv4 Address:** 10.101.0.103
+- **DNN:** internet2
+- **PDU Session ID:** 1
+- **PDU Session Type:** IPV4
+- **Location Information:**
+  - **TAC:** 000001
+  - **PLMN ID:**
+    - **MCC:** 001
+    - **MNC:** 01
+  - **NR Cell ID:** 000000040
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for smf"
+Fetch the target UE location based on imsi-001010000000001 of the PDU session 1,I need to identify the location of a target UE in the HPE 5G Core having SUPI ID and PDU session,get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",get_supi_location,"{'nf': 'SMF', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",False,"* User: Fetch the target UE location based on imsi-001010000000001 of the PDU session 1
+* Assistant: Please provide the network function name for which you require the UE location information.
+* User: The network function is SMF.
+* Assistant: 
+* Tool: {
+  ""supi"": ""imsi-001010000000001"",
+  ""ue_ipv4_address"": ""10.101.0.103"",
+  ""dnn"": ""internet2"",
+  ""pdu_session_id"": 1,
+  ""pduSessionType"": ""IPV4"",
+  ""ueLocation"": {
+    ""tac"": ""000001"",
+    ""plmnId"": {
+      ""mcc"": ""001"",
+      ""mnc"": ""01""
+    },
+    ""nrCellId"": ""000000040""
+  }
+}
+* Assistant: The location information for the target UE with ID **imsi-001010000000001** in PDU session **1** is as follows:
+
+- **UE IPv4 Address:** 10.101.0.103
+- **DNN:** internet2
+- **PDU Session ID:** 1
+- **PDU Session Type:** IPV4
+- **Location Information:**
+  - **TAC:** 000001
+  - **PLMN ID:**
+    - **MCC:** 001
+    - **MNC:** 01
+  - **NR Cell ID:** 000000040
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for SMF"
+What is the location of the first UE and PDU session 1?,Can you help me determine the location of a target UE using the SUPI ID and PDU session?,get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1'}",get_supi_location,"{'nf': 'smf', 'supi': 'imsi-001010000000001', 'pdu_session_id': '1.0'}",False,"* User: What is the location of the first UE and PDU session 1?
+* Assistant: Please provide the network function name and the user/device/UE ID (must start with ‘imsi-’) for which you require the location information. Additionally, please provide the PDU Session ID for which you need the location information.
+* User: The network function is smf, the SUPI is imsi-001010000000001, and the PDU Session ID is 1.0.
+* Assistant: 
+* Tool: {
+  ""supi"": ""imsi-001010000000001"",
+  ""ue_ipv4_address"": ""10.101.0.103"",
+  ""dnn"": ""internet2"",
+  ""pdu_session_id"": 1,
+  ""pduSessionType"": ""IPV4"",
+  ""ueLocation"": {
+    ""tac"": ""000001"",
+    ""plmnId"": {
+      ""mcc"": ""001"",
+      ""mnc"": ""01""
+    },
+    ""nrCellId"": ""000000040""
+  }
+}
+* Assistant: The location information for the specified UE and PDU session is as follows:
+
+- **SUPI**: imsi-001010000000001
+- **UE IPv4 Address**: 10.101.0.103
+- **DNN**: internet2
+- **PDU Session ID**: 1
+- **PDU Session Type**: IPV4
+- **Location Information**:
+  - **TAC**: 000001
+  - **PLMN ID**: 
+    - MCC: 001
+    - MNC: 01
+  - **NR Cell ID**: 000000040
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for smf"
+Retrieve details of the first data profile,I need to retrieve the details of a specific data profile in the HPE 5G Core,get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Retrieve details of the first data profile
+* Assistant: Please provide the UUID of the data profile you want to retrieve.
+* User: The UUID of the data profile is 60c86889-c348-4ebe-8fdc-26b6d9551845.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that the network function name I used is incorrect. Please provide the correct network function name for which you want to retrieve the data profile details.
+* User: The network function is ""udr.""
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the details of the data profile with UUID **60c86889-c348-4ebe-8fdc-26b6d9551845**:
+
+- **Description**: plmn_99999_slice_1-000001
+- **UUID**: 60c86889-c348-4ebe-8fdc-26b6d9551845
+- **PLMN Rules Map**:
+  - **Subscribed UE AMBR**:
+    - **Downlink**: 1 Gbps
+    - **Uplink**: 1 Gbps
+  - **PDU Session Types**:
+    - **Default Session Type**: IPV4
+
+If you need further assistance or more information, please let me know!
+* User: Thank you for the information. I have received the details I needed.
+* Assistant: 
+* Tool: Close case for udr"
+Fetch details of the second data profile,I'm looking to get information about a particular data profile in the HPE 5G Core,get_dataprofile,"{'nf': 'udr', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",get_dataprofile,"{'nf': 'udr', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Fetch details of the second data profile
+* Assistant: Could you please provide the UUID of the data profile you want to retrieve?
+* User: The UUID of the data profile is a47a045a-6b39-4172-bbeb-47ec64a60b38.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems there was an issue with the network function name. Could you please provide the correct network function name for retrieving the data profile details?
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the details of the data profile with UUID **a47a045a-6b39-4172-bbeb-47ec64a60b38**:
+
+- **Description**: plmn_00101_slice_1
+- **UUID**: a47a045a-6b39-4172-bbeb-47ec64a60b38
+- **PLMN Rules Map**:
+  - **Subscribed UE AMBR**:
+    - **Downlink**: 1 Gbps
+    - **Uplink**: 1 Gbps
+  - **PDU Session Types**:
+    - **Allowed Session Types**: IPV4V6, IPV6
+    - **Default Session Type**: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Get details of the data profile using 60c86889-c348-4ebe-8fdc-26b6d9551845,It'sessential to gather details for a data profile within the HPE 5G Core,get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Get details of the data profile using 60c86889-c348-4ebe-8fdc-26b6d9551845
+* Assistant: Please provide the UUID of the data profile you want to retrieve.
+* User: The UUID of the data profile is 60c86889-c348-4ebe-8fdc-26b6d9551845.
+* Assistant: Please provide the network function name for which you need the data profile information.
+* User: The network function name is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the details of the data profile with UUID **60c86889-c348-4ebe-8fdc-26b6d9551845**:
+
+- **Description**: plmn_99999_slice_1-000001
+- **UUID**: 60c86889-c348-4ebe-8fdc-26b6d9551845
+- **PLMN Rules Map**:
+  - **Subscribed UE AMBR**:
+    - **Downlink**: 1 Gbps
+    - **Uplink**: 1 Gbps
+  - **PDU Session Types**:
+    - **Default Session Type**: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Access details of the data profile using a47a045a-6b39-4172-bbeb-47ec64a60b38,Can you provide the details for a specific data profile in the HPE 5G Core,get_dataprofile,"{'nf': 'udr', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",get_dataprofile,"{'nf': 'udr', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Access details of the data profile using a47a045a-6b39-4172-bbeb-47ec64a60b38
+* Assistant: Please provide the UUID of the data profile you want to retrieve. It seems you have already provided it as ""a47a045a-6b39-4172-bbeb-47ec64a60b38"". 
+
+Now, I will proceed to retrieve the specific data profile information. 
+
+Please provide the network function name to retrieve the specific data profile.
+* User: The network function is ""udr"".
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the details of the data profile with UUID ""a47a045a-6b39-4172-bbeb-47ec64a60b38"":
+
+- **Description**: plmn_00101_slice_1
+- **UUID**: a47a045a-6b39-4172-bbeb-47ec64a60b38
+- **PLMN Rules Map**:
+  - **Subscribed UE AMBR**:
+    - **Downlink**: 1 Gbps
+    - **Uplink**: 1 Gbps
+  - **PDU Session Types**:
+    - **Allowed Session Types**: IPV4V6, IPV6
+    - **Default Session Type**: IPV4
+
+If you need any further assistance or additional information, please let me know!
+* User: Thank you for the information. I have received the details I needed.
+* Assistant: 
+* Tool: Close case for udr"
+What are the details of the first data profile ?,I want to check the details of a data profile in the HPE 5G Core,get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",get_dataprofile,"{'nf': 'udr', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: What are the details of the first data profile ?
+* Assistant: Could you please provide the UUID of the data profile you want to retrieve?
+* User: The UUID of the data profile is 60c86889-c348-4ebe-8fdc-26b6d9551845.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that the network function name I used is incorrect. Could you please provide the correct network function name for retrieving the data profile details?
+* User: The network function is ""udr.""
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the details of the data profile with UUID **60c86889-c348-4ebe-8fdc-26b6d9551845**:
+
+- **Description**: plmn_99999_slice_1-000001
+- **UUID**: 60c86889-c348-4ebe-8fdc-26b6d9551845
+- **PLMN Rules Map**:
+  - **Subscribed UE AMBR**:
+    - **Downlink**: 1 Gbps
+    - **Uplink**: 1 Gbps
+  - **PDU Session Types**:
+    - **Default Session Type**: IPV4
+
+If you need further assistance or details, please let me know!
+* User: Thank you for the information. I have all I need now.
+* Assistant: 
+* Tool: Close case for udr"
+Get details of the authorized first device/user,I need to retrieve details of an authorized device/user within the HPE 5G Core,get_supi,"{'nf': 'udm', 'supi': 'imsi-001010000021309'}",get_supis,{'nf': 'udm'},False,"* User: Get details of the authorized first device/user
+* Assistant: Could you please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core?
+* User: Yes, I would like the list of all authorized devices/users accessed in the HPE 5G Core, specifically focusing on the first device/user.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems there was an issue retrieving the list of authorized devices/users from the HPE 5G Core. Could you please provide the correct network function name or any additional details that might help?
+* User: The network function I am referring to is ""udm."" Please use that to retrieve the details of the authorized first device/user.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here are the details of the first authorized device/user accessed in the HPE 5G Core:
+
+- **SUPI**: imsi-001010000021309
+- **GPSI**: msisdn-491725670014
+- **Status**: ACTIVE
+- **Description**: test4
+- **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+- **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udm"
+Retrieve details of the second authorized device/user,I'm looking to obtain information about an authorized device/user in the HPE 5G Core,get_supi,"{'nf': 'udm', 'supi': 'imsi-0010100000213'}",get_supis,{'nf': 'UDM'},False,"* User: Retrieve details of the second authorized device/user
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like to retrieve the list of all authorized devices/users in the HPE 5G Core.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that there was an issue retrieving the list of authorized devices/users due to an unrecognized network function name. Could you please provide the correct network function name or any additional details?
+* User: The network function I am referring to is the UDM (Unified Data Management) in the HPE 5G Core. Please use that to retrieve the list of authorized devices/users.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here is the list of authorized devices/users in the HPE 5G Core (UDM):
+
+1. **User/Device ID:** imsi-001010000021309
+   - **GPSI:** msisdn-491725670014
+   - **Status:** ACTIVE
+   - **Description:** test4
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+2. **User/Device ID:** imsi-0010100000213
+   - **GPSI:** null
+   - **Status:** ACTIVE
+   - **Description:** test_meta_prompting
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+3. **User/Device ID:** imsi-001010000000001
+   - **GPSI:** msisdn-491725670013
+   - **Status:** ACTIVE
+   - **Description:** test3
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+4. **User/Device ID:** imsi-999990000000001
+   - **GPSI:** null
+   - **Status:** ACTIVE
+   - **Description:** K/OP : 465B50A2EE238A6BC / E8E3CA
+   - **Data Profile UUID:** 60c86889-c348-4ebe-8fdc-26b6d95518459
+   - **Auth Method:** 5G_AKA
+
+You mentioned retrieving details of the second authorized device/user. Here are the details:
+
+- **User/Device ID:** imsi-0010100000213
+  - **GPSI:** null
+  - **Status:** ACTIVE
+  - **Description:** test_meta_prompting
+  - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+  - **Auth Method:** 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDM"
+Fetch details of the authorized device/user imsi-001010000000001,It's important to gather details of an authorized device/user in the HPE 5G Core,get_supi,"{'nf': 'udm', 'supi': 'imsi-001010000000001'}",get_supi,"{'nf': 'UDM', 'supi': 'imsi-001010000000001'}",False,"* User: Fetch details of the authorized device/user imsi-001010000000001
+* Assistant: Please provide the network function name where you need the details for the specific user/device/UE with the identifier ""imsi-001010000000001"".
+* User: The network function is UDM.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here are the details for the authorized device/user with the identifier ""imsi-001010000000001"":
+
+- **SUPI**: imsi-001010000000001
+- **GPSI**: msisdn-491725670013
+- **Status**: ACTIVE
+- **Description**: test3
+- **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+- **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDM"
+Access details of the authorized device/user imsi-001010000000001,Can you provide the details of an authorized device/user in the HPE 5G Core,get_supi,"{'nf': 'udm', 'supi': 'imsi-001010000000001'}",get_supi,"{'nf': 'UDM', 'supi': 'imsi-001010000000001'}",False,"* User: Access details of the authorized device/user imsi-001010000000001
+* Assistant: Please provide the network function name where you need to retrieve the details for the authorized device/user with the identifier ""imsi-001010000000001.""
+* User: The network function is UDM.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here are the details for the authorized device/user with the identifier ""imsi-001010000000001"":
+
+- **SUPI**: imsi-001010000000001
+- **GPSI**: msisdn-491725670013
+- **Status**: ACTIVE
+- **Description**: test3
+- **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+- **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDM"
+What are the details of the first authorized device/user?,I want to check the details of an authorized device/user within the HPE 5G Core,get_supi,"{'nf': 'udm', 'supi': 'imsi-001010000021309'}",get_supi,"{'nf': 'udm', 'supi': 'imsi-001010000021309'}",True,"* User: What are the details of the first authorized device/user?
+* Assistant: Could you please clarify if you are looking for the details of a specific user/device/UE? If so, please provide the identifier for that user/device/UE, ensuring that the ID starts with ""imsi-"". If you need the list of all authorized devices/users, please confirm that as well.
+* User: I am looking for the details of the first authorized device/user with the following information:
+
+- Network Function: udm
+- SUPI: imsi-001010000021309
+
+Please provide the details for this authorized device/user.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here are the details for the authorized device/user with the SUPI ""imsi-001010000021309"":
+
+- **SUPI**: imsi-001010000021309
+- **GPSI**: msisdn-491725670014
+- **Status**: ACTIVE
+- **Description**: test4
+- **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+- **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udm"
+Access the profile status of the UDM network function,I need to check the profile status of a network function in the HPE 5G Core,get_nf_profile,"{'nf': 'nrf', 'target_nf': 'udm'}",get_nf_profile,"{'nf': 'nrf', 'target_nf': 'udm'}",True,"* User: Access the profile status of the UDM network function
+* Assistant: Please provide the network function name for which you need the profile.
+* User: The network function name is ""nrf.""
+* Assistant: 
+* Tool: {
+  ""smf"": {
+    ""id"": ""add1ee29-ca9d-493a-a30c-869daeb1b500"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.11"",
+    ""fqdn"": ""smf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nsmf-pdusession"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-event-exposure"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-nidd"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""amf"": {
+    ""id"": ""77619132-e61b-4c15-93c8-f2ae420669be"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.1"",
+    ""fqdn"": ""amf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""namf-comm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-evts"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-mt"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-loc"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""udm"": {
+    ""id"": ""6c08b255-2138-4454-b890-92689cdefeb2"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""10.132.0.5"",
+    ""fqdn"": ""udm.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nudm-uecm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-ueau"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-sdm"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  }
+}
+* Assistant: The profile status of the UDM network function is as follows:
+
+- **ID**: 6c08b255-2138-4454-b890-92689cdefeb2
+- **Status**: REGISTERED
+- **IP Address**: 10.132.0.5
+- **FQDN**: udm.5gc.mnc001.mcc001.3gppnetwork.org
+
+**Services:**
+1. **nudm-uecm** - Status: REGISTERED
+2. **nudm-ueau** - Status: REGISTERED
+3. **nudm-sdm** - Status: REGISTERED
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for nrf"
+Get the profile status of the AMF network function,I'm looking to retrieve the profile status of a specific network function in the HPE 5G Core,get_nf_profile,"{'nf': 'nrf', 'target_nf': 'amf'}",get_nf_profile,"{'nf': 'nrf', 'target_nf': 'amf'}",True,"* User: Get the profile status of the AMF network function
+* Assistant: Please provide the network function name for which you need the profile.
+* User: The network function name is ""nrf.""
+* Assistant: 
+* Tool: {
+  ""smf"": {
+    ""id"": ""add1ee29-ca9d-493a-a30c-869daeb1b500"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.11"",
+    ""fqdn"": ""smf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nsmf-pdusession"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-event-exposure"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-nidd"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""amf"": {
+    ""id"": ""77619132-e61b-4c15-93c8-f2ae420669be"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.1"",
+    ""fqdn"": ""amf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""namf-comm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-evts"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-mt"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-loc"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""udm"": {
+    ""id"": ""6c08b255-2138-4454-b890-92689cdefeb2"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""10.132.0.5"",
+    ""fqdn"": ""udm.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nudm-uecm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-ueau"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-sdm"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  }
+}
+* Assistant: The profile status of the AMF network function is as follows:
+
+- **ID**: 77619132-e61b-4c15-93c8-f2ae420669be
+- **Status**: REGISTERED
+- **IP Address**: 127.100.1.1
+- **FQDN**: amf.5gc.mnc001.mcc001.3gppnetwork.org
+- **Services**:
+  - **namf-comm**: REGISTERED
+  - **namf-evts**: REGISTERED
+  - **namf-mt**: REGISTERED
+  - **namf-loc**: REGISTERED
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for nrf"
+Fetch the profile status of the SMF network function,It's important to verify the profile status of a network function within the HPE 5G Core,get_nf_profile,"{'nf': 'nrf', 'target_nf': 'smf'}",get_nf_profile,"{'nf': 'nrf', 'target_nf': 'smf'}",True,"* User: Fetch the profile status of the SMF network function
+* Assistant: Please provide the network function name for which you need the profile.
+* User: The network function name is ""nrf.""
+* Assistant: 
+* Tool: {
+  ""smf"": {
+    ""id"": ""add1ee29-ca9d-493a-a30c-869daeb1b500"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.11"",
+    ""fqdn"": ""smf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nsmf-pdusession"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-event-exposure"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-nidd"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""amf"": {
+    ""id"": ""77619132-e61b-4c15-93c8-f2ae420669be"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.1"",
+    ""fqdn"": ""amf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""namf-comm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-evts"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-mt"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-loc"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""udm"": {
+    ""id"": ""6c08b255-2138-4454-b890-92689cdefeb2"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""10.132.0.5"",
+    ""fqdn"": ""udm.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nudm-uecm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-ueau"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-sdm"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  }
+}
+* Assistant: The profile status of the SMF network function is as follows:
+
+- **ID**: add1ee29-ca9d-493a-a30c-869daeb1b500
+- **Status**: REGISTERED
+- **IP Address**: 127.100.1.11
+- **FQDN**: smf.5gc.mnc001.mcc001.3gppnetwork.org
+
+**Services:**
+1. **nsmf-pdusession** - Status: REGISTERED
+2. **nsmf-event-exposure** - Status: REGISTERED
+3. **nsmf-nidd** - Status: REGISTERED
+
+If you need any further assistance or information, please let me know!
+* User: Thank you for the information. I have everything I need.
+* Assistant: 
+* Tool: Close case for nrf"
+Check the profile status of the UDM network function,Can you provide the profile status for a specific network function in the HPE 5G Core?,get_nf_profile,"{'nf': 'nrf', 'target_nf': 'udm'}",get_nf_profile,"{'nf': 'nrf', 'target_nf': 'udm'}",True,"* User: Check the profile status of the UDM network function
+* Assistant: Please provide the network function name for which you need the profile.
+* User: The network function name is ""nrf.""
+* Assistant: 
+* Tool: {
+  ""smf"": {
+    ""id"": ""add1ee29-ca9d-493a-a30c-869daeb1b500"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.11"",
+    ""fqdn"": ""smf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nsmf-pdusession"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-event-exposure"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-nidd"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""amf"": {
+    ""id"": ""77619132-e61b-4c15-93c8-f2ae420669be"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.1"",
+    ""fqdn"": ""amf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""namf-comm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-evts"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-mt"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-loc"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""udm"": {
+    ""id"": ""6c08b255-2138-4454-b890-92689cdefeb2"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""10.132.0.5"",
+    ""fqdn"": ""udm.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nudm-uecm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-ueau"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-sdm"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  }
+}
+* Assistant: The profile status of the UDM network function is as follows:
+
+- **ID**: 6c08b255-2138-4454-b890-92689cdefeb2
+- **Status**: REGISTERED
+- **IP Address**: 10.132.0.5
+- **FQDN**: udm.5gc.mnc001.mcc001.3gppnetwork.org
+
+**Services:**
+1. **nudm-uecm** - Status: REGISTERED
+2. **nudm-ueau** - Status: REGISTERED
+3. **nudm-sdm** - Status: REGISTERED
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for nrf"
+What is the profile status of the AMF network function?,I want to see the profile status of a network function operating in the HPE 5G Core,get_nf_profile,"{'nf': 'nrf', 'target_nf': 'amf'}",get_nf_profile,"{'nf': 'NRF', 'target_nf': 'AMF'}",False,"* User: What is the profile status of the AMF network function?
+* Assistant: Please provide the network function name for which you need the profile.
+* User: The network function is the NRF.
+* Assistant: 
+* Tool: {
+  ""smf"": {
+    ""id"": ""add1ee29-ca9d-493a-a30c-869daeb1b500"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.11"",
+    ""fqdn"": ""smf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nsmf-pdusession"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-event-exposure"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nsmf-nidd"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""amf"": {
+    ""id"": ""77619132-e61b-4c15-93c8-f2ae420669be"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""127.100.1.1"",
+    ""fqdn"": ""amf.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""namf-comm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-evts"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-mt"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""namf-loc"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  },
+  ""udm"": {
+    ""id"": ""6c08b255-2138-4454-b890-92689cdefeb2"",
+    ""status"": ""REGISTERED"",
+    ""ip"": ""10.132.0.5"",
+    ""fqdn"": ""udm.5gc.mnc001.mcc001.3gppnetwork.org"",
+    ""services"": [
+      {
+        ""name"": ""nudm-uecm"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-ueau"",
+        ""status"": ""REGISTERED""
+      },
+      {
+        ""name"": ""nudm-sdm"",
+        ""status"": ""REGISTERED""
+      }
+    ]
+  }
+}
+* Assistant: The profile status of the AMF network function is as follows:
+
+- **ID**: 77619132-e61b-4c15-93c8-f2ae420669be
+- **Status**: REGISTERED
+- **IP**: 127.100.1.1
+- **FQDN**: amf.5gc.mnc001.mcc001.3gppnetwork.org
+- **Services**:
+  - **namf-comm**: REGISTERED
+  - **namf-evts**: REGISTERED
+  - **namf-mt**: REGISTERED
+  - **namf-loc**: REGISTERED
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for NRF"
+Get the list of authorized devices/users,I need to retrieve the list of authorized devices/users for the HPE 5G Core,get_supis,{'nf': 'udm'},get_supis,{'nf': '5G Core'},False,"* User: Get the list of authorized devices/users
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like the list of all authorized devices/users with IDs starting with ‘imsi-’.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that there was an issue retrieving the list of authorized devices/users due to an incorrect network function name. Let me try again with the correct name. Please hold on for a moment. 
+
+I'll proceed to retrieve the list of authorized devices/users.
+* Tool: Error: Network function '5g core' not found.
+* Assistant: It appears that I'm unable to retrieve the list of authorized devices/users due to an issue with the network function name. Unfortunately, I cannot access the information at this moment.
+
+If you have any specific details about the network function name or if there's anything else I can assist you with, please let me know!
+* User: I apologize for the inconvenience. I need to confirm the exact network function name to proceed. Could you please provide the correct name for the HPE 5G Core?
+* Assistant: I currently do not have access to the exact network function names for the HPE 5G Core. However, you may want to check your internal documentation or contact your network administrator for the correct name.
+
+Once you have the correct network function name, please let me know, and I will assist you in retrieving the list of authorized devices/users.
+* User: I understand that retrieving the correct network function name is essential. If you can provide me with the correct name, I will be able to assist you further in getting the list of authorized devices/users.
+* Assistant: I apologize for any confusion, but I do not have access to the specific network function names for the HPE 5G Core. It would be best to consult your internal resources or network documentation to find the correct name.
+
+Once you have that information, please share it with me, and I will be happy to assist you in retrieving the list of authorized devices/users. Thank you for your understanding!
+* User: I appreciate your patience. However, I am unable to provide the exact network function name for the HPE 5G Core. Please check your internal documentation or reach out to your network administrator for the correct name.
+
+Once you have that information, feel free to share it with me, and I will assist you in retrieving the list of authorized devices/users. Thank you!
+* Assistant: Thank you for your understanding. If you are unable to provide the exact network function name, I recommend reaching out to your network administrator or checking your internal documentation for assistance.
+
+Once you have the correct name, please let me know, and I will be here to help you retrieve the list of authorized devices/users. If there's anything else I can assist you with in the meantime, please feel free to ask!
+* User: I appreciate your assistance. However, I am unable to provide the exact network function name for the HPE 5G Core. Please check your internal documentation or reach out to your network administrator for the correct name.
+
+Once you have that information, feel free to share it with me, and I will assist you in retrieving the list of authorized devices/users. Thank you!
+* Assistant: I understand that obtaining the correct network function name is crucial for proceeding. Unfortunately, I do not have access to internal documentation or specific network function names.
+
+Please consult your network administrator or relevant resources to find the correct name for the HPE 5G Core. Once you have that information, I will be ready to assist you in retrieving the list of authorized devices/users.
+
+If there's anything else I can help you with in the meantime, please let me know! Thank you for your patience.
+* User: Thank you for your understanding. If you have any further questions or need assistance in the future, please don't hesitate to reach out. Have a great day!
+* Assistant: Thank you for your kind words! If you have any further questions or need assistance in the future, please don't hesitate to reach out. Have a great day! 
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all for now. Thank you for your assistance! Have a great day!
+* Assistant: 
+* Tool: Close case for HPE 5G Core"
+Fetch the list of authorized devices/users,I'm looking for a list of users and devices allowed to access the HPE 5G Core,get_supis,{'nf': 'udm'},get_supis,{'nf': 'udm'},True,"* User: Fetch the list of authorized devices/users
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like the list of all authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that the network function name I used is not recognized. Can you please provide the correct network function name for retrieving the list of authorized devices/users?
+* User: The network function I am referring to is ""udm."" Please use that to fetch the list of authorized devices/users.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here is the list of authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core:
+
+1. **User/Device ID (SUPI):** imsi-001010000021309
+   - **GPSI:** msisdn-491725670014
+   - **Status:** ACTIVE
+   - **Description:** test4
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method:** 5G_AKA
+
+2. **User/Device ID (SUPI):** imsi-0010100000213
+   - **GPSI:** None
+   - **Status:** ACTIVE
+   - **Description:** test_meta_prompting
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method:** 5G_AKA
+
+3. **User/Device ID (SUPI):** imsi-001010000000001
+   - **GPSI:** msisdn-491725670013
+   - **Status:** ACTIVE
+   - **Description:** test3
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method:** 5G_AKA
+
+4. **User/Device ID (SUPI):** imsi-999990000000001
+   - **GPSI:** None
+   - **Status:** ACTIVE
+   - **Description:** K/OP : 465B50A2EE238A6BC / E8E3CA
+   - **Data Profile UUID:** 60c86889-c348-4ebe-8fdc-26b6d95518459
+   - **Authentication Method:** 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udm"
+Retrieve the list of authorized devices/users,It's important to verify which devices and users are permitted in the HPE 5G Core,get_supis,{'nf': 'udm'},get_supis,{'nf': 'udm'},True,"* User: Retrieve the list of authorized devices/users
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like the list of all authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that the network function name ""HPE 5G Core"" is not recognized. Could you please provide the correct network function name for retrieving the list of authorized devices/users?
+* User: The correct network function is ""udm."" Please retrieve the list of authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core using that.
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here is the list of authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core:
+
+1. **User ID (SUPI)**: imsi-001010000021309
+   - **GPSI**: msisdn-491725670014
+   - **Status**: ACTIVE
+   - **Description**: test4
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+2. **User ID (SUPI)**: imsi-0010100000213
+   - **GPSI**: None
+   - **Status**: ACTIVE
+   - **Description**: test_meta_prompting
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+3. **User ID (SUPI)**: imsi-001010000000001
+   - **GPSI**: msisdn-491725670013
+   - **Status**: ACTIVE
+   - **Description**: test3
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+4. **User ID (SUPI)**: imsi-999990000000001
+   - **GPSI**: None
+   - **Status**: ACTIVE
+   - **Description**: K/OP : 465B50A2EE238A6BC / E8E3CA
+   - **Data Profile UUID**: 60c86889-c348-4ebe-8fdc-26b6d95518459
+   - **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udm"
+Access the list of authorized devices/users,Can you provide the list of authorized users and devices for the HPE 5G Core?,get_supis,{'nf': 'udm'},get_supis,{'nf': 'UDM'},False,"* User: Access the list of authorized devices/users
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like to access the list of all authorized devices/users with IDs starting with ‘imsi-’ in the HPE 5G Core.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that there was an issue accessing the list of authorized devices/users due to the network function name not being recognized. 
+
+Could you please provide the correct network function name or any additional details that might help me locate the authorized devices/users?
+* User: The network function I am referring to is the UDM (Unified Data Management) within the HPE 5G Core. Can you try accessing the list of authorized devices/users again using that information?
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here is the list of authorized devices/users with IDs starting with ‘imsi-’ in the UDM (Unified Data Management) within the HPE 5G Core:
+
+1. **User/Device ID (SUPI):** imsi-001010000021309
+   - **GPSI:** msisdn-491725670014
+   - **Status:** ACTIVE
+   - **Description:** test4
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+2. **User/Device ID (SUPI):** imsi-0010100000213
+   - **GPSI:** None
+   - **Status:** ACTIVE
+   - **Description:** test_meta_prompting
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+3. **User/Device ID (SUPI):** imsi-001010000000001
+   - **GPSI:** msisdn-491725670013
+   - **Status:** ACTIVE
+   - **Description:** test3
+   - **Data Profile UUID:** 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Auth Method:** 5G_AKA
+
+4. **User/Device ID (SUPI):** imsi-999990000000001
+   - **GPSI:** None
+   - **Status:** ACTIVE
+   - **Description:** K/OP : 465B50A2EE238A6BC / E8E3CA
+   - **Data Profile UUID:** 60c86889-c348-4ebe-8fdc-26b6d95518459
+   - **Auth Method:** 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDM"
+What is the list of authorized devices/users?,I want to check which devices and users are authorized within the HPE 5G Core,get_supis,{'nf': 'udm'},get_supis,{'nf': 'UDM'},False,"* User: What is the list of authorized devices/users?
+* Assistant: Please confirm if you want the list of all authorized devices/users (those with IDs starting with ‘imsi-’) accessed in the HPE 5G Core.
+* User: Yes, I would like the list of all authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core.
+* Assistant: 
+* Tool: Error: Network function 'hpe 5g core' not found.
+* Assistant: It seems that there was an issue retrieving the list of authorized devices/users due to the network function name not being recognized. 
+
+Could you please provide the correct network function name or any additional details that might help me locate the information?
+* User: The network function I am referring to is the UDM (Unified Data Management) within the HPE 5G Core. Can you check again for the authorized devices/users with IDs starting with ‘imsi-’?
+* Assistant: 
+* Tool: [
+  {
+    ""supi"": ""imsi-001010000021309"",
+    ""gpsi"": ""msisdn-491725670014"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test4"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-0010100000213"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""test_meta_prompting"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-001010000000001"",
+    ""gpsi"": ""msisdn-491725670013"",
+    ""status"": ""ACTIVE"",
+    ""description"": ""test3"",
+    ""data_profile_uuid"": ""07ca093e-cafe-4afa-85e7-29bf8f3c65c9"",
+    ""auth_method"": ""5G_AKA""
+  },
+  {
+    ""supi"": ""imsi-999990000000001"",
+    ""gpsi"": null,
+    ""status"": ""ACTIVE"",
+    ""description"": ""K/OP : 465B50A2EE238A6BC / E8E3CA"",
+    ""data_profile_uuid"": ""60c86889-c348-4ebe-8fdc-26b6d95518459"",
+    ""auth_method"": ""5G_AKA""
+  }
+]
+* Assistant: Here is the list of authorized devices/users with IDs starting with ‘imsi-’ accessed in the HPE 5G Core (UDM):
+
+1. **User ID (SUPI)**: imsi-001010000021309
+   - **GPSI**: msisdn-491725670014
+   - **Status**: ACTIVE
+   - **Description**: test4
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+2. **User ID (SUPI)**: imsi-0010100000213
+   - **GPSI**: None
+   - **Status**: ACTIVE
+   - **Description**: test_meta_prompting
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+3. **User ID (SUPI)**: imsi-001010000000001
+   - **GPSI**: msisdn-491725670013
+   - **Status**: ACTIVE
+   - **Description**: test3
+   - **Data Profile UUID**: 07ca093e-cafe-4afa-85e7-29bf8f3c65c9
+   - **Authentication Method**: 5G_AKA
+
+4. **User ID (SUPI)**: imsi-999990000000001
+   - **GPSI**: None
+   - **Status**: ACTIVE
+   - **Description**: K/OP : 465B50A2EE238A6BC / E8E3CA
+   - **Data Profile UUID**: 60c86889-c348-4ebe-8fdc-26b6d95518459
+   - **Authentication Method**: 5G_AKA
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDM"
+Assign data profile 60c86889-c348-4ebe-8fdc-26b6d9551845 to user imsi-0010100000213,I need to allocate a dedicated network data profile for a specific use case,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Assign data profile 60c86889-c348-4ebe-8fdc-26b6d9551845 to user imsi-0010100000213
+* Assistant: Please provide the network function name where you would like to assign the data profile.
+* User: The network function is udr.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile with UUID `60c86889-c348-4ebe-8fdc-26b6d9551845` has been successfully assigned to the user `imsi-0010100000213` in the network function `udr`. The status is now ACTIVE.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Allocate data profile a47a045a-6b39-4172-bbeb-47ec64a60b38 to user imsi-0010100000213,I'm looking to assign a network data profile to an authorized user,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Allocate data profile a47a045a-6b39-4172-bbeb-47ec64a60b38 to user imsi-0010100000213
+* Assistant: Please provide the network function name where you would like to assign the data profile.
+* User: The network function is udr.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile with UUID `a47a045a-6b39-4172-bbeb-47ec64a60b38` has been successfully allocated to the user `imsi-0010100000213` in the network function `udr`. The status is now ACTIVE.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Set first data profile for user imsi-0010100000213,It's important to configure a network data profile for an enterprise application,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Set first data profile for user imsi-0010100000213
+* Assistant: Please provide the network function name and the UUID of the data profile you want to assign to the user imsi-0010100000213.
+* User: The network function is udr, and the UUID is 60c86889-c348-4ebe-8fdc-26b6d9551845.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile has been successfully assigned to the user imsi-0010100000213. The status is now ACTIVE, and the description of the profile is ""test_meta_prompting.""
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Allocate second data profile to user imsi-0010100000213,Can you provide a dedicated data profile for an IoT device?,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Allocate second data profile to user imsi-0010100000213
+* Assistant: Please provide the network function name where you would like to assign the new data profile, as well as the UUID of the data profile you want to allocate to the user.
+* User: The network function is udr, and the UUID for the data profile is a47a045a-6b39-4172-bbeb-47ec64a60b38.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The new data profile has been successfully allocated to the user with ID imsi-0010100000213. The status of the profile is now ACTIVE, and it has been modified with the description ""test_meta_prompting.""
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Assign data profile plmn_99999_slice_1-000001 to user imsi-0010100000213,I want to assign a specific data profile for emergency services,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Assign data profile plmn_99999_slice_1-000001 to user imsi-0010100000213
+* Assistant: Please provide the network function name where you want to assign the data profile.
+* User: The network function is udr.
+* Assistant: The provided data profile UUID ""plmn_99999_slice_1-000001"" needs to be verified against the approved data profiles. Let me retrieve the list of authorized data profiles for the network function ""udr.""
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: The data profile ""plmn_99999_slice_1-000001"" corresponds to the UUID ""60c86889-c348-4ebe-8fdc-26b6d9551845"" and is recognized in the approved data profiles.
+
+Now, I will proceed to assign this data profile to the user with ID ""imsi-0010100000213"" in the network function ""udr.""
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile ""plmn_99999_slice_1-000001"" has been successfully assigned to the user ""imsi-0010100000213"" in the network function ""udr."" The status is now ACTIVE.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Set data profile plmn_00101_slice_1 for user imsi-0010100000213,Allocate a dedicated network data profile for an authorized enterprise user,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",get_dataprofiles,{'nf': 'UDR'},False,"* User: Set data profile plmn_00101_slice_1 for user imsi-0010100000213
+* Assistant: Please provide the network function name where you want to assign the data profile, and confirm that the data profile UUID ""plmn_00101_slice_1"" is from the approved list.
+* User: The network function is UDR, and the data profile UUID is ""plmn_00101_slice_1."" Please proceed with setting the data profile for user imsi-0010100000213.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: The data profile ""plmn_00101_slice_1"" has been successfully assigned to the user ""imsi-0010100000213"" in the UDR network function.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for UDR"
+Assign data profile 60c86889-c348-4ebe-8fdc-26b6d9551845 to the second user,Configure a network data profile for a permitted IoT device,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Assign data profile 60c86889-c348-4ebe-8fdc-26b6d9551845 to the second user
+* Assistant: Please provide the network function name, the user’s ID (must start with ‘imsi-’ or match an entry from the approved device list), and the data profile’s UUID (from the approved list).
+* User: The network function is ""udr,"" the SUPI is ""imsi-0010100000213,"" and the UUID is ""60c86889-c348-4ebe-8fdc-26b6d9551845.""
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile with UUID ""60c86889-c348-4ebe-8fdc-26b6d9551845"" has been successfully assigned to the user with SUPI ""imsi-0010100000213."" The status is now ACTIVE, and it was last modified on February 11, 2025.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Allocate data profile a47a045a-6b39-4172-bbeb-47ec64a60b38 to the second user,Assign a dedicated network data profile for mission-critical services,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Allocate data profile a47a045a-6b39-4172-bbeb-47ec64a60b38 to the second user
+* Assistant: To assist you with allocating the data profile, I need a bit more information. 
+
+Please provide the following:
+1. The network function name where the profile will be assigned.
+2. The user’s ID (it must start with ‘imsi-’ or match an entry from the approved device list).
+
+Once I have this information, I can proceed with the allocation.
+* User: The network function is udr, and the user's ID is imsi-0010100000213.
+* Assistant: Now, I need to verify if the data profile UUID ""a47a045a-6b39-4172-bbeb-47ec64a60b38"" is recognized in the approved data profiles list. 
+
+Let me check that for you. Please hold on for a moment. 
+
+I'll retrieve the list of authorized data profiles for the network function ""udr.""
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile with UUID ""a47a045a-6b39-4172-bbeb-47ec64a60b38"" has been successfully allocated to the user with ID ""imsi-0010100000213."" The status of the allocation is now ACTIVE.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Set first data profile for the second user,Ensure an authorized device gets the correct network data profile,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': '60c86889-c348-4ebe-8fdc-26b6d9551845'}",True,"* User: Set first data profile for the second user
+* Assistant: Could you please provide the following details to assist you with assigning the new data profile?
+
+1. The network function name.
+2. The user’s ID (it must start with ‘imsi-’ or match an entry from the approved device list).
+3. The UUID of the data profile you want to assign (it should be from the approved list).
+
+If you are unsure about the user ID or the data profile UUID, please let me know, and I can help you retrieve that information.
+* User: The network function is udr. 
+
+The user ID is imsi-0010100000213. 
+
+The UUID of the data profile is 60c86889-c348-4ebe-8fdc-26b6d9551845. 
+
+Please proceed with setting the first data profile for the second user.
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile has been successfully assigned to the user with ID **imsi-0010100000213**. The status of the data profile is now **ACTIVE**, and it has been described as **test_meta_prompting**.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Set data profile with description plmn_00101_slice_1 for the second user,Ensure an authorized device gets the correct network data profile,patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",patch_provisioned_data_profile,"{'nf': 'udr', 'supi': 'imsi-0010100000213', 'uuid': 'a47a045a-6b39-4172-bbeb-47ec64a60b38'}",True,"* User: Set data profile with description plmn_00101_slice_1 for the second user
+* Assistant: Could you please provide the following details to assist you with assigning a new data profile?
+
+1. The network function name where the profile should be assigned.
+2. The user’s ID (it must start with ‘imsi-’ or match an entry from the approved device list).
+3. The UUID of the data profile (from the approved list).
+
+If the user’s identifier does not start with “imsi-”, please confirm the identifier or provide additional details to locate the device in the approved list.
+* User: The network function is udr. The user's ID is imsi-0010100000213, and the UUID for the data profile is a47a045a-6b39-4172-bbeb-47ec64a60b38.
+* Assistant: I will now verify the provided data profile UUID to ensure it is recognized in the approved data profiles. Please hold on for a moment. 
+
+First, I will retrieve the list of authorized data profiles.
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: 
+* Tool: {
+  ""status"": ""ACTIVE"",
+  ""description"": ""test_meta_prompting"",
+  ""modified_at"": ""2025-02-11T18:32:50.215Z""
+}
+* Assistant: The data profile with the description ""plmn_00101_slice_1"" has been successfully assigned to the user with ID ""imsi-0010100000213."" The status of the assignment is now ACTIVE.
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Can you retrieve the authorized data profiles in the HPE 5G Core?,Get all authorized data profiles within the HPE 5G Core.,get_dataprofiles,{'nf': 'udr'},get_dataprofiles,{'nf': 'udr'},True,"* User: Can you retrieve the authorized data profiles in the HPE 5G Core?
+* Assistant: Please provide the network function name to retrieve the list of authorized data profiles.
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the authorized data profiles in the HPE 5G Core for the network function ""udr"":
+
+1. **Description:** plmn_99999_slice_1-000001
+   - **UUID:** 60c86889-c348-4ebe-8fdc-26b6d9551845
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Default Session Type: IPV4
+
+2. **Description:** plmn_00101_slice_1
+   - **UUID:** a47a045a-6b39-4172-bbeb-47ec64a60b38
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Allowed Session Types: IPV4V6, IPV6
+     - Default Session Type: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Please provide the authorized data profiles within the HPE 5G Core.,Access the authorized data profiles available in the HPE 5G Core.,get_dataprofiles,{'nf': 'udr'},get_dataprofiles,{'nf': 'udr'},True,"* User: Please provide the authorized data profiles within the HPE 5G Core.
+* Assistant: Please provide the network function name to retrieve the list of authorized data profiles.
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the authorized data profiles within the HPE 5G Core for the network function ""udr"":
+
+1. **Description:** plmn_99999_slice_1-000001
+   - **UUID:** 60c86889-c348-4ebe-8fdc-26b6d9551845
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Default Session Type: IPV4
+
+2. **Description:** plmn_00101_slice_1
+   - **UUID:** a47a045a-6b39-4172-bbeb-47ec64a60b38
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Allowed Session Types: IPV4V6, IPV6
+     - Default Session Type: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+How do I access the authorized data profiles in the HPE 5G Core?,Retrieve the complete set of authorized data profiles from the HPE 5G Core.,get_dataprofiles,{'nf': 'udr'},get_dataprofiles,{'nf': 'udr'},True,"* User: How do I access the authorized data profiles in the HPE 5G Core?
+* Assistant: Please provide the network function name to retrieve the list of authorized data profiles.
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the authorized data profiles in the HPE 5G Core for the network function ""udr"":
+
+1. **Description:** plmn_99999_slice_1-000001
+   - **UUID:** 60c86889-c348-4ebe-8fdc-26b6d9551845
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Default Session Type: IPV4
+
+2. **Description:** plmn_00101_slice_1
+   - **UUID:** a47a045a-6b39-4172-bbeb-47ec64a60b38
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Allowed Session Types: IPV4V6, IPV6
+     - Default Session Type: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Could you show the authorized data profiles within the HPE 5G Core?,Get details about all authorized data profiles within the HPE 5G Core.,get_dataprofiles,{'nf': 'udr'},get_dataprofiles,{'nf': 'udr'},True,"* User: Could you show the authorized data profiles within the HPE 5G Core?
+* Assistant: Please provide the network function name to retrieve the list of authorized data profiles.
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here are the authorized data profiles within the HPE 5G Core for the network function ""udr"":
+
+1. **Description:** plmn_99999_slice_1-000001
+   - **UUID:** 60c86889-c348-4ebe-8fdc-26b6d9551845
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Default Session Type: IPV4
+
+2. **Description:** plmn_00101_slice_1
+   - **UUID:** a47a045a-6b39-4172-bbeb-47ec64a60b38
+   - **Subscribed UE AMBR:**
+     - Downlink: 1 Gbps
+     - Uplink: 1 Gbps
+   - **PDU Session Types:**
+     - Allowed Session Types: IPV4V6, IPV6
+     - Default Session Type: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"
+Can you provide a detailed overview of the authorized data profiles in the HPE 5G Core?,Access the full range of authorized data profiles within the HPE 5G Core.,get_dataprofiles,{'nf': 'udr'},get_dataprofiles,{'nf': 'udr'},True,"* User: Can you provide a detailed overview of the authorized data profiles in the HPE 5G Core?
+* Assistant: Please provide the network function name to retrieve the list of authorized data profiles.
+* User: The network function is udr.
+* Assistant: 
+* Tool: [
+  {
+    ""description"": ""plmn_99999_slice_1-000001"",
+    ""uuid"": ""60c86889-c348-4ebe-8fdc-26b6d9551845"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  },
+  {
+    ""description"": ""plmn_00101_slice_1"",
+    ""uuid"": ""a47a045a-6b39-4172-bbeb-47ec64a60b38"",
+    ""plmn_rules_map"": {
+      ""*"": {
+        ""subscribedUeAmbr"": {
+          ""downlink"": ""1 Gbps"",
+          ""uplink"": ""1 Gbps""
+        },
+        ""pduSessionTypes"": {
+          ""allowedSessionTypes"": [
+            ""IPV4V6"",
+            ""IPV6""
+          ],
+          ""defaultSessionType"": ""IPV4""
+        }
+      }
+    }
+  }
+]
+* Assistant: Here is the detailed overview of the authorized data profiles in the HPE 5G Core for the network function ""udr"":
+
+1. **Profile Description**: plmn_99999_slice_1-000001
+   - **UUID**: 60c86889-c348-4ebe-8fdc-26b6d9551845
+   - **PLMN Rules Map**:
+     - **Subscribed UE AMBR**:
+       - **Downlink**: 1 Gbps
+       - **Uplink**: 1 Gbps
+     - **PDU Session Types**:
+       - **Default Session Type**: IPV4
+
+2. **Profile Description**: plmn_00101_slice_1
+   - **UUID**: a47a045a-6b39-4172-bbeb-47ec64a60b38
+   - **PLMN Rules Map**:
+     - **Subscribed UE AMBR**:
+       - **Downlink**: 1 Gbps
+       - **Uplink**: 1 Gbps
+     - **PDU Session Types**:
+       - **Allowed Session Types**: IPV4V6, IPV6
+       - **Default Session Type**: IPV4
+
+Is there anything more I can assist you with regarding managing the HPE 5G Core?
+* User: No, that will be all. Thank you for your assistance!
+* Assistant: 
+* Tool: Close case for udr"

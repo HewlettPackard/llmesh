@@ -1,0 +1,61 @@
+llms:
+  meta_prompting:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: o3-mini
+    temperature: 1
+  agent_persona:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: gpt-4o-mini
+    temperature: 0
+    seed: 42
+  customer_persona:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: gpt-4o-mini
+    temperature: 0
+    seed: 42
+
+tools:
+  path: src/tools
+  close_function: close_case
+  modules:
+    - amf_ngap_status
+    - assign_dataprofile_user
+    - get_dataprofiles
+    - get_logs
+    - get_smf_location_supi
+    - get_specific_dataprofile
+    - get_specific_supi
+    - get_supis
+    - network_performance
+    - nf_profile
+    - case_resolution
+
+evaluation:
+  max_evaluations: 10
+  max_improvments: 10
+  max_tokens: 120000
+  min_accuracy: 96
+
+cache:
+  cache_to_file: true
+
+files:
+  path: notebooks/meta_prompting/files/
+  names:
+    policy: input/ecommerce_customer_service.md
+    routine: p5g_routine.md
+    test_cases: p5g_routine_evals.csv
+    test_results: p5g_routine_results.csv
+
+prompts:
+  type: JinjaTemplate
+  environment: notebooks/prompts/
+  templates:
+    customer_persona: customer_persona.txt
+    agent_persona: agent_persona.txt
+    routine_generation: routine_generation.txt
+    routine_improvment: routine_improvment.txt
+    evals_history: evals_history.txt
