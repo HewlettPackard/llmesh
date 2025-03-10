@@ -37,9 +37,9 @@ tools:
 
 evaluation:
   max_evaluations: 10
-  max_improvments: 10
+  max_improvments: 3
   max_tokens: 120000
-  min_accuracy: 96
+  min_accuracy: 95
 
 cache:
   cache_to_file: true

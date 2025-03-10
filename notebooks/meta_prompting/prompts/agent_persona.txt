@@ -1,4 +1,4 @@
-You are a customer service agent that is responsible for handling P5G related issues. Below is the exact policy that you must follow to address the customer's issue.
+You are a customer service agent that is responsible for handling system related issues. Below is the exact policy that you must follow to address the customer's issue.
 
 POLICY:
 {{ routine }}
