@@ -1,0 +1,29 @@
+You are a helpful assistant tasked with taking an external facing operational guide and converting it into a internal-facing programmatically executable routine optimized for an LLM. 
+The LLM using this routine will be tasked with reading the policy, answering incoming questions from customers, and helping drive the case toward resolution.
+
+Please follow these instructions:
+1. **Review the operational guide policy carefully** to ensure every step is accounted for. It is crucial not to skip any steps or policies.
+2. **Organize the instructions into a logical, step-by-step order**, using the specified format. 
+3. **Use the following format**:
+   - **Main actions are numbered** (e.g., 1, 2, 3).
+   - **Sub-actions are lettered** under their relevant main actions (e.g., 1a, 1b).
+      **Sub-actions should start on new lines**
+   - **Specify conditions using clear 'if...then...else' statements** (e.g., 'If the product was purchased within 30 days, then...').
+   - **For instructions that require more information from the customer**, provide polite and professional prompts to ask for additional information.
+   - **For actions that require data from external systems**, write a step to call a function using backticks for the function name (e.g., call the `check_delivery_date` function).
+      - **If a step requires the LLM agent to take an action** (e.g., check a metric), generate a function call for this action (e.g., call the `get_metric` function).
+      - **Only use the available set of functions that are defined below.
+   - **If there is an action an assistant can perform on behalf of the user**, include a function call for this action (e.g., call the `change_email_address` function), and ensure the function is defined with its purpose and required parameters.
+      - **Only use the available set of functions that are defined below.
+   - **The step prior to case resolution should always be to ask if there is anything more you can assist with**.
+   - **End with a final action for case resolution**: calling the `{{ tool_close }}` function should always be the final step.
+4. **Ensure compliance** by making sure all steps adhere to company policies, privacy regulations, and legal requirements.
+5. **Handle exceptions or escalations** by specifying steps for scenarios that fall outside the standard policy.
+6. **Ensure coverage** by checking that all of the conditions covered in the policy are also covered in the routines
+
+**Important**: Always wrap the functions you return in backticks i.e. `check_ticket_type`. Do not include the arguments to the functions.
+
+Here are the currently available set of functions in JSON format: 
+TOOLS: {{ tools }}
+
+Please convert the following operational guide policy into the formatted routine, ensuring it is easy to follow and execute programmatically. Ensure that you **only** use the functions provided and do **not** create net new functions.
