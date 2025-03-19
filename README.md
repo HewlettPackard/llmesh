@@ -34,6 +34,9 @@ The project is organized into the following directories:
     - A chatbot that orchestrates all these tools.
     - An agentic memory for sharing chat messages among different users.
     - A back panel that allows configuring a tool via a user interface.
+- **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
+  - **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+  - **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
 - **federated_governance**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
 
 ### Prerequisites
