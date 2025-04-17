@@ -19,6 +19,11 @@ from self_serve_platform.system.log import Logger
 
 logger = Logger().get_logger()
 
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 class Config:
     """
