@@ -12,6 +12,9 @@ tools_directories=(
 # Activate virtual environment 
 source .venv/bin/activate
 
+# Download example data files
+python ./3gpp.py # Download spec files for tool_rag example
+
 # Launch tools
 for dir in "${tools_directories[@]}"; do
     (
