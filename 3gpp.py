@@ -52,7 +52,7 @@ def main():
 
     # Re-write the config.yaml file with updated data
     with open(config_yaml, "wb") as f:
-        yaml.safe_dump(loaded, f, default_flow_style=False, explicit_start=True, allow_unicode=True, encoding="utf-8")
+        yaml.safe_dump(loaded, f, default_flow_style=False, explicit_start=True, allow_unicode=True, encoding="utf-8", sort_keys=False)
 
 if __name__ == "__main__":
     main()
