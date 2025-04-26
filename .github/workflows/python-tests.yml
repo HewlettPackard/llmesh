@@ -22,7 +22,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils tesseract-ocr libtesseract-dev libmagic-dev
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          source $HOME/.local/bin/env
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
         
       - name: Ensure Python version
         run: uv python install ${{ env.PYTHON_VERSION }}
