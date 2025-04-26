@@ -74,8 +74,11 @@ To use the complete setup, including examples and demo applications, follow thes
 2. **Install Dependencies**: All dependencies required by the platform are specified in the `pyproject.toml` file. Use the following commands to install them:
 
    ```bash
-   pip install poetry==1.8.5
-   poetry install --all-extras
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   source $HOME/.local/bin/env
+   # Optional auto completions
+   echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
+   echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
    ```
 
 3. **Setup for Specific Tools**: Some tools, including **tool_rag**, **tool_agents**, and **tool_analyzer**, require additional setup (e.g., copying specific data files and initializing configurations). For detailed setup instructions, refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
