@@ -13,7 +13,7 @@ import tiktoken
 from langchain_core.messages import HumanMessage, SystemMessage
 from athon.chat import PromptRender, ChatModel
 from athon.system import Config
-from self_serve_platform.system.file_cache import FileCache
+from libs.core.file_cache import FileCache
 from notebooks.meta_prompting.tool_manager import load_tools
 from notebooks.meta_prompting.agent_simulator import PersonaAgent, simluate_conversation
 

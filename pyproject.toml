@@ -121,20 +121,20 @@ Repository = "https://github.com/HewlettPackard/llmesh"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "self_serve_platform/package/athon",
-    "self_serve_platform",
+    "lib/package/athon",
+    "lib",
 ]
-exclude = ["self_serve_platform/tests"]
+exclude = ["lib/tests"]
 
 [tool.hatch.build.targets.wheel]
 include = [
-    "self_serve_platform/package/athon",
-    "self_serve_platform",
+    "lib/package/athon",
+    "lib",
 ]
-exclude = ["self_serve_platform/tests"]
+exclude = ["lib/tests"]
 
 [tool.hatch.build.targets.wheel.sources]
-"self_serve_platform/package/athon" = "athon"
+"lib/package/athon" = "athon"
 
 [build-system]
 requires = ["hatchling"]

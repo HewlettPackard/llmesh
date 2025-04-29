@@ -14,9 +14,9 @@ import yaml
 import jsonref
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
+from libs.chat.prompt_render import PromptRender
+from libs.core.config import Config
+from libs.core.log import Logger
 
 
 config = Config('examples/tool_agents/config.yaml').get_settings()

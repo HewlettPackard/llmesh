@@ -11,9 +11,9 @@ rendering a chat interface, and handling user input.
 """
 
 from flask import Flask, render_template, request, jsonify
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
-from self_serve_platform.chat.prompt_render import PromptRender
+from libs.core.config import Config
+from libs.core.log import Logger
+from libs.chat.prompt_render import PromptRender
 from examples.app_games.game import Game
 
 

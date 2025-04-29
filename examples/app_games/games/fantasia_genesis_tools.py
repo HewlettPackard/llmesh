@@ -12,11 +12,11 @@ from datetime import datetime, timezone
 from typing import Type, Any
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from self_serve_platform.rag.data_storage import DataStorage
-from self_serve_platform.rag.data_loader import DataLoader
-from self_serve_platform.rag.data_retriever import DataRetriever
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
+from libs.rag.data_storage import DataStorage
+from libs.rag.data_loader import DataLoader
+from libs.rag.data_retriever import DataRetriever
+from libs.core.config import Config
+from libs.core.log import Logger
 
 
 config = Config('examples/app_games/config.yaml').get_settings()

@@ -12,11 +12,11 @@ import string
 from typing import Any
 from langchain.tools import StructuredTool
 from langchain.schema import SystemMessage, HumanMessage
-from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.agents.tool_repository import ToolRepository
-from self_serve_platform.agents.reasoning_engine import ReasoningEngine
-from self_serve_platform.system.log import Logger
+from libs.chat.prompt_render import PromptRender
+from libs.chat.model import ChatModel
+from libs.agents.tool_repository import ToolRepository
+from libs.agents.reasoning_engine import ReasoningEngine
+from libs.core.log import Logger
 from examples.app_games.games.base import BaseGame
 
 

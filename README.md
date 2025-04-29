@@ -23,7 +23,7 @@ We have created a series of tools and examples to demonstrate what you can do wi
 
 The project is organized into the following directories:
 
-- **self_serve_platform**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
+- **lib**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
   - **Chat Services**
   - **RAG (Retrieval-Augmented Generation) Services**
   - **Agent Services**

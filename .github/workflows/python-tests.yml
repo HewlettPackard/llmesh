@@ -28,4 +28,4 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
 
       - name: Run tests
-        run: uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" pytest --maxfail=10 --disable-warnings -v --ignore self_serve_platform/tests/integration
+        run: uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" pytest --maxfail=10 --disable-warnings -v --ignore lib/tests/integration

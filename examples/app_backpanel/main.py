@@ -15,9 +15,9 @@ This modularity facilitates ease of maintenance and scalability.
 """
 
 from flask import Flask, render_template, request, jsonify
-from self_serve_platform.system.tool_server import ToolDiscovery
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
+from libs.system_services.tool_server import ToolDiscovery
+from libs.core.config import Config
+from libs.core.log import Logger
 from examples.app_backpanel.tool_manager.prompt import PromptTool
 from examples.app_backpanel.tool_manager.rag import RagTool
 from examples.app_backpanel.tool_manager.agent import AgentTool

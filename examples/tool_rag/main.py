@@ -10,16 +10,16 @@ models for document indexing, querying, and information retrieval.
 import json
 from sentence_transformers import CrossEncoder
 from langchain.schema import HumanMessage, SystemMessage
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.rag.data_extractor import DataExtractor
-from self_serve_platform.rag.data_transformer import DataTransformer
-from self_serve_platform.rag.data_storage import DataStorage
-from self_serve_platform.rag.data_loader import DataLoader
-from self_serve_platform.rag.data_retriever import DataRetriever
-from self_serve_platform.system.tool_client import AthonTool
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
+from libs.chat.model import ChatModel
+from libs.chat.prompt_render import PromptRender
+from libs.rag.data_extractor import DataExtractor
+from libs.rag.data_transformer import DataTransformer
+from libs.rag.data_storage import DataStorage
+from libs.rag.data_loader import DataLoader
+from libs.rag.data_retriever import DataRetriever
+from libs.system_services.tool_client import AthonTool
+from libs.core.config import Config
+from libs.core.log import Logger
 
 
 config = Config('examples/tool_rag/config.yaml').get_settings()

@@ -10,11 +10,11 @@ import os
 import copy
 from packaging.version import Version, InvalidVersion
 from langchain.schema import HumanMessage, SystemMessage
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
-from self_serve_platform.system.tool_server import ToolDiscovery
-from self_serve_platform.chat.prompt_render import PromptRender
+from libs.chat.model import ChatModel
+from libs.core.config import Config
+from libs.core.log import Logger
+from libs.system_services.tool_server import ToolDiscovery
+from libs.chat.prompt_render import PromptRender
 from examples.app_backpanel.tool_manager.base import ToolManager
 
 

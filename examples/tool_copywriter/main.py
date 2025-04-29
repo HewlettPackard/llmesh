@@ -8,10 +8,10 @@ It utilizes the AthonTool decorator for configuration and logging setup.
 """
 
 from langchain.schema import HumanMessage, SystemMessage
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.system.tool_client import AthonTool
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
+from libs.chat.model import ChatModel
+from libs.system_services.tool_client import AthonTool
+from libs.core.config import Config
+from libs.core.log import Logger
 
 
 # Parse command-line arguments and start the application

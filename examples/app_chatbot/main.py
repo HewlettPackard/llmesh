@@ -12,13 +12,13 @@ messages and generating intelligent responses.
 """
 
 from flask import Flask, render_template, request, jsonify
-from self_serve_platform.system.config import Config
-from self_serve_platform.system.log import Logger
-from self_serve_platform.chat.memory import ChatMemory
-from self_serve_platform.chat.prompt_render import PromptRender
-from self_serve_platform.system.tool_server import ToolDiscovery
-from self_serve_platform.agents.tool_repository import ToolRepository
-from self_serve_platform.agents.reasoning_engine import ReasoningEngine
+from libs.core.config import Config
+from libs.core.log import Logger
+from libs.chat.memory import ChatMemory
+from libs.chat.prompt_render import PromptRender
+from libs.system_services.tool_server import ToolDiscovery
+from libs.agents.tool_repository import ToolRepository
+from libs.agents.reasoning_engine import ReasoningEngine
 
 
 # Supported Brands
