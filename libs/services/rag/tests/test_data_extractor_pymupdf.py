@@ -11,8 +11,8 @@ handles files correctly, including error handling and caching.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_extractor import DataExtractor
-from self_serve_platform.rag.data_extractors.pymupdf_for_sections import (
+from libs.services.rag.data_extractor import DataExtractor
+from libs.services.rag.data_extractors.pymupdf.sections import (
     PyMuPdfForSectionsDataExtractor)
 
 
@@ -57,8 +57,8 @@ def pymupdf_config():
     }
 
 
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.FileCache')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.Logger.get_logger')
 @patch('fitz.open')
 def test_parse_success(mock_fitz_open, mock_get_logger, mock_file_cache, pymupdf_config):  # pylint: disable=W0621
     """
@@ -85,8 +85,8 @@ def test_parse_success(mock_fitz_open, mock_get_logger, mock_file_cache, pymupdf
     assert result.elements == mock_extracted_elements
 
 
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.FileCache')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.Logger.get_logger')
 @patch('os.path.exists', return_value=False)
 def test_parse_file_not_found(mock_exists, mock_get_logger, mock_file_cache, pymupdf_config):  # pylint: disable=W0621
     """
@@ -107,8 +107,8 @@ def test_parse_file_not_found(mock_exists, mock_get_logger, mock_file_cache, pym
     mock_exists.assert_called_once_with("non_existent_file.pdf")
 
 
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.FileCache')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.Logger.get_logger')
 @patch('fitz.open')
 def test_parse_with_cache(mock_fitz_open, mock_get_logger, mock_file_cache, pymupdf_config):  # pylint: disable=W0621, W0613
     """
@@ -128,8 +128,8 @@ def test_parse_with_cache(mock_fitz_open, mock_get_logger, mock_file_cache, pymu
     mock_file_cache_instance.load.assert_called_once_with("cached_file.pdf")
 
 
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.pymupdf_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.FileCache')
+@patch('libs.services.rag.data_extractors.pymupdf.sections.Logger.get_logger')
 @patch('fitz.open')
 def test_parse_exception_handling(mock_fitz_open, mock_get_logger, mock_file_cache, pymupdf_config):  # pylint: disable=W0621, W0613
     """
@@ -166,13 +166,13 @@ def config():
         "extract_image": True,
         "document_type": "Pdf",
         "cache_elements_to_file": False,
-        "image_output_folder": "self_serve_platform/tests/unit/test_data/img"
+        "image_output_folder": "libs/services/rag/tests/test_data/img"
     }
 
 @pytest.fixture
 def sample_pdf_path():
     "test path"
-    return "self_serve_platform/tests/unit/test_data/sample_pdf_for_test.pdf"
+    return "libs/services/rag/tests/test_data/sample_pdf_for_test.pdf"
 
 @pytest.fixture
 def extractor(config):  # pylint: disable=W0621

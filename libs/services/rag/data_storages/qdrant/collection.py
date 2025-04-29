@@ -12,8 +12,8 @@ from typing import Dict, Any, Optional
 from pydantic import Field
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
-from self_serve_platform.rag.data_storages.base import BaseDataStorage
-from self_serve_platform.system.log import Logger
+from libs.services.rag.data_storages.base import BaseDataStorage
+from libs.core.log import Logger
 
 
 logger = Logger().get_logger()

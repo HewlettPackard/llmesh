@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from pydantic import Field
 from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import (
     SentenceTransformerEmbeddingFunction)
-from libs.rag.data_retrievers.base import BaseDataRetriever
+from libs.services.rag.data_retrievers.base import BaseDataRetriever
 from libs.core.log import Logger
 
 

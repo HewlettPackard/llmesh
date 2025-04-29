@@ -10,7 +10,7 @@ and removing short sections.
 
 import os
 import pytest
-from self_serve_platform.rag.data_transformers.clean_regex import (
+from libs.services.rag.data_transformers.clean.regex import (
     remove_multiple_spaces,
     replace_tabs_with_spaces,
     remove_title_elements_only,

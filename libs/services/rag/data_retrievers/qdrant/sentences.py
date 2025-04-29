@@ -11,7 +11,7 @@ This module provides functionality to:
 from typing import Optional, List, Dict, Any
 from qdrant_client.http.models import Filter, ScoredPoint
 from pydantic import Field
-from libs.rag.data_retrievers.base import BaseDataRetriever
+from libs.services.rag.data_retrievers.base import BaseDataRetriever
 from libs.core.log import Logger
 
 

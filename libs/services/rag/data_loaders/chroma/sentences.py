@@ -11,7 +11,7 @@ This module provides functionality to:
 
 from typing import Dict, List, Any, Tuple
 from tqdm import tqdm
-from libs.rag.data_loaders.base import BaseDataLoader
+from libs.services.rag.data_loaders.base import BaseDataLoader
 from libs.core.log import Logger
 
 

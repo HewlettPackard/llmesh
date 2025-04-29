@@ -10,7 +10,7 @@ handles files correctly, including error handling and caching.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from libs.rag.data_extractors.markitdown_for_sections import (
+from libs.services.rag.data_extractors.markitdown.sections import (
     MarkitdownForSectionsDataExtractor
 )
 
@@ -49,8 +49,8 @@ def extractor(config):  # pylint: disable=W0621
     return MarkitdownForSectionsDataExtractor(config)
 
 
-@patch('lib.rag.data_extractors.markitdown_for_sections.FileCache')
-@patch('lib.rag.data_extractors.markitdown_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.markitdown.sections.FileCache')
+@patch('libs.services.rag.data_extractors.markitdown.sections.Logger.get_logger')
 def test_parse_html_success(mock_get_logger, mock_file_cache, extractor, sample_html_path):  # pylint: disable=W0621
     """
     Test if the parsing of an HTML file is successful without errors.
@@ -62,7 +62,7 @@ def test_parse_html_success(mock_get_logger, mock_file_cache, extractor, sample_
     mock_file_cache_instance.is_cached.return_value = False
     # Mocking MarkItDown behavior
     with patch(
-        'lib.rag.data_extractors.markitdown_for_sections.MarkItDown'
+        'libs.services.rag.data_extractors.markitdown.sections.MarkItDown'
     ) as mock_markitdown:
         mock_markitdown_instance = mock_markitdown.return_value
         mock_markitdown_instance.convert.return_value.text_content = (
@@ -74,8 +74,8 @@ def test_parse_html_success(mock_get_logger, mock_file_cache, extractor, sample_
         assert result.elements[0]["text"].strip() == '<h1>Header 1</h1><p>Some content.</p>'
 
 
-@patch('lib.rag.data_extractors.markitdown_for_sections.FileCache')
-@patch('lib.rag.data_extractors.markitdown_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.markitdown.sections.FileCache')
+@patch('libs.services.rag.data_extractors.markitdown.sections.Logger.get_logger')
 def test_parse_pdf_success(mock_get_logger, mock_file_cache, extractor, sample_pdf_path):  # pylint: disable=W0621
     """
     Test if the parsing of a PDF file is successful without errors.
@@ -87,7 +87,7 @@ def test_parse_pdf_success(mock_get_logger, mock_file_cache, extractor, sample_p
     mock_file_cache_instance.is_cached.return_value = False
     # Mocking MarkItDown behavior
     with patch(
-        'lib.rag.data_extractors.markitdown_for_sections.MarkItDown'
+        'libs.services.rag.data_extractors.markitdown.sections.MarkItDown'
     ) as mock_markitdown:
         mock_markitdown_instance = mock_markitdown.return_value
         mock_markitdown_instance.convert.return_value.text_content = (
@@ -100,8 +100,8 @@ def test_parse_pdf_success(mock_get_logger, mock_file_cache, extractor, sample_p
         assert result.elements[0]["text"].strip() == "This is content from the PDF."
 
 
-@patch('lib.rag.data_extractors.markitdown_for_sections.FileCache')
-@patch('lib.rag.data_extractors.markitdown_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.markitdown.sections.FileCache')
+@patch('libs.services.rag.data_extractors.markitdown.sections.Logger.get_logger')
 def test_parse_doc_success(mock_get_logger, mock_file_cache, extractor, sample_doc_path):  # pylint: disable=W0621
     """
     Test if the parsing of a DOC file is successful without errors.
@@ -113,7 +113,7 @@ def test_parse_doc_success(mock_get_logger, mock_file_cache, extractor, sample_d
     mock_file_cache_instance.is_cached.return_value = False
     # Mocking MarkItDown behavior
     with patch(
-        'lib.rag.data_extractors.markitdown_for_sections.MarkItDown'
+        'libs.services.rag.data_extractors.markitdown.sections.MarkItDown'
     ) as mock_markitdown:
         mock_markitdown_instance = mock_markitdown.return_value
         mock_markitdown_instance.convert.return_value.text_content = (
@@ -126,8 +126,8 @@ def test_parse_doc_success(mock_get_logger, mock_file_cache, extractor, sample_d
         assert result.elements[0]["text"].strip() == "This is content from the DOC."
 
 
-@patch('lib.rag.data_extractors.markitdown_for_sections.FileCache')
-@patch('lib.rag.data_extractors.markitdown_for_sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.markitdown.sections.FileCache')
+@patch('libs.services.rag.data_extractors.markitdown.sections.Logger.get_logger')
 def test_parse_excel_success(mock_get_logger, mock_file_cache, extractor, sample_excel_path):  # pylint: disable=W0621
     """
     Test if the parsing of an Excel file is successful without errors.
@@ -139,7 +139,7 @@ def test_parse_excel_success(mock_get_logger, mock_file_cache, extractor, sample
     mock_file_cache_instance.is_cached.return_value = False
     # Mocking MarkItDown behavior
     with patch(
-        'lib.rag.data_extractors.markitdown_for_sections.MarkItDown'
+        'libs.services.rag.data_extractors.markitdown.sections.MarkItDown'
     ) as mock_markitdown:
         mock_markitdown_instance = mock_markitdown.return_value
         mock_markitdown_instance.convert.return_value.text_content = (

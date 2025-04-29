@@ -8,13 +8,13 @@ This pytest script tests the functions for transforming elements' text.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.chat.model import ChatModel
-from self_serve_platform.rag.data_transformers.tranform_llm import (
+from libs.services.chat.model import ChatModel
+from libs.services.rag.data_transformers.transform.llm import (
     transform_summary,
     transform_qa)
-from self_serve_platform.rag.data_transformers.transform_chunk import (
+from libs.services.rag.data_transformers.transform.chunk import (
     transform_chunk)
-from self_serve_platform.rag.data_transformers.transform_section import (
+from libs.services.rag.data_transformers.transform.section import (
     transform_section_by_header,
     transform_section_by_type,
     transform_section_by_toc)
@@ -165,8 +165,8 @@ def test_transform_qa_with_invalid_config(sample_elements):  # pylint: disable=W
         )
 
 
-@patch('self_serve_platform.rag.data_transformers.transform_chunk.RecursiveCharacterTextSplitter')
-@patch('self_serve_platform.rag.data_transformers.transform_chunk.SentenceTransformersTokenTextSplitter')  # pylint: disable=C0301
+@patch('libs.services.rag.data_transformers.transform.chunk.RecursiveCharacterTextSplitter')
+@patch('libs.services.rag.data_transformers.transform.chunk.SentenceTransformersTokenTextSplitter')  # pylint: disable=C0301
 def test_transform_chunk(mock_token_splitter, mock_char_splitter, sample_elements):  # pylint: disable=W0621
     """
     Test the transform_chunk function to ensure it splits text into character and token chunks.
@@ -205,8 +205,8 @@ def test_transform_chunk(mock_token_splitter, mock_char_splitter, sample_element
     mock_token_instance.split_text.assert_called()
 
 
-@patch('self_serve_platform.rag.data_transformers.transform_chunk.RecursiveCharacterTextSplitter')
-@patch('self_serve_platform.rag.data_transformers.transform_chunk.SentenceTransformersTokenTextSplitter')  # pylint: disable=C0301
+@patch('libs.services.rag.data_transformers.transform.chunk.RecursiveCharacterTextSplitter')
+@patch('libs.services.rag.data_transformers.transform.chunk.SentenceTransformersTokenTextSplitter')  # pylint: disable=C0301
 def test_transform_chunk_preserves_metadata(mock_token_splitter, mock_char_splitter, sample_elements):  # pylint: disable=W0621, C0301
     """
     Test to ensure that metadata is preserved when text is split into chunks.

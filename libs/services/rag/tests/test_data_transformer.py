@@ -13,8 +13,8 @@ transformation of document elements.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_transformer import DataTransformer
-from self_serve_platform.rag.data_transformers.cte_action_runner import (
+from libs.services.rag.data_transformer import DataTransformer
+from libs.services.rag.data_transformers.cte_action_runner import (
     CteActionRunnerDataTransformer)
 
 
@@ -69,7 +69,7 @@ def cte_action_runner_config():
     }
 
 
-@patch('self_serve_platform.rag.data_transformers.cte_action_runner.Logger.get_logger')
+@patch('libs.services.rag.data_transformers.cte_action_runner.Logger.get_logger')
 def test_process_success(mock_get_logger, cte_action_runner_config):  # pylint: disable=W0621
     """
     Test the process method of CteActionRunnerDataTransformer to verify it performs
@@ -95,7 +95,7 @@ def test_process_success(mock_get_logger, cte_action_runner_config):  # pylint: 
     assert result.elements[0]["metadata"]["header"] == "Header1"
 
 
-@patch('self_serve_platform.rag.data_transformers.cte_action_runner.Logger.get_logger')
+@patch('libs.services.rag.data_transformers.cte_action_runner.Logger.get_logger')
 def test_process_unknown_action(mock_get_logger, cte_action_runner_config):  # pylint: disable=W0621
     """
     Test the process method of CteActionRunnerDataTransformer 
@@ -113,7 +113,7 @@ def test_process_unknown_action(mock_get_logger, cte_action_runner_config):  # p
     assert "Unknown action" in result.error_message
 
 
-@patch('self_serve_platform.rag.data_transformers.cte_action_runner.Logger.get_logger')
+@patch('libs.services.rag.data_transformers.cte_action_runner.Logger.get_logger')
 def test_process_failure(mock_get_logger, cte_action_runner_config):  # pylint: disable=W0621
     """
     Test the process method of CteActionRunnerDataTransformer 

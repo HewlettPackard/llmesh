@@ -11,11 +11,11 @@ based on the document type.
 """
 
 from typing import Type, Dict, Any
-from libs.rag.data_loaders.chroma_for_sentences import (
+from libs.services.rag.data_loaders.chroma.sentences import (
     ChromaForSentenceDataLoader)
-from libs.rag.data_loaders.qdrant_for_sentences import (
+from libs.services.rag.data_loaders.qdrant.sentences import (
     QdrantForSentenceDataLoader)
-from libs.rag.data_loaders.milvus_for_sentences import (
+from libs.services.rag.data_loaders.milvus.sentences import (
     MilvusForSentenceDataLoader)
 
 

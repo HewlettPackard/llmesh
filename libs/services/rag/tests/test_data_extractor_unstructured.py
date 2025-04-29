@@ -12,8 +12,8 @@ import os
 from unittest.mock import patch, MagicMock, ANY
 import pytest
 import nltk
-from self_serve_platform.rag.data_extractor import DataExtractor
-from self_serve_platform.rag.data_extractors.unstructured_for_sections import (
+from libs.services.rag.data_extractor import DataExtractor
+from libs.services.rag.data_extractors.unstructured.sections import (
     UnstructuredSectionsDataExtractor)
 
 
@@ -68,10 +68,10 @@ def unstructured_config():
     }
 
 
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.partition_docx')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.Document')
+@patch('libs.services.rag.data_extractors.unstructured.sections.FileCache')
+@patch('libs.services.rag.data_extractors.unstructured.sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.unstructured.sections.partition_docx')
+@patch('libs.services.rag.data_extractors.unstructured.sections.Document')
 def test_parse_docx_success(
         mock_document,  # pylint: disable=W0613
         mock_partition_docx,
@@ -97,9 +97,9 @@ def test_parse_docx_success(
     mock_partition_docx.assert_called_once_with("sample.docx")
 
 
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.partition_pdf')
+@patch('libs.services.rag.data_extractors.unstructured.sections.FileCache')
+@patch('libs.services.rag.data_extractors.unstructured.sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.unstructured.sections.partition_pdf')
 def test_parse_pdf_success(
         mock_partition_pdf,
         mock_get_logger,
@@ -125,9 +125,9 @@ def test_parse_pdf_success(
     mock_partition_pdf.assert_called_once_with("sample.pdf")
 
 
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger')
-@patch('self_serve_platform.rag.data_extractors.unstructured_for_sections.partition_docx')
+@patch('libs.services.rag.data_extractors.unstructured.sections.FileCache')
+@patch('libs.services.rag.data_extractors.unstructured.sections.Logger.get_logger')
+@patch('libs.services.rag.data_extractors.unstructured.sections.partition_docx')
 def test_parse_docx_exception_handling(
         mock_partition_docx,
         mock_get_logger,
@@ -161,13 +161,13 @@ def config():
         "extract_image": True,
         "document_type": "Pdf",
         "cache_elements_to_file": False,
-        "image_output_folder": "self_serve_platform/tests/unit/test_data/img"
+        "image_output_folder": "libs/services/rag/tests/test_data/img"
     }
 
 @pytest.fixture
 def sample_pdf_path():
     "test path"
-    return "self_serve_platform/tests/unit/test_data/sample_pdf_for_test.pdf"
+    return "libs/services/rag/tests/test_data/sample_pdf_for_test.pdf"
 
 @pytest.fixture
 def extractor(config):  # pylint: disable=W0621
@@ -256,13 +256,13 @@ def docx_config():
         "extract_image": False,
         "document_type": "Docx",
         "cache_elements_to_file": False,
-        "image_output_folder": "self_serve_platform/tests/unit/test_data/img"
+        "image_output_folder": "libs/services/rag/tests/test_data/img"
     }
 
 @pytest.fixture
 def sample_docx_path():
     "test path"
-    return "self_serve_platform/tests/unit/test_data/sample_docx_for_test.docx"
+    return "libs/services/rag/tests/test_data/sample_docx_for_test.docx"
 
 @pytest.fixture
 def docx_extractor(docx_config):  # pylint: disable=W0621
@@ -344,13 +344,13 @@ def html_config():
         "skip_start_elements": 1,
         "skip_end_elements": 1,
         "include_text_as_html": True,
-        "image_output_folder": "self_serve_platform/tests/unit/test_data/img"
+        "image_output_folder": "libs/services/rag/tests/test_data/img"
     }
 
 @pytest.fixture
 def sample_html_path():
     "test path for HTML"
-    return "self_serve_platform/tests/unit/test_data/sample_html_for_test.html"
+    return "libs/services/rag/tests/test_data/sample_html_for_test.html"
 
 @pytest.fixture
 def html_extractor(html_config):  # pylint: disable=W0621
@@ -407,15 +407,15 @@ def test_include_text_as_html(html_extractor, sample_html_path):  # pylint: disa
 @pytest.mark.parametrize(
     "file_name, expected_partition_func_name",
     [
-        ("self_serve_platform/tests/unit/test_data/sample_docx_for_test.docx", "partition_docx"),
-        ("self_serve_platform/tests/unit/test_data/sample_pdf_for_test.pdf", "partition_pdf"),
-        ("self_serve_platform/tests/unit/test_data/sample_html_for_test.html", "partition_html"),
-        ("self_serve_platform/tests/unit/test_data/sample_pptx_for_test.pptx", "partition_pptx"),
-        ("self_serve_platform/tests/unit/test_data/sample_xlsx_for_test.xlsx", "partition_xlsx"),
+        ("libs/services/rag/tests/test_data/sample_docx_for_test.docx", "partition_docx"),
+        ("libs/services/rag/tests/test_data/sample_pdf_for_test.pdf", "partition_pdf"),
+        ("libs/services/rag/tests/test_data/sample_html_for_test.html", "partition_html"),
+        ("libs/services/rag/tests/test_data/sample_pptx_for_test.pptx", "partition_pptx"),
+        ("libs/services/rag/tests/test_data/sample_xlsx_for_test.xlsx", "partition_xlsx"),
     ],
 )
-@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache")
-@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger")
+@patch("libs.services.rag.data_extractors.unstructured.sections.FileCache")
+@patch("libs.services.rag.data_extractors.unstructured.sections.Logger.get_logger")
 def test_parse_auto_document_type(
     mock_get_logger,
     mock_file_cache,
@@ -432,7 +432,7 @@ def test_parse_auto_document_type(
     # 2. Patch the relevant partition functions. We can patch them all and only one will be called.
     func_name = expected_partition_func_name
     with patch(
-        f"self_serve_platform.rag.data_extractors.unstructured_for_sections.{func_name}"
+        f"libs.services.rag.data_extractors.unstructured.sections.{func_name}"
     ) as mock_partition_func:
         mock_logger = MagicMock()
         mock_get_logger.return_value = mock_logger
@@ -452,8 +452,8 @@ def test_parse_auto_document_type(
             mock_partition_func.assert_called_once_with(ANY)
 
 
-@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.FileCache")
-@patch("self_serve_platform.rag.data_extractors.unstructured_for_sections.Logger.get_logger")
+@patch("libs.services.rag.data_extractors.unstructured.sections.FileCache")
+@patch("libs.services.rag.data_extractors.unstructured.sections.Logger.get_logger")
 def test_parse_auto_unsupported_extension(
     mock_get_logger,
     mock_file_cache,

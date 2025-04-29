@@ -13,8 +13,8 @@ correct retrieval or creation of collections in ChromaDB and QdrantDB.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_storage import DataStorage
-from self_serve_platform.rag.data_storages.chroma_collection import (
+from libs.services.rag.data_storage import DataStorage
+from libs.services.rag.data_storages.chroma.collection import (
     ChromaCollectionDataStorage)
 
 
@@ -58,8 +58,8 @@ def chroma_collection_config_success():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.chroma_collection.PersistentClient')
-@patch('self_serve_platform.rag.data_storages.chroma_collection.Logger')
+@patch('libs.services.rag.data_storages.chroma.collection.PersistentClient')
+@patch('libs.services.rag.data_storages.chroma.collection.Logger')
 def test_get_chroma_collection_success(
         mock_logger,  # pylint: disable=W0613
         mock_persistent_client, chroma_collection_config_success):  # pylint: disable=W0621
@@ -88,7 +88,7 @@ def chroma_collection_config_singleton():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.chroma_collection.PersistentClient')
+@patch('libs.services.rag.data_storages.chroma.collection.PersistentClient')
 def test_chroma_singleton_behavior(mock_persistent_client, chroma_collection_config_singleton):  # pylint: disable=W0621
     """
     Test the singleton behavior of ChromaCollectionDataStorage to ensure that multiple

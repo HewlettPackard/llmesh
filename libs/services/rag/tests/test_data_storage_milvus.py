@@ -15,11 +15,11 @@ from unittest.mock import patch
 import pytest
 
 # Make sure these imports match your actual module paths:
-# e.g., if your DataStorage factory is in self_serve_platform.rag.data_storage
-# and your Milvus code is in self_serve_platform.rag.data_storages.milvus_collection,
+# e.g., if your DataStorage factory is in libs.services.rag.data_storage
+# and your Milvus code is in libs.services.rag.data_storages.milvus.collection,
 # then these imports should be correct as shown below.
-from self_serve_platform.rag.data_storage import DataStorage
-from self_serve_platform.rag.data_storages.milvus_collection import (
+from libs.services.rag.data_storage import DataStorage
+from libs.services.rag.data_storages.milvus.collection import (
     MilvusCollectionDataStorage
 )
 
@@ -65,8 +65,8 @@ def milvus_collection_config_success():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.milvus_collection.MilvusClient')
-@patch('self_serve_platform.rag.data_storages.milvus_collection.Logger')
+@patch('libs.services.rag.data_storages.milvus.collection.MilvusClient')
+@patch('libs.services.rag.data_storages.milvus.collection.Logger')
 def test_get_milvus_collection_success(
     mock_logger,  # pylint: disable=unused-argument
     mock_milvus_client,
@@ -103,7 +103,7 @@ def milvus_collection_config_singleton():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.milvus_collection.MilvusClient')
+@patch('libs.services.rag.data_storages.milvus.collection.MilvusClient')
 def test_milvus_singleton_behavior(mock_milvus_client, milvus_collection_config_singleton):  # pylint: disable=W0621
     """
     Test the singleton behavior of MilvusCollectionDataStorage to ensure that multiple

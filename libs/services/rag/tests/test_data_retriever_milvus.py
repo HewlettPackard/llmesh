@@ -13,8 +13,8 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 # Adjust these imports to match your actual code structure:
-from self_serve_platform.rag.data_retriever import DataRetriever
-from self_serve_platform.rag.data_retrievers.milvus_for_sentences import (
+from libs.services.rag.data_retriever import DataRetriever
+from libs.services.rag.data_retrievers.milvus.sentences import (
     MilvusForSentenceDataRetriever
 )
 
@@ -59,7 +59,7 @@ def milvus_retriever_config():
     }
 
 
-@patch('self_serve_platform.rag.data_retrievers.milvus_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.milvus.sentences.Logger.get_logger')
 @patch('pymilvus.MilvusClient')
 def test_select_success(mock_milvus_client, mock_get_logger, milvus_retriever_config):  # pylint: disable=W0621
     """
@@ -101,7 +101,7 @@ def test_select_success(mock_milvus_client, mock_get_logger, milvus_retriever_co
     mock_milvus_client.search.assert_called_once()
 
 
-@patch('self_serve_platform.rag.data_retrievers.milvus_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.milvus.sentences.Logger.get_logger')
 @patch('pymilvus.MilvusClient')
 def test_select_exception_handling(mock_milvus_client, mock_get_logger, milvus_retriever_config):  # pylint: disable=W0621
     """

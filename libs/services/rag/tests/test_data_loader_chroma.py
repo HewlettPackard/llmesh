@@ -13,8 +13,8 @@ setup and functionality.
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from self_serve_platform.rag.data_loader import DataLoader
-from self_serve_platform.rag.data_loaders.chroma_for_sentences import ChromaForSentenceDataLoader
+from libs.services.rag.data_loader import DataLoader
+from libs.services.rag.data_loaders.chroma.sentences import ChromaForSentenceDataLoader
 
 
 @pytest.mark.parametrize("config, expected_class", [
@@ -51,7 +51,7 @@ def chroma_for_sentences_config():
     }
 
 
-@patch('self_serve_platform.rag.data_loaders.chroma_for_sentences.Logger')
+@patch('libs.services.rag.data_loaders.chroma.sentences.Logger')
 def test_insert_success(mock_logger, chroma_for_sentences_config):  # pylint: disable=W0621, W0613
     """
     Test the insert method of ChromaForSentenceDataLoader to verify
@@ -67,7 +67,7 @@ def test_insert_success(mock_logger, chroma_for_sentences_config):  # pylint: di
     mock_collection.add.assert_called_once()
 
 
-@patch('self_serve_platform.rag.data_loaders.chroma_for_sentences.Logger')
+@patch('libs.services.rag.data_loaders.chroma.sentences.Logger')
 def test_insert_failure(mock_logger, chroma_for_sentences_config):  # pylint: disable=W0621, W0613
     """
     Test the insert method of ChromaForSentenceDataLoader

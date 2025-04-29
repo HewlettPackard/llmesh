@@ -13,8 +13,8 @@ setup and functionality.
 import os
 from unittest.mock import MagicMock, patch
 import pytest
-from self_serve_platform.rag.data_loader import DataLoader
-from self_serve_platform.rag.data_loaders.qdrant_for_sentences import (
+from libs.services.rag.data_loader import DataLoader
+from libs.services.rag.data_loaders.qdrant.sentences import (
     QdrantForSentenceDataLoader)
 
 
@@ -52,7 +52,7 @@ def qdrant_for_sentences_config():
     }
 
 
-@patch('self_serve_platform.system.log.Logger')
+@patch('libs.core.log.Logger')
 @patch('qdrant_client.QdrantClient')
 def test_insert_success(mock_qdrant_client, mock_logger, qdrant_for_sentences_config):  # pylint: disable=W0621, W0613
     """
@@ -80,7 +80,7 @@ def test_insert_success(mock_qdrant_client, mock_logger, qdrant_for_sentences_co
     mock_qdrant_client.upsert.assert_called_once()
 
 
-@patch('self_serve_platform.system.log.Logger')
+@patch('libs.core.log.Logger')
 @patch('qdrant_client.QdrantClient')
 def test_insert_failure(mock_qdrant_client, mock_logger, qdrant_for_sentences_config):  # pylint: disable=W0621, W0613
     """

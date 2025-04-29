@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 
 """
-Milvus for Sentences Data Loader
+Qdrant for Sentences Data Loader
 
 This module provides functionality to:
-- Retrieve or create a Milvus collection by name
+- Retrieve or create a Qdrant collection by name
 - Load data and metadata into the collection using embeddings from the metadata
 """
 
 from typing import Dict, List, Any, Tuple
 from tqdm import tqdm
-from libs.rag.data_loaders.base import BaseDataLoader
+from qdrant_client.http.models import PointStruct
+from libs.services.rag.data_loaders.base import BaseDataLoader
 from libs.core.log import Logger
 
 logger = Logger().get_logger()
 
 
-class MilvusForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
+class QdrantForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
     """
-    Data loader strategy for managing Milvus collections with sentence embeddings.
+    Data loader strategy for managing Qdrant collections with sentence embeddings.
     Embeddings should be present in the metadata of each element.
     """
 
@@ -29,18 +30,18 @@ class MilvusForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
 
         :param config: Configuration dictionary for the data loader.
         """
-        self.config = MilvusForSentenceDataLoader.Config(**config)
-        self.result = MilvusForSentenceDataLoader.Result()
+        self.config = QdrantForSentenceDataLoader.Config(**config)
+        self.result = QdrantForSentenceDataLoader.Result()
 
     def insert(
             self,
             collection: Dict,
             elements: List[Dict[str, Any]]
-        ) -> 'MilvusForSentenceDataLoader.Result':
+        ) -> 'QdrantForSentenceDataLoader.Result':
         """
-        Insert data into the Milvus collection.
+        Insert data into the Qdrant collection.
 
-        :param collection: Milvus collection dict with client and name.
+        :param collection: Qdrant collection dict with client and name.
         :param elements: List of dictionaries containing 'text',
             'metadata', and 'embedding' for insertion.
         :return: Result object indicating the success or failure of the operation.
@@ -80,7 +81,10 @@ class MilvusForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
             # Extract embedding first
             embedding = metadata.pop('embedding', None)  # Remove 'embedding' from metadata
             # Validate embedding
-            if embedding is None:
+            if (
+                embedding is None
+                or not isinstance(embedding, list)
+                or not all(isinstance(i, (int, float)) for i in embedding)):
                 raise ValueError(f"Invalid or missing embedding for element: {text}")
             embeddings.append(embedding)
             # Validate remaining metadata (excluding embedding)
@@ -98,26 +102,27 @@ class MilvusForSentenceDataLoader(BaseDataLoader):  # pylint: disable=R0903
             documents: List[str],
             metadatas: List[Dict[str, Any]]):
         """
-        Insert documents, their embeddings, and corresponding metadata into the Milvus collection.
+        Insert documents, their embeddings, and corresponding metadata into the Qdrant collection.
 
-        :param collection: Milvus collection dict with client and name.
+        :param collection: Qdrant collection dict with client and name.
         :param embeddings: List of vector embeddings corresponding to the documents.
         :param documents: List of document texts to insert.
         :param metadatas: List of metadata dictionaries corresponding to the documents.
         """
         client = collection["client"]
         collection_name = collection["name"]
-        data = [
-            {
-                "embedding": embedding,
-                "text": document,
-                **metadata
-            }
-            for document, embedding, metadata in zip(documents, embeddings, metadatas)
+        current_count = client.count(collection_name=collection_name).count
+        ids = [(i + current_count) for i in range(len(documents))]
+        points = [
+            PointStruct(
+                id=ids[i],
+                vector=embeddings[i],
+                payload={"text": documents[i], **metadatas[i]}
+            )
+            for i in range(len(documents))
         ]
-        result = client.insert(
+        client.upsert(
             collection_name=collection_name,
-            data=data
+            points=points
         )
         logger.debug(f"Inserted {len(documents)} documents into the collection.")
-        logger.debug(result)

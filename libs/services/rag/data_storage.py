@@ -11,11 +11,11 @@ based on the document type.
 """
 
 from typing import Type, Dict, Any
-from libs.rag.data_storages.chroma_collection import (
+from libs.services.rag.data_storages.chroma.collection import (
     ChromaCollectionDataStorage)
-from libs.rag.data_storages.qdrant_collection import (
+from libs.services.rag.data_storages.qdrant.collection import (
     QdrantCollectionDataStorage)
-from libs.rag.data_storages.milvus_collection import (
+from libs.services.rag.data_storages.milvus.collection import (
     MilvusCollectionDataStorage)
 
 

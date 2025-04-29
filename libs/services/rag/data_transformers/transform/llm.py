@@ -10,7 +10,7 @@ import ast
 from typing import List, Dict, Any
 from tqdm import tqdm
 from langchain.schema import HumanMessage, SystemMessage, BaseMessage
-from self_serve_platform.chat.model import ChatModel
+from libs.services.chat.model import ChatModel
 
 
 def transform_summary(

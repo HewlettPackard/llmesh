@@ -11,9 +11,10 @@ or creation of collections by name.
 from typing import Optional, Dict, Any
 from pydantic import Field
 from chromadb import PersistentClient
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from self_serve_platform.rag.data_storages.base import BaseDataStorage
-from self_serve_platform.system.log import Logger
+from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import (
+    SentenceTransformerEmbeddingFunction)
+from libs.services.rag.data_storages.base import BaseDataStorage
+from libs.core.log import Logger
 
 
 logger = Logger().get_logger()

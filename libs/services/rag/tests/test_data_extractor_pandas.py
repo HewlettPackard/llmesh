@@ -9,8 +9,8 @@ and processes the data by transforming it into text and metadata as expected.
 
 import os
 import pytest
-from self_serve_platform.rag.data_extractor import DataExtractor
-from self_serve_platform.rag.data_extractors.pandas_read_excel import (
+from libs.services.rag.data_extractor import DataExtractor
+from libs.services.rag.data_extractors.pandas.read_excel import (
     PandasReadExcelExtractor)
 
 
@@ -60,7 +60,7 @@ def sample_excel_file():
     """
     Path to the real sample Excel file.
     """
-    return "self_serve_platform/tests/unit/test_data/sample_excel_for_test.xlsx"
+    return "libs/services/rag/tests/test_data/sample_excel_for_test.xlsx"
 
 
 @pytest.fixture

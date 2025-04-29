@@ -13,13 +13,11 @@ This module allow
 from functools import partial
 from typing import List, Optional, Dict, Any
 from pydantic import Field
-from self_serve_platform.rag.data_transformers.base import BaseDataTransformer
-from self_serve_platform.rag.data_transformers import clean_regex
-from self_serve_platform.rag.data_transformers import tranform_llm
-from self_serve_platform.rag.data_transformers import transform_section
-from self_serve_platform.rag.data_transformers import transform_chunk
-from self_serve_platform.rag.data_transformers import enrich_metadata
-from self_serve_platform.system.log import Logger
+from libs.services.rag.data_transformers.base import BaseDataTransformer
+from libs.services.rag.data_transformers.clean import regex
+from libs.services.rag.data_transformers.transform import llm, section, chunk
+from libs.services.rag.data_transformers.enrich import metadata
+from libs.core.log import Logger
 
 
 logger = Logger().get_logger()
@@ -123,22 +121,22 @@ class CteActionRunnerDataTransformer(BaseDataTransformer):  # pylint: disable=R0
         if not self.config.clean:
             self.config.clean = CteActionRunnerDataTransformer.ConfigClean(**{})
         action_map.update({
-            'RemoveMultipleSpaces': clean_regex.remove_multiple_spaces,
+            'RemoveMultipleSpaces': regex.remove_multiple_spaces,
             'ReplaceTabsWithSpaces': partial(
-                clean_regex.replace_tabs_with_spaces,
+                regex.replace_tabs_with_spaces,
                 self.config.clean.fields  # pylint: disable=E1101
             ),
-            'RemoveTitleElementsOnly': clean_regex.remove_title_elements_only,
+            'RemoveTitleElementsOnly': regex.remove_title_elements_only,
             'RemoveSectionsByHeader': partial(
-                clean_regex.remove_sections_by_header,
+                regex.remove_sections_by_header,
                 self.config.clean.headers_to_remove
             ),
             'KeepSectionsByHeader': partial(
-                clean_regex.keep_sections_by_header,
+                regex.keep_sections_by_header,
                 self.config.clean.headers_to_keep
             ),
             'RemoveShortSections': partial(
-                clean_regex.remove_short_sections,
+                regex.remove_short_sections,
                 self.config.clean.min_section_length
             )
         })
@@ -148,31 +146,31 @@ class CteActionRunnerDataTransformer(BaseDataTransformer):  # pylint: disable=R0
             self.config.transform = CteActionRunnerDataTransformer.ConfigTransform(**{})
         action_map.update({
             "TransformInSummary": partial(
-                tranform_llm.transform_summary,
+                llm.transform_summary,
                 self.config.transform.llm_config,
                 self.config.transform.system_prompt,
                 self.config.transform.action_prompt,
                 self.config.transform.transform_delimeters
             ),
             "TransformInQA": partial(
-                tranform_llm.transform_qa,
+                llm.transform_qa,
                 self.config.transform.llm_config,
                 self.config.transform.system_prompt,
                 self.config.transform.action_prompt,
                 self.config.transform.transform_delimeters
             ),
-            "TransformInSectionByHeader": transform_section.transform_section_by_header,
+            "TransformInSectionByHeader": section.transform_section_by_header,
             "TransformInSectionByType": partial(
-                transform_section.transform_section_by_type,
+                section.transform_section_by_type,
                 self.config.transform.header_types
             ),
             "TransformInSectionByToc": partial(
-                transform_section.transform_section_by_toc,
+                section.transform_section_by_toc,
                 self.config.transform.toc_types,
                 self.config.transform.toc_pattern
             ),
             "TransformInChunk": partial(
-                transform_chunk.transform_chunk,
+                chunk.transform_chunk,
                 self.config.transform.chunk_size,
                 self.config.transform.chunk_overlap,
                 self.config.transform.token_chunk
@@ -183,7 +181,7 @@ class CteActionRunnerDataTransformer(BaseDataTransformer):  # pylint: disable=R0
         if not self.config.enrich:
             self.config.enrich = CteActionRunnerDataTransformer.ConfigEnrich(**{})
         action_map["EnrichMetadata"] = partial(
-            enrich_metadata.add_metadata,
+            metadata.add_metadata,
             self.config.enrich.metadata
         )
 

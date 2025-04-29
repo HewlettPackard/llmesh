@@ -11,8 +11,8 @@ the retriever's select method to ensure correct data retrieval and processing.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_retriever import DataRetriever
-from self_serve_platform.rag.data_retrievers.chroma_for_sentences import (
+from libs.services.rag.data_retriever import DataRetriever
+from libs.services.rag.data_retrievers.chroma.sentences import (
     ChromaForSentenceDataRetriever)
 
 
@@ -55,7 +55,7 @@ def chroma_retriever_config():
     }
 
 
-@patch('self_serve_platform.rag.data_retrievers.chroma_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.chroma.sentences.Logger.get_logger')
 def test_select_success(mock_get_logger, chroma_retriever_config):  # pylint: disable=W0621
     """
     Test the select method to ensure it successfully retrieves
@@ -82,7 +82,7 @@ def test_select_success(mock_get_logger, chroma_retriever_config):  # pylint: di
     )
 
 
-@patch('self_serve_platform.rag.data_retrievers.chroma_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.chroma.sentences.Logger.get_logger')
 def test_select_exception_handling(mock_get_logger, chroma_retriever_config):  # pylint: disable=W0621
     """
     Test the select method to ensure it handles exceptions during data retrieval correctly.
@@ -98,7 +98,7 @@ def test_select_exception_handling(mock_get_logger, chroma_retriever_config):  #
     assert "An error occurred while retrieving data" in result.error_message
 
 
-@patch('self_serve_platform.rag.data_retrievers.chroma_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.chroma.sentences.Logger.get_logger')
 def test_expand_with_section_window(mock_get_logger, chroma_retriever_config):  # pylint: disable=W0621
     """
     Test the _expand_with_section_window method to ensure it expands results correctly by section.
@@ -126,7 +126,7 @@ def test_expand_with_section_window(mock_get_logger, chroma_retriever_config):  
     )
 
 
-@patch('self_serve_platform.rag.data_retrievers.chroma_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.chroma.sentences.Logger.get_logger')
 def test_expand_with_sentence_window(mock_get_logger, chroma_retriever_config):  # pylint: disable=W0621
     """
     Test the _expand_with_sentence_window method to ensure

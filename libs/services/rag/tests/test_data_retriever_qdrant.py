@@ -11,8 +11,8 @@ the retriever's select method to ensure correct data retrieval and processing.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_retriever import DataRetriever
-from self_serve_platform.rag.data_retrievers.qdrant_for_sentences import (
+from libs.services.rag.data_retriever import DataRetriever
+from libs.services.rag.data_retrievers.qdrant.sentences import (
     QdrantForSentenceDataRetriever)
 
 
@@ -54,7 +54,7 @@ def qdrant_retriever_config():
     }
 
 
-@patch('self_serve_platform.rag.data_retrievers.qdrant_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.qdrant.sentences.Logger.get_logger')
 @patch('qdrant_client.QdrantClient')
 def test_select_success(mock_qdrant_client, mock_get_logger, qdrant_retriever_config):  # pylint: disable=W0621
     """
@@ -82,7 +82,7 @@ def test_select_success(mock_qdrant_client, mock_get_logger, qdrant_retriever_co
     mock_qdrant_client.search.assert_called_once()
 
 
-@patch('self_serve_platform.rag.data_retrievers.qdrant_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.qdrant.sentences.Logger.get_logger')
 @patch('qdrant_client.QdrantClient')
 def test_select_exception_handling(mock_qdrant_client, mock_get_logger, qdrant_retriever_config):  # pylint: disable=W0621
     """
@@ -102,7 +102,7 @@ def test_select_exception_handling(mock_qdrant_client, mock_get_logger, qdrant_r
     assert "An error occurred while retrieving data" in result.error_message
 
 
-@patch('self_serve_platform.rag.data_retrievers.qdrant_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.qdrant.sentences.Logger.get_logger')
 @patch('qdrant_client.QdrantClient')
 def test_expand_with_section_window(mock_qdrant_client, mock_get_logger, qdrant_retriever_config):  # pylint: disable=W0621
     """
@@ -131,7 +131,7 @@ def test_expand_with_section_window(mock_qdrant_client, mock_get_logger, qdrant_
     mock_qdrant_client.scroll.assert_called_once()
 
 
-@patch('self_serve_platform.rag.data_retrievers.qdrant_for_sentences.Logger.get_logger')
+@patch('libs.services.rag.data_retrievers.qdrant.sentences.Logger.get_logger')
 @patch('qdrant_client.QdrantClient')
 def test_expand_with_sentence_window(mock_qdrant_client, mock_get_logger, qdrant_retriever_config):  # pylint: disable=W0621
     """

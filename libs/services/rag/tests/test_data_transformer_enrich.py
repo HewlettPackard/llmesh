@@ -8,7 +8,7 @@ It includes tests for adding metadata with fixed values and callable functions.
 
 import os
 import pytest
-from self_serve_platform.rag.data_transformers.enrich_metadata import add_metadata
+from libs.services.rag.data_transformers.enrich.metadata import add_metadata
 
 
 @pytest.fixture

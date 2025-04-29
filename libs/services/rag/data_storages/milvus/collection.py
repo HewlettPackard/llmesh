@@ -16,8 +16,8 @@ from pymilvus import (
     DataType,
     FieldSchema
 )
-from self_serve_platform.rag.data_storages.base import BaseDataStorage
-from self_serve_platform.system.log import Logger
+from libs.services.rag.data_storages.base import BaseDataStorage
+from libs.core.log import Logger
 
 
 logger = Logger().get_logger()

@@ -15,8 +15,8 @@ from unittest.mock import patch
 import pytest
 
 # Make sure these imports match your actual codebase paths
-from self_serve_platform.rag.data_loader import DataLoader
-from self_serve_platform.rag.data_loaders.milvus_for_sentences import (
+from libs.services.rag.data_loader import DataLoader
+from libs.services.rag.data_loaders.milvus.sentences import (
     MilvusForSentenceDataLoader
 )
 
@@ -55,7 +55,7 @@ def milvus_for_sentences_config():
     }
 
 
-@patch('self_serve_platform.system.log.Logger')
+@patch('libs.core.log.Logger')
 @patch('pymilvus.MilvusClient')
 def test_insert_success(mock_milvus_client, mock_logger, milvus_for_sentences_config):  # pylint: disable=W0621, W0613
     """
@@ -94,7 +94,7 @@ def test_insert_success(mock_milvus_client, mock_logger, milvus_for_sentences_co
     assert inserted_data[1]["text"] == "Document 2"
 
 
-@patch('self_serve_platform.system.log.Logger')
+@patch('libs.core.log.Logger')
 @patch('pymilvus.MilvusClient')
 def test_insert_failure(mock_milvus_client, mock_logger, milvus_for_sentences_config):  # pylint: disable=W0621, W0613
     """

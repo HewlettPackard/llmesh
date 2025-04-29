@@ -11,7 +11,7 @@ based on the document type.
 """
 
 from typing import Type, Dict, Any
-from libs.rag.data_transformers.cte_action_runner import (
+from libs.services.rag.data_transformers.cte_action_runner import (
     CteActionRunnerDataTransformer
 )
 

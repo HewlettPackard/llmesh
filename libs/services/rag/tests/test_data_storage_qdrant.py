@@ -13,8 +13,8 @@ correct retrieval or creation of collections in ChromaDB and QdrantDB.
 import os
 from unittest.mock import patch, MagicMock
 import pytest
-from self_serve_platform.rag.data_storage import DataStorage
-from self_serve_platform.rag.data_storages.qdrant_collection import (
+from libs.services.rag.data_storage import DataStorage
+from libs.services.rag.data_storages.qdrant.collection import (
     QdrantCollectionDataStorage)
 
 
@@ -29,7 +29,7 @@ from self_serve_platform.rag.data_storages.qdrant_collection import (
         QdrantCollectionDataStorage
     )
 ])
-@patch('self_serve_platform.rag.data_storages.qdrant_collection.QdrantClient')  # Mock QdrantClient
+@patch('libs.services.rag.data_storages.qdrant.collection.QdrantClient')  # Mock QdrantClient
 def test_create_qdrant(mock_qdrant_client, config, expected_class):
     """
     Test the create factory method to ensure it returns instances of QdrantCollectionDataStorage
@@ -71,8 +71,8 @@ def qdrant_collection_config_success():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.qdrant_collection.QdrantClient')
-@patch('self_serve_platform.rag.data_storages.qdrant_collection.Logger')
+@patch('libs.services.rag.data_storages.qdrant.collection.QdrantClient')
+@patch('libs.services.rag.data_storages.qdrant.collection.Logger')
 def test_get_qdrant_collection_success(
         mock_logger,  # pylint: disable=W0613
         mock_qdrant_client, qdrant_collection_config_success):  # pylint: disable=W0621
@@ -102,7 +102,7 @@ def qdrant_collection_config_singleton():
     }
 
 
-@patch('self_serve_platform.rag.data_storages.qdrant_collection.QdrantClient')
+@patch('libs.services.rag.data_storages.qdrant.collection.QdrantClient')
 def test_qdrant_singleton_behavior(mock_qdrant_client, qdrant_collection_config_singleton):  # pylint: disable=W0621
     """
     Test the singleton behavior of QdrantCollectionDataStorage to ensure that multiple
