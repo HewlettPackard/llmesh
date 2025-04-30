@@ -1,0 +1,66 @@
+webapp:
+  ip: 0.0.0.0
+  port: 5001
+  brand: hpe
+  ssh_cert: adhoc
+
+chat:
+  type: LangChainForOpenAI
+  system_prompt: $PROMPT{chat_system_prompt}
+  model: 
+    type: LangChainChatOpenAI
+    model_name: gpt-4o
+    api_key: $ENV{OPENAI_API_KEY}
+    temperature: 0
+    seed: 42
+  memory:
+    type: LangChainBuffer
+    memory_key: chat_history
+    return_messages: true
+  tools:
+    type: LangChainStructured
+  discovery:
+    timeout: 100
+    cert_verify: false
+  verbose: true
+
+projects:
+  - name: "Personal Chat"
+    memory:
+      type: LangChainBuffer
+      memory_key: chat_history
+      return_messages: true
+    tools:
+      # - "src/platform/tool_copywriter"    # BasicCopywriter as local tool
+      - "https://127.0.0.1:5002/"     # BasicCopywriter
+  - name: "Project 5G Network"
+    memory:
+      type: LangChainRemote
+      memory_key: chat_history
+      return_messages: true
+      base_url: "https://127.0.0.1:5010/"
+      timeout: 100
+      cert_verify: false
+    tools:
+      - "https://127.0.0.1:5005/"     # OpenAPIManager
+      - "https://127.0.0.1:5006/"     # TelcoExpert
+  - name: "Project Meteo"
+    memory:
+      type: LangChainBuffer
+      memory_key: chat_history
+      return_messages: true
+    tools:
+      - "https://127.0.0.1:5003/"     # TemperatureFinder
+      - "https://127.0.0.1:5004/"     # TemperatureAnalyzer
+
+prompts:
+  type: JinjaTemplate
+  environment: src/platform/app_chatbot/prompts/
+  templates:
+    chat_system_prompt: chat_system_prompt.txt
+    chat_error_message: chat_error_message.txt
+
+logger:
+  name: ATHON
+  log_file: src/platform/app_chatbot/logs/athon.log
+  level: DEBUG

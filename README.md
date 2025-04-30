@@ -23,21 +23,22 @@ We have created a series of tools and examples to demonstrate what you can do wi
 
 The project is organized into the following directories:
 
-- **lib**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
-  - **Chat Services**
-  - **RAG (Retrieval-Augmented Generation) Services**
-  - **Agent Services**
-  - **System Platform Services**
-- **examples**: Includes four Gen AI tools based on LLMs that demonstrate various capabilities:
-  - **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
-  - **Web Applications**:
-    - A chatbot that orchestrates all these tools.
-    - An agentic memory for sharing chat messages among different users.
-    - A back panel that allows configuring a tool via a user interface.
-- **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
-  - **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
-  - **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
-- **federated_governance**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
+- **src**: Sourve code
+  - **lib**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
+    - **Chat Services**
+    - **RAG (Retrieval-Augmented Generation) Services**
+    - **Agent Services**
+    - **System Platform Services**
+  - **platform**: Includes four Gen AI tools based on LLMs that demonstrate various capabilities:
+    - **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
+    - **Web Applications**:
+      - A chatbot that orchestrates all these tools.
+      - An agentic memory for sharing chat messages among different users.
+      - A back panel that allows configuring a tool via a user interface.
+  - **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
+    - **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+    - **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
+- **policies**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
 
 ### Prerequisites
 
@@ -45,8 +46,10 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 
 #### General Requirements
 
+- **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
 - **Python 3.11**: Ensure Python 3.11 is installed on your machine.
   - Recommended to install uv which is a drop in replacement for pip, venv, and others.
+
   ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
    source $HOME/.local/bin/env
@@ -54,8 +57,8 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
    echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
    echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
    ```
-   - Note, drop in means that you can use uv or the orginals as well.
-- **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
+
+  - Note, drop in means that you can use uv or the orginals as well.
 
 ### Installation Options
 
@@ -97,7 +100,7 @@ To use the complete setup, including examples and demo applications, follow thes
 
 ### Running the UIs
 
-You can run the tools and web applications individually or use the provided script `run_examples.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
+You can run the tools and web applications individually or use the provided script `run_src.platform.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
 
 ### Running the Games
 
