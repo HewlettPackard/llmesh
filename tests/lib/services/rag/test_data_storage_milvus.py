@@ -27,7 +27,7 @@ from src.lib.services.rag.data_storages.milvus.collection import (
     (
         {
             "type": "MilvusCollection",
-            "path": "self_serve_platform/tests/unit/data/milvus.db",
+            "path": "tests/lib/services/rag/data/milvus.db",
             "collection": "test_milvus_collection",
             "reset": True
 
@@ -60,7 +60,7 @@ def milvus_collection_config_success():
     """
     return {
         "type": "MilvusCollection",
-        "path": "self_serve_platform/tests/unit/data/milvus.db",
+        "path": "tests/lib/services/rag/data/milvus.db",
         "collection": "test_milvus_collection_success"
     }
 
@@ -98,7 +98,7 @@ def milvus_collection_config_singleton():
     """
     return {
         "type": "MilvusCollection",
-        "path": "self_serve_platform/tests/unit/data/milvus.db",
+        "path": "tests/lib/services/rag/data/milvus.db",
         "collection": "test_milvus_collection_singleton"
     }
 

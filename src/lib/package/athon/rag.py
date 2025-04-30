@@ -3,8 +3,8 @@
 
 """
 This module re-exports key functionalities related to RAG handling
-within the self_serve_platform. It simplifies the import for clients 
-of the self_serve_platform package.
+within the lib. It simplifies the import for clients 
+of the lib package.
 """
 
 from src.lib.services.rag.data_extractor import DataExtractor

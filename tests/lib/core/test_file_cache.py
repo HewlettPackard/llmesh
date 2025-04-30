@@ -3,7 +3,7 @@
 
 """
 This pytest script tests the functionality of the FileCache class from 
-the self_serve_platform.system.file_cache module.
+the lib.core.file_cache module.
 It includes tests for checking if a file is cached, saving data to the cache, 
 loading data from the cache, and the behavior when caching is disabled.
 """

@@ -17,7 +17,7 @@ import os
 import time
 import pytest
 from pymilvus import model
-from athon.rag import DataStorage, DataLoader, DataRetriever
+from src.lib.package.athon.rag import DataStorage, DataLoader, DataRetriever
 
 
 # --------------------------------
@@ -72,7 +72,7 @@ ELEMENTS = [
 # --------------------------------------
 CHROMA_STORAGE_CONFIG = {
     'type': 'ChromaCollection',
-    'path': 'self_serve_platform/tests/integration/data',  # Adjust path as needed
+    'path': 'tests/lib/services/rag/data',  # Adjust path as needed
     'collection': 'IntegrationTestsChroma',
     'reset': True,
 }
@@ -124,7 +124,7 @@ def test_data_storage_workflow_chroma():
 EMBEDDING_FUNCTION = model.DefaultEmbeddingFunction()
 MILVUS_STORAGE_CONFIG = {
     'type': 'MilvusCollection',
-    'path': 'self_serve_platform/tests/integration/data/milvus.db',
+    'path': 'tests/lib/services/rag/data/milvus.db',
     'collection': 'IntegrationTestsMilvus',
     'reset': True,
 }

@@ -22,7 +22,7 @@ from src.lib.services.rag.data_storages.chroma.collection import (
     (
         {
             "type": "ChromaCollection",
-            "path": "self_serve_platform/tests/unit/data",
+            "path": "tests/lib/services/rag/data",
             "collection": "test_collection1"
         },
         ChromaCollectionDataStorage
@@ -53,7 +53,7 @@ def chroma_collection_config_success():
     """
     return {
         "type": "ChromaCollection",
-        "path": "self_serve_platform/tests/unit/data",
+        "path": "tests/lib/services/rag/data",
         "collection": "test_collection2"
     }
 
@@ -83,7 +83,7 @@ def chroma_collection_config_singleton():
     """
     return {
         "type": "ChromaCollection",
-        "path": "self_serve_platform/tests/unit/data",
+        "path": "tests/lib/services/rag/data",
         "collection": "test_collection3"
     }
 

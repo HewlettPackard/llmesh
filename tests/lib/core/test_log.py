@@ -43,7 +43,7 @@ def test_logger_configuration_and_adapter():
     """
     config = {
         "name": "AppLogger",
-        "log_file": "tests/logs/test.log",
+        "log_file": "logs/test.log",
         "level": "INFO",
         "log_format": '%(asctime)s - %(levelname)s - %(message)s',
         "max_bytes": 1024,
@@ -62,7 +62,7 @@ def test_logger_configuration_and_adapter():
             "LoggerAdapter should carry the correct name."
         # Check if the file handler was correctly instantiated and configured
         mock_file_handler.assert_called_once_with(
-            'tests/logs/test.log',
+            'logs/test.log',
             maxBytes=1024,
             backupCount=3
         )
@@ -79,7 +79,7 @@ def test_file_handler_setup():
     Test the file handler setup to ensure it configures correctly with rotation and formatting.
     """
     config = {
-        "log_file": "tests/logs/test.log",
+        "log_file": "logs/test.log",
         "level": "DEBUG",
         "max_bytes": 1024,
         "backup_count": 3

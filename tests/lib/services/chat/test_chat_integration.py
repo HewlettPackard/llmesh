@@ -15,7 +15,7 @@ To run this test, use:
 import os
 import pytest
 from langchain.schema import HumanMessage, SystemMessage
-from athon.chat import ChatModel
+from src.lib.package.athon.chat import ChatModel
 
 
 @pytest.mark.parametrize("config", [
