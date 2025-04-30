@@ -100,7 +100,7 @@ To use the complete setup, including examples and demo applications, follow thes
 
 ### Running the UIs
 
-You can run the tools and web applications individually or use the provided script `run_src.platform.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
+You can run the tools and web applications individually or use the provided script `src/infra/scripts/start_examples.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
 
 ### Running the Games
 
