@@ -18,7 +18,7 @@ llms:
     seed: 42
 
 tools:
-  path: notebooks.meta_prompting.tools
+  path: src.notebooks.meta_prompting.tools
   close_function: close_case
   modules:
     - get_order_status
@@ -45,7 +45,7 @@ cache:
   cache_to_file: true
 
 files:
-  path: notebooks/meta_prompting/files/
+  path: src/notebooks/meta_prompting/files/
   names:
     policy: input/ecommerce_customer_service.md
     routine: output/ecommerce_agent_routine.md
@@ -54,7 +54,7 @@ files:
 
 prompts:
   type: JinjaTemplate
-  environment: notebooks/meta_prompting/prompts/
+  environment: src/notebooks/meta_prompting/prompts/
   templates:
     customer_persona: customer_persona.txt
     agent_persona: agent_persona.txt

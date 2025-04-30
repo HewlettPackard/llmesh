@@ -9,7 +9,7 @@ import math
 import json
 from typing import List, Any
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
-from athon.chat import ChatModel
+from src.lib.package.athon.chat import ChatModel
 
 
 class PersonaAgent:

@@ -64,7 +64,7 @@ from src.lib.services.chat.memories.langchain.summary import (
         {
             "type": "LangChainChromaStore",
             "memory_key": "chat_history",
-            "persist_directory": "src.lib.services/tests/unit/data",
+            "persist_directory": "tests/lib/services/chat/data",
             "collection_name": "my_collection",
             "k": 5
         },
@@ -212,7 +212,7 @@ def langchain_chroma_store_memory_config():
     return {
         "type": "LangChainChromaStore",
         "memory_key": "chat_history",
-        "persist_directory": "src.lib.services/tests/unit/data",
+        "persist_directory": "tests/lib/services/chat/data",
         "collection_name": "my_collection",
         "k": 5
     }
