@@ -10,13 +10,9 @@ import os
 import copy
 from packaging.version import Version, InvalidVersion
 from langchain.schema import HumanMessage, SystemMessage
-from libs.chat.model import ChatModel
-from libs.core.config import Config
-from libs.core.log import Logger
-from libs.system_services.tool_server import ToolDiscovery
-from libs.chat.prompt_render import PromptRender
+from src.lib.package.athon.chat import ChatModel, PromptRender
+from src.lib.package.athon.system import Config, Logger, ToolDiscovery
 from src.platform.app_backpanel.tool_manager.base import ToolManager
-
 
 
 # Parse command-line arguments and start the application

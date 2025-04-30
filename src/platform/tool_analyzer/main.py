@@ -18,11 +18,8 @@ import matplotlib
 matplotlib.use('Agg')  # Use the 'Agg' backend for non-GUI rendering
 import matplotlib.pyplot as plt  # pylint: disable=W0611,C0413
 from langchain.schema import HumanMessage, SystemMessage  # pylint: disable=C0413
-from libs.chat.model import ChatModel  # pylint: disable=C0413
-from libs.chat.prompt_render import PromptRender  # pylint: disable=C0413
-from libs.system_services.tool_client import AthonTool  # pylint: disable=C0413
-from libs.core.config import Config  # pylint: disable=C0413
-from libs.core.log import Logger  # pylint: disable=C0413
+from src.lib.package.athon.chat import ChatModel, PromptRender  # pylint: disable=C0413
+from src.lib.package.athon.system import AthonTool, Config, Logger  # pylint: disable=C0413
 
 
 # Parse command-line arguments and start the application

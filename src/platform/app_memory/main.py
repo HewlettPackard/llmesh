@@ -19,15 +19,9 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages.utils import get_buffer_string
 from langchain_core.runnables.config import get_executor_for_config
 from langchain_core.tools import tool
-from libs.chat.model import ChatModel
-from libs.chat.memory import ChatMemory
-from libs.chat.message_manager import MessageManager
-from libs.chat.prompt_render import PromptRender
-from libs.rag.data_storage import DataStorage
-from libs.rag.data_loader import DataLoader
-from libs.rag.data_retriever import DataRetriever
-from libs.core.config import Config
-from libs.core.log import Logger
+from src.lib.package.athon.chat import ChatModel, ChatMemory, MessageManager, PromptRender
+from src.lib.package.athon.rag import DataStorage, DataLoader, DataRetriever
+from src.lib.package.athon.system import Config, Logger
 
 
 # Parse command-line arguments and start the application

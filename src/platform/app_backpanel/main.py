@@ -15,9 +15,7 @@ This modularity facilitates ease of maintenance and scalability.
 """
 
 from flask import Flask, render_template, request, jsonify
-from libs.system_services.tool_server import ToolDiscovery
-from libs.core.config import Config
-from libs.core.log import Logger
+from src.lib.package.athon.system import ToolDiscovery, Config, Logger
 from src.platform.app_backpanel.tool_manager.prompt import PromptTool
 from src.platform.app_backpanel.tool_manager.rag import RagTool
 from src.platform.app_backpanel.tool_manager.agent import AgentTool

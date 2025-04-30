@@ -12,11 +12,8 @@ from datetime import datetime, timezone
 from typing import Type, Any
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from libs.rag.data_storage import DataStorage
-from libs.rag.data_loader import DataLoader
-from libs.rag.data_retriever import DataRetriever
-from libs.core.config import Config
-from libs.core.log import Logger
+from src.lib.package.athon.rag import DataStorage, DataLoader, DataRetriever
+from src.lib.package.athon.system import Config, Logger
 
 
 config = Config('src/platform/app_games/config.yaml').get_settings()

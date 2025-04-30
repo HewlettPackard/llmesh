@@ -10,10 +10,8 @@ synthetis them from JSON results.
 
 import sys
 from crewai.tools import BaseTool
-from libs.system_services.tool_client import AthonTool
-from libs.core.config import Config
-from libs.core.log import Logger
-from libs.agents.task_force import TaskForce
+from src.lib.package.athon.system import AthonTool, Config, Logger
+from src.lib.package.athon.agents import TaskForce
 # Import tool classes needed to resolve properly the config file
 from src.platform.tool_agents.openapi_tool import OpenApiManagerTool  # pylint: disable=W0611
 

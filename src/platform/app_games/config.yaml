@@ -8,7 +8,7 @@ games:
   - type: WhoAmI
     name: "Who am I?"
     chat:
-      type: LangChainForOpenAI
+      type: LangChainAgentExecutor
       system_prompt: $PROMPT{whoami_prompt}
       rules_prompt: $PROMPT{whoami_rules}
       secret_identity_prompt: $PROMPT{whoami_secret_identity}

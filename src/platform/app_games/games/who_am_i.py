@@ -12,11 +12,9 @@ import string
 from typing import Any
 from langchain.tools import StructuredTool
 from langchain.schema import SystemMessage, HumanMessage
-from libs.chat.prompt_render import PromptRender
-from libs.chat.model import ChatModel
-from libs.agents.tool_repository import ToolRepository
-from libs.agents.reasoning_engine import ReasoningEngine
-from libs.core.log import Logger
+from src.lib.package.athon.chat import PromptRender, ChatModel
+from src.lib.package.athon.agents import ToolRepository, ReasoningEngine
+from src.lib.package.athon.system import Logger
 from src.platform.app_games.games.base import BaseGame
 
 

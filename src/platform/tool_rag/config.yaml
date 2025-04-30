@@ -1,38 +1,36 @@
-version: "1.0.0"
-
+---
+version: 1.0.0
 webapp:
   ip: 0.0.0.0
   port: 5006
   ssh_cert: adhoc
-
 tool:
   name: TelcoExpert
   function: $FUNCTION{telco_expert}
   arguments:
-    - name: query
-      type: str
-      description: $PROMPT{field_query_description}
-      default : null    
+  - name: query
+    type: str
+    description: $PROMPT{field_query_description}
+    default: null
   description: $PROMPT{tool_description}
   return_direct: true
-
 function:
   rag:
-    extractor:      
+    extractor:
       type: UnstructuredForSections
       document_type: Docx
       extraction_type: SectionWithHeader
     transformer:
       type: CteActionRunner
-      clean: 
-      transform:
-      enrich:
+      clean: null
+      transform: null
+      enrich: null
     actions:
-        - RemoveMultipleSpaces
-        - ReplaceTabsWithSpaces
-        - TransformInSectionByHeader
-        - RemoveTitleElementsOnly
-        - TransformInChunk
+    - RemoveMultipleSpaces
+    - ReplaceTabsWithSpaces
+    - TransformInSectionByHeader
+    - RemoveTitleElementsOnly
+    - TransformInChunk
     storage:
       type: ChromaCollection
       path: src/platform/tool_rag/data
@@ -40,27 +38,25 @@ function:
       reset: false
     loader:
       type: ChromaForSentences
-    retriever:  
+    retriever:
       type: ChromaForSentences
       n_results: 10
     llm_model:
       type: LangChainChatOpenAI
       model_name: gpt-4o
       api_key: $ENV{OPENAI_API_KEY}
-      temperature: 0  
+      temperature: 0
       seed: 42
     rerank_model: cross-encoder/ms-marco-MiniLM-L-6-v2
     summary_chunks: 5
   query_espantion: $PROMPT{query_espantion}
   debug:
     load_files: false
-
 data:
-  path: src/platform/tool_rag/data/
+  path: src/platform/tool_rag/data
   files:
-  - source: 23501-i60.docx
-  - source: 23502-i60.docx
-  
+  - source: 23501-j30.docx
+  - source: 23502-j30.docx
 prompts:
   type: JinjaTemplate
   environment: src/platform/tool_rag/prompts/
@@ -69,7 +65,6 @@ prompts:
     field_query_description: field_query_description.txt
     query_espantion: query_espantion.txt
     answer_summary: answer_summary.txt
-      
 logger:
   name: IMS_EXPERT
   log_file: src/platform/tool_rag/logs/ims_expert.log

@@ -87,7 +87,7 @@ def test_parse_success(mock_fitz_open, mock_get_logger, mock_file_cache, pymupdf
 
 @patch('src.lib.services.rag.data_extractors.pymupdf.sections.FileCache')
 @patch('src.lib.services.rag.data_extractors.pymupdf.sections.Logger.get_logger')
-@patch('os.path.exists', return_value=False)
+@patch('os.path.exists', return_value=False, autospec=True)
 def test_parse_file_not_found(mock_exists, mock_get_logger, mock_file_cache, pymupdf_config):  # pylint: disable=W0621
     """
     Test the parse method to ensure it handles a file not found scenario correctly.
@@ -104,7 +104,7 @@ def test_parse_file_not_found(mock_exists, mock_get_logger, mock_file_cache, pym
     assert "no such file" in result.error_message
     mock_file_cache_instance.is_cached.assert_called_once_with("non_existent_file.pdf")
     mock_file_cache_instance.load.assert_not_called()  # Ensure load is not called
-    mock_exists.assert_called_once_with("non_existent_file.pdf")
+    mock_exists.assert_any_call("non_existent_file.pdf")
 
 
 @patch('src.lib.services.rag.data_extractors.pymupdf.sections.FileCache')

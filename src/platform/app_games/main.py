@@ -11,9 +11,8 @@ rendering a chat interface, and handling user input.
 """
 
 from flask import Flask, render_template, request, jsonify
-from libs.core.config import Config
-from libs.core.log import Logger
-from libs.chat.prompt_render import PromptRender
+from src.lib.package.athon.system import Config, Logger
+from src.lib.package.athon.chat import PromptRender
 from src.platform.app_games.game import Game
 
 

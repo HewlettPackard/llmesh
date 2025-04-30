@@ -5,7 +5,7 @@ webapp:
   ssh_cert: adhoc
 
 chat:
-  type: LangChainForOpenAI
+  type: LangChainAgentExecutor
   system_prompt: $PROMPT{chat_system_prompt}
   model: 
     type: LangChainChatOpenAI

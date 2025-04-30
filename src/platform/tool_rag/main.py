@@ -10,16 +10,14 @@ models for document indexing, querying, and information retrieval.
 import json
 from sentence_transformers import CrossEncoder
 from langchain.schema import HumanMessage, SystemMessage
-from libs.chat.model import ChatModel
-from libs.chat.prompt_render import PromptRender
-from libs.rag.data_extractor import DataExtractor
-from libs.rag.data_transformer import DataTransformer
-from libs.rag.data_storage import DataStorage
-from libs.rag.data_loader import DataLoader
-from libs.rag.data_retriever import DataRetriever
-from libs.system_services.tool_client import AthonTool
-from libs.core.config import Config
-from libs.core.log import Logger
+from src.lib.package.athon.chat import ChatModel, PromptRender
+from src.lib.package.athon.rag import (
+    DataExtractor,
+    DataTransformer,
+    DataStorage,
+    DataLoader,
+    DataRetriever)
+from src.lib.package.athon.system import AthonTool, Config, Logger
 
 
 config = Config('src/platform/tool_rag/config.yaml').get_settings()

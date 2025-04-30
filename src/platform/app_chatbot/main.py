@@ -12,13 +12,9 @@ messages and generating intelligent responses.
 """
 
 from flask import Flask, render_template, request, jsonify
-from libs.core.config import Config
-from libs.core.log import Logger
-from libs.chat.memory import ChatMemory
-from libs.chat.prompt_render import PromptRender
-from libs.system_services.tool_server import ToolDiscovery
-from libs.agents.tool_repository import ToolRepository
-from libs.agents.reasoning_engine import ReasoningEngine
+from src.lib.package.athon.system import Config, Logger, ToolDiscovery
+from src.lib.package.athon.chat import ChatMemory, PromptRender
+from src.lib.package.athon.agents import ToolRepository, ReasoningEngine
 
 
 # Supported Brands

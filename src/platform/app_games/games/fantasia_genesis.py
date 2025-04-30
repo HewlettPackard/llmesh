@@ -13,13 +13,10 @@ from typing import Any
 from crewai.tools import BaseTool
 from langchain_core.messages.utils import get_buffer_string
 from langchain.schema import SystemMessage, HumanMessage
-from libs.chat.model import ChatModel
-from libs.chat.memory import ChatMemory
-from libs.chat.prompt_render import PromptRender
-from libs.agents.task_force import TaskForce
-from libs.rag.data_storage import DataStorage
-from libs.core.config import Config
-from libs.core.log import Logger
+from src.lib.package.athon.chat import ChatModel, ChatMemory, PromptRender
+from src.lib.package.athon.agents import TaskForce
+from src.lib.package.athon.rag import DataStorage
+from src.lib.package.athon.system import Config, Logger
 from src.platform.app_games.games.base import BaseGame
 # Import tool classes needed to resolve properly the config file
 from src.platform.app_games.games.fantasia_genesis_tools import (  # pylint: disable=W0611

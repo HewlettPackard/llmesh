@@ -10,7 +10,7 @@ It utilizes the AthonTool decorator for configuration and logging setup.
 import datetime
 import requests
 from requests.exceptions import HTTPError, Timeout, RequestException
-from libs.system_services.tool_client import AthonTool
+from src.lib.package.athon.system import AthonTool
 
 
 @AthonTool()

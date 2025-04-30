@@ -10,17 +10,14 @@ import os
 import copy
 from packaging.version import Version, InvalidVersion
 from langchain.schema import HumanMessage, SystemMessage
-from libs.chat.model import ChatModel
-from libs.core.config import Config
-from libs.core.log import Logger
-from libs.system_services.tool_server import ToolDiscovery
-from libs.chat.prompt_render import PromptRender
-from libs.rag.data_extractor import DataExtractor
-from libs.rag.data_transformer import DataTransformer
-from libs.rag.data_storage import DataStorage
-from libs.rag.data_loader import DataLoader
+from src.lib.package.athon.chat import ChatModel, PromptRender
+from src.lib.package.athon.system import Config, Logger, ToolDiscovery
+from src.lib.package.athon.rag import (
+    DataExtractor,
+    DataTransformer,
+    DataStorage,
+    DataLoader)
 from src.platform.app_backpanel.tool_manager.base import ToolManager
-
 
 
 # Parse command-line arguments and start the application
