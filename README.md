@@ -48,17 +48,31 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 
 - **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
 - **Python 3.11**: Ensure Python 3.11 is installed on your machine.
-  - Recommended to install uv which is a drop in replacement for pip, venv, and others.
+
+  - It's recommended to install **`uv`**, a drop-in replacement for `pip`, `venv`, and other Python tooling.
+  - You can install `uv` either via script or with `pip`:
+
+  **Option 1: Install via script (macOS/Linux)**
 
   ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-   source $HOME/.local/bin/env
-   # Optional auto completions
-   echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
-   echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
-   ```
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  source $HOME/.local/bin/env
+  ```
 
-  - Note, drop in means that you can use uv or the orginals as well.
+  **Option 2: Install via pip**
+
+  ```bash
+  pip install uv
+  ```
+
+  - Optional: Enable shell completions
+
+  ```bash
+  echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
+  echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
+  ```
+
+  > Note: "Drop-in" means you can use `uv` in place of the original tools (e.g., `pip`, `venv`) without changing your workflow.
 
 ### Installation Options
 
@@ -67,7 +81,7 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 If you only need the core LLM Agentic Tool Mesh services without the example applications, you can install them directly via `uv pip`:
 
   ```bash
-  uv pip install -e .[all]
+  uv pip install -e '.[all]'
   ```
 
 After installation, refer to the [Usage Guide](https://github.com/HewlettPackard/llmesh/wiki/Usage#using-library-services) for instructions on using platform services.

@@ -1,6 +1,6 @@
 [project]
 name = "llmesh"
-version = "0.1.4"
+version = "0.2.0"
 description = "HPE LLM Agentic Tool Mesh Platform is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
 authors = [{ name = "Antonio Fin", email = "antonio.fin@hpe.com" }]
 requires-python = ">=3.11,<3.13"
@@ -121,20 +121,20 @@ Repository = "https://github.com/HewlettPackard/llmesh"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "lib/package/athon",
-    "lib",
+    "src/lib/package/athon",
+    "src/lib",
 ]
-exclude = ["lib/tests"]
+exclude = ["tests"]
 
 [tool.hatch.build.targets.wheel]
 include = [
-    "lib/package/athon",
-    "lib",
+    "src/lib/package/athon",
+    "src/lib",
 ]
-exclude = ["lib/tests"]
+exclude = ["tests"]
 
 [tool.hatch.build.targets.wheel.sources]
-"lib/package/athon" = "athon"
+"src/lib/package/athon" = "athon"
 
 [build-system]
 requires = ["hatchling"]
