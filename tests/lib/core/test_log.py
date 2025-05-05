@@ -26,7 +26,8 @@ def test_logger_singleton():
     meaning that all calls return the same instance.
     """
     config = {
-        "name": "AppLogger"
+        "name": "AppLogger",
+        "log_file": "logs/test.log"
     }
     logger_instance = Logger()
     logger_instance.configure(config)
@@ -97,6 +98,7 @@ def test_stream_handler_setup():
     """
     config = {
         "level": "WARNING",
+        "log_file": "logs/test.log"
     }
     with patch('logging.getLogger', return_value=MagicMock(handlers=[])), patch('sys.stdout'):
         logger = Logger().configure(config).get_logger().logger
