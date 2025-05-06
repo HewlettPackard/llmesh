@@ -31,10 +31,10 @@ jobs:
         run: uv venv
 
       - name: Install dependencies
-        run: uv venv exec pip install --editable ".[all,test]"
+        run: uv run pip install --editable ".[all,test]"
 
       - name: Run tests
-        run: uv venv exec pytest tests \
+        run: uv run pytest tests \
           --maxfail=10 --disable-warnings -v \
           --deselect=tests/lib/services/agents/test_agents_integration.py \
           --deselect=tests/lib/services/chat/test_chat_integration.py \
