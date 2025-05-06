@@ -22,8 +22,13 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from src.lib.package.athon.agents import TaskForce
 
 
-tavily_tool = TavilySearchResults(max_results=1)
-serper_tool = SerperDevTool()
+def get_tavily_tool():
+    "Lazy get Tool"
+    return TavilySearchResults(max_results=1)
+
+def get_serper_tool():
+    "Lazy get Tool"
+    return SerperDevTool()
 
 SHORT_EXECUTION = False
 
@@ -64,7 +69,7 @@ BASE_TASK_FORCE_CONFIG = {
                 'role': TASK1_AGENT_ROLE,
                 'goal': TASK1_AGENT_GOAL,
                 'backstory': TASK1_AGENT_BACKSTORY,
-                'tools': [serper_tool]
+                'tools': [get_serper_tool()]
             }
         },
         {
@@ -137,7 +142,7 @@ def langgraph_task_force():
                 'agent': {
                     'role': TASK1_AGENT_ROLE,
                     'goal': TASK1_AGENT_GOAL,
-                    'tools': [tavily_tool],
+                    'tools': [get_tavily_tool()],
                     'edges': {
                         'routing_function': should_end,
                         'nodes': [TASK2_AGENT_ROLE, 'FINISH']
