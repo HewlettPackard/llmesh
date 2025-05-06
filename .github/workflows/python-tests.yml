@@ -31,7 +31,6 @@ jobs:
         run: |
           uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" pytest
           --maxfail=10 --disable-warnings -v
-          --ignore=tests/lib/services/agents/test_agents_integration.py
-          --ignore=tests/lib/services/chat/test_chat_integration.py
-          --ignore=tests/lib/services/rag/test_rag_integration.py
-    
+          --deselect=tests/lib/services/agents/test_agents_integration.py
+          --deselect=tests/lib/services/chat/test_chat_integration.py
+          --deselect=tests/lib/services/rag/test_rag_integration.py
