@@ -29,9 +29,10 @@ jobs:
   
       - name: Run tests
         run: >
-          uv run --python ${{ env.PYTHON_VERSION }} pytest tests
+          uv run --python ${{ env.PYTHON_VERSION }} python -m pytest tests
           --maxfail=10 --disable-warnings -v
           --ignore=tests/lib/services/agents/test_agents_integration.py
           --ignore=tests/lib/services/chat/test_chat_integration.py
           --ignore=tests/lib/services/rag/test_rag_integration.py
+      
       
