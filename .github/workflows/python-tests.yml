@@ -28,8 +28,10 @@ jobs:
         run: uv python install ${{ env.PYTHON_VERSION }}
   
       - name: Run tests
-        run: uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" pytest tests \
-             --maxfail=10 --disable-warnings -v \
-             --ignore=tests/lib/services/agents/test_agents_integration.py \
-             --ignore=tests/lib/services/chat/test_chat_integration.py \
-             --ignore=tests/lib/services/rag/test_rag_integration.py
+        run: >
+          uv run --python ${{ env.PYTHON_VERSION }} pytest tests
+          --maxfail=10 --disable-warnings -v
+          --ignore=tests/lib/services/agents/test_agents_integration.py
+          --ignore=tests/lib/services/chat/test_chat_integration.py
+          --ignore=tests/lib/services/rag/test_rag_integration.py
+      
