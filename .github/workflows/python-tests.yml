@@ -27,10 +27,13 @@ jobs:
       - name: Ensure Python version
         run: uv python install ${{ env.PYTHON_VERSION }}
 
+      - name: Install dependencies
+        run: uv pip install --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]"
+  
       - name: Run tests
-        run: uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" \
-          pytest tests \
+        run: uv venv exec pytest tests \
           --maxfail=10 --disable-warnings -v \
           --deselect=tests/lib/services/agents/test_agents_integration.py \
           --deselect=tests/lib/services/chat/test_chat_integration.py \
-          --deselect=tests/lib/services/rag/test_rag_integration.py 
+          --deselect=tests/lib/services/rag/test_rag_integration.py
+  
