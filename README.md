@@ -24,12 +24,12 @@ We have created a series of tools and examples to demonstrate what you can do wi
 The project is organized into the following directories:
 
 - **src**: Sourve code
-  - **lib**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
+  - **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
     - **Chat Services**
     - **RAG (Retrieval-Augmented Generation) Services**
     - **Agent Services**
     - **System Platform Services**
-  - **platform**: Includes four Gen AI tools based on LLMs that demonstrate various capabilities:
+  - **platform**: Includes the **`agentic tool mesh`** with examples of Gen AI applications that demonstrate various capabilities:
     - **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
     - **Web Applications**:
       - A chatbot that orchestrates all these tools.
