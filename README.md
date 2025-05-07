@@ -1,13 +1,21 @@
 # LLM Agentic Tool Mesh
 
-Welcome to LLM Agentic Tool Mesh, a pioneering initiative by HPE Athonet aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
+Welcome to LLM Agentic Tool Mesh, a pioneering initiative by HPE aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
+
+The project consists of two main components:
+
+* **Athon (agentic-python library):** A Python library that provides the core functions and abstractions required to build agentic applications. It serves as the foundation for creating, orchestrating, and managing Gen AI agents and workflows.
+
+* **Agentic Tool Mesh Platform:** A service-based platform built on top of the agentic-python library. It offers a complete ecosystem of tools, APIs, and infrastructure needed to deploy, operate, and scale Gen AI-driven applications in real-world environments.
+
+Together, these components form a flexible and extensible framework for building next-generation AI solutions with minimal friction.
 
 ## Understanding the Challenges
 
 Gen AI has the potential to revolutionize businesses, but adopting it comes with challenges:
 
-- **Technical Complexity**: Gen AI tools are powerful but often require both coding and machine learning expertise. This makes it difficult for companies to use these tools effectively without specialized skills.
-- **Organizational Challenges**: Simply adding a Gen AI team isn’t enough. The real value comes from using the knowledge of your existing teams, especially those who may not be tech experts. However, if not done right, Gen AI can impact team dynamics. It’s important to find ways to use Gen AI that enhance collaboration and make the most of everyone’s expertise.
+* **Technical Complexity**: Gen AI tools are powerful but often require both coding and machine learning expertise. This makes it difficult for companies to use these tools effectively without specialized skills.
+* **Organizational Challenges**: Simply adding a Gen AI team isn’t enough. The real value comes from using the knowledge of your existing teams, especially those who may not be tech experts. However, if not done right, Gen AI can impact team dynamics. It’s important to find ways to use Gen AI that enhance collaboration and make the most of everyone’s expertise.
 
 ## Our Approach
 
@@ -23,22 +31,22 @@ We have created a series of tools and examples to demonstrate what you can do wi
 
 The project is organized into the following directories:
 
-- **src**: Sourve code
-  - **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
-    - **Chat Services**
-    - **RAG (Retrieval-Augmented Generation) Services**
-    - **Agent Services**
-    - **System Platform Services**
-  - **platform**: Includes the **`agentic tool mesh`** with examples of Gen AI applications that demonstrate various capabilities:
-    - **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
-    - **Web Applications**:
-      - A chatbot that orchestrates all these tools.
-      - An agentic memory for sharing chat messages among different users.
-      - A back panel that allows configuring a tool via a user interface.
-  - **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
-    - **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
-    - **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
-- **policies**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
+* **src**: Sourve code
+  * **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
+    * **Chat Services**
+    * **RAG (Retrieval-Augmented Generation) Services**
+    * **Agent Services**
+    * **System Platform Services**
+  * **platform**: Includes the **`agentic tool mesh`** with examples of Gen AI applications that demonstrate various capabilities:
+    * **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
+    * **Web Applications**:
+      * A chatbot that orchestrates all these tools.
+      * An agentic memory for sharing chat messages among different users.
+      * A back panel that allows configuring a tool via a user interface.
+  * **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
+    * **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+    * **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
+* **policies**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
 
 ### Prerequisites
 
@@ -46,11 +54,11 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 
 #### General Requirements
 
-- **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
-- **Python 3.11**: Ensure Python 3.11 is installed on your machine.
+* **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
+* **Python 3.11**: Ensure Python 3.11 is installed on your machine.
 
-  - It's recommended to install **`uv`**, a drop-in replacement for `pip`, `venv`, and other Python tooling.
-  - You can install `uv` either via script or with `pip`:
+  * It's recommended to install **`uv`**, a drop-in replacement for `pip`, `venv`, and other Python tooling.
+  * You can install `uv` either via script or with `pip`:
 
   **Option 1: Install via script (macOS/Linux)**
 
@@ -65,7 +73,7 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
   pip install uv
   ```
 
-  - Optional: Enable shell completions
+  * Optional: Enable shell completions
 
   ```bash
   echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
@@ -102,10 +110,8 @@ To use the complete setup, including examples and demo applications, follow thes
   ```bash
   # Install with all extras
   uv pip install -e ".[all]"
-
   # Install with specific extras
   uv pip install -e ".[chat,agents,rag]"
-
   # Install with development/testing dependencies
   uv pip install -e ".[all,test]"
   ```
