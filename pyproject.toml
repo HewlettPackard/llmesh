@@ -1,7 +1,7 @@
 [project]
-name = "llmesh"
+name = "agentic-python"
 version = "0.2.0"
-description = "HPE LLM Agentic Tool Mesh Platform is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
+description = "Athon is the agentic-python library to create the HPE Agentic Tool Mesh platform services. This is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
 authors = [{ name = "Antonio Fin", email = "antonio.fin@hpe.com" }]
 requires-python = ">=3.11,<3.13"
 readme = "README.md"

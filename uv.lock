@@ -2754,7 +2754,7 @@ wheels = [
 ]
 
 [[package]]
-name = "llmesh"
+name = "agentic-python"
 version = "0.2.0"
 source = { editable = "." }
 dependencies = [
