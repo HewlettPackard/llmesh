@@ -1,0 +1,63 @@
+llms:
+  meta_prompting:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: o3-mini
+    temperature: 1
+  agent_persona:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: gpt-4o-mini
+    temperature: 0
+    seed: 42
+  customer_persona:
+    type: LangChainChatOpenAI
+    api_key: $ENV{OPENAI_API_KEY}
+    model_name: gpt-4o-mini
+    temperature: 0
+    seed: 42
+
+tools:
+  path: src.notebooks.meta_prompting.tools
+  close_function: close_case
+  modules:
+    - get_order_status
+    - modify_order
+    - cancel_order
+    - track_shipment
+    - initiate_return
+    - check_refund
+    - process_refund
+    - order_history
+    - handle_complaint
+    - escalate_to_human
+    - update_account
+    - get_faq
+    - case_resolution
+
+evaluation:
+  max_evaluations: 10
+  max_improvments: 3
+  max_tokens: 120000
+  min_accuracy: 95
+
+cache:
+  cache_to_file: true
+
+files:
+  path: src/notebooks/meta_prompting/files/
+  names:
+    policy: input/ecommerce_customer_service.md
+    routine: output/ecommerce_agent_routine.md
+    test_cases: input/ecommerce_test_cases.csv
+    test_results: output/ecommerce_agent_results.csv
+
+prompts:
+  type: JinjaTemplate
+  environment: src/notebooks/meta_prompting/prompts/
+  templates:
+    customer_persona: customer_persona.txt
+    agent_persona: agent_persona.txt
+    routine_generation: routine_generation.txt
+    routine_improvment: routine_improvment.txt
+    evals_history: evals_history.txt
