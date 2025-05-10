@@ -1,7 +1,7 @@
 [project]
-name = "llmesh"
-version = "0.1.4"
-description = "HPE LLM Agentic Tool Mesh Platform is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
+name = "agentic-python"
+version = "0.2.0"
+description = "Athon is the agentic-python library to create the HPE Agentic Tool Mesh platform services. This is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
 authors = [{ name = "Antonio Fin", email = "antonio.fin@hpe.com" }]
 requires-python = ">=3.11,<3.13"
 readme = "README.md"
@@ -37,9 +37,9 @@ chat = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.11,<0.12",
-    "llama-index-llms-openai>=0.2,<0.3",
-    "vllm>=0.7.3,<0.8",
+    "llama-index>=0.12.3,<0.13",
+    "llama-index-llms-openai>=0.3,<0.4",
+    "vllm>=0.8",
 ]
 
 agents = [
@@ -50,9 +50,9 @@ agents = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.11,<0.12",
-    "llama-index-llms-openai>=0.2,<0.3",
-    "vllm>=0.7.3,<0.8",
+    "llama-index>=0.12.3,<0.13",
+    "llama-index-llms-openai>=0.3,<0.4",
+    "vllm>=0.8",
     # Agents specific
     "crewai[tools]>0.80.0,<0.90.0",
     "langgraph>=0.2.39,<0.3",
@@ -65,11 +65,12 @@ rag = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.11,<0.12",
-    "llama-index-llms-openai>=0.2,<0.3",
-    "vllm>=0.7.3,<0.8",
+    "llama-index>=0.12.3,<0.13",
+    "llama-index-llms-openai>=0.3,<0.4",
+    "vllm>=0.8",
     # RAG specific
     "chromadb>0.4.24, <0.6.00",
+    "torch>=2.6.0, <2.7.0",
     "sentence-transformers>3.2.0, <3.4.0",
     "transformers>=4.48.0",
     "qdrant-client>1.12.0, <1.13.0",
@@ -94,14 +95,15 @@ all = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.11,<0.12",
-    "llama-index-llms-openai>=0.2,<0.3",
+    "llama-index>=0.12.3,<0.13",
+    "llama-index-llms-openai>=0.3,<0.4",
     # Agents specific
     "crewai[tools]>0.80.0,<0.90.0",
     "langgraph>=0.2.39,<0.3",
-    "vllm>=0.7.3,<0.8",
+    "vllm>=0.8",
     # RAG specific
     "chromadb>0.4.24, <0.6.00",
+    "torch>=2.6.0, <2.7.0",
     "sentence-transformers>3.2.0, <3.4.0",
     "transformers>=4.48.0",
     "qdrant-client>1.12.0, <1.13.0",
@@ -121,20 +123,20 @@ Repository = "https://github.com/HewlettPackard/llmesh"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "self_serve_platform/package/athon",
-    "self_serve_platform",
+    "src/lib/package/athon",
+    "src/lib",
 ]
-exclude = ["self_serve_platform/tests"]
+exclude = ["tests"]
 
 [tool.hatch.build.targets.wheel]
 include = [
-    "self_serve_platform/package/athon",
-    "self_serve_platform",
+    "src/lib/package/athon",
+    "src/lib",
 ]
-exclude = ["self_serve_platform/tests"]
+exclude = ["tests"]
 
 [tool.hatch.build.targets.wheel.sources]
-"self_serve_platform/package/athon" = "athon"
+"src/lib/package/athon" = "athon"
 
 [build-system]
 requires = ["hatchling"]
