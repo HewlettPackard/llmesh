@@ -11,7 +11,6 @@ runs a common demonstration sequence (`run_demo` from `client_util`) to interact
 with the server's tools, resources, and prompts.
 """
 
-# mcp_client.py
 import asyncio
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client

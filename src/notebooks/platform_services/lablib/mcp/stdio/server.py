@@ -10,7 +10,6 @@ the MCP SDK's default stdio transport. This is suitable for scenarios where
 the MCP server is managed as a subprocess by a client.
 """
 
-# mcp_server.py
 from mcp.server.fastmcp import FastMCP
 from src.notebooks.platform_services.lablib.mcp.definitions import (
     register_tools,
