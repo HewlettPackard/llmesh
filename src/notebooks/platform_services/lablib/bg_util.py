@@ -8,6 +8,8 @@ This class ensures that background processes are cleaned up when the kernel exit
 It provides methods to start, kill, and manage background processes.
 The class is designed to be used in a Jupyter notebook or similar environment,
 where the kernel may be restarted or interrupted.
+
+Also handles port management, allowing users to find and kill processes using specific ports.
 """
 
 import subprocess
@@ -24,7 +26,7 @@ class BackgroundProcessManager:
     per Python session (Jupyter kernel).
     """
     _instance = None
-    _processes = {}  # Stores name: Popen_object
+    _processes: dict[str, subprocess.Popen] = {}
     _atexit_registered = False
 
     def __new__(cls, *args, **kwargs):
@@ -91,7 +93,7 @@ class BackgroundProcessManager:
         try:
             process = subprocess.Popen(
                 command,
-                shell=True, # Exercise caution if command is from untrusted input
+                shell=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 preexec_fn=preexec_fn_to_use,
@@ -102,6 +104,12 @@ class BackgroundProcessManager:
             if os.name != 'nt':
                 pid_info += f", PGID: {os.getpgid(process.pid)}"
             print(f"BackgroundProcessManager: Started '{name}' ({pid_info}). Command: {command}")
+            if process.returncode is not None:
+                print(f"BackgroundProcessManager: Process '{name}' exited immediately with return code {process.returncode}.")
+                print(f"BackgroundProcessManager: Warning! Process '{name}' exited with code {process.returncode} immediately after starting.")
+                print(f"Error output: {process.stderr.read().decode() if process.stderr else 'No error output available.'}")
+            else:
+                print(f"BackgroundProcessManager: Process '{name}' started successfully. PID: {process.pid}")
             return process
         except FileNotFoundError:
             print(f"BackgroundProcessManager: Error starting process '{name}'. Command not found: {command.split()[0]}")
@@ -214,6 +222,169 @@ class BackgroundProcessManager:
         if cls._is_running_in_jupyter():
             print("BackgroundProcessManager: Automated cleanup complete.")
 
+    def find_processes_by_port(self, port: int) -> list[tuple[int, str]]:
+        """
+        Find processes using a specific port.
+        
+        Args:
+            port: The port number to search for.
+            
+        Returns:
+            List of tuples containing (pid, command_name)
+        """
+        processes = []
+        
+        try:
+            if os.name == 'nt':  # Windows
+                # Use netstat to find processes using the port
+                cmd = ['netstat', '-ano']
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    lines = result.stdout.splitlines()
+                    for line in lines:
+                        if f':{port}' in line and 'LISTENING' in line:
+                            parts = line.split()
+                            if len(parts) >= 5:
+                                pid_str = parts[-1]
+                                try:
+                                    pid = int(pid_str)
+                                    # Get process name using tasklist
+                                    tasklist_result = subprocess.run(
+                                        ['tasklist', '/FI', f'PID eq {pid}', '/FO', 'CSV', '/NH'],
+                                        capture_output=True, text=True
+                                    )
+                                    if tasklist_result.returncode == 0:
+                                        lines = tasklist_result.stdout.strip().split('\n')
+                                        if lines and lines[0]:
+                                            # Parse CSV output
+                                            import csv
+                                            from io import StringIO
+                                            reader = csv.reader(StringIO(lines[0]))
+                                            row = next(reader)
+                                            process_name = row[0] if row else f"PID:{pid}"
+                                            processes.append((pid, process_name))
+                                except (ValueError, IndexError):
+                                    continue
+            else:  # Linux/Unix
+                # Use lsof to find processes using the port
+                cmd = ['lsof', '-t', f'-i:{port}', '-sTCP:LISTEN']
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    pids = result.stdout.strip().split('\n')
+                    for pid_str in pids:
+                        try:
+                            pid = int(pid_str)
+                            # Get process name using ps
+                            ps_result = subprocess.run(
+                                ['ps', '-p', str(pid), '-o', 'comm='],
+                                capture_output=True, text=True
+                            )
+                            if ps_result.returncode == 0:
+                                process_name = ps_result.stdout.strip()
+                                processes.append((pid, process_name))
+                        except (ValueError, FileNotFoundError):
+                            continue
+                            
+        except Exception as e:
+            print(f"BackgroundProcessManager: Error finding processes on port {port}: {e}")
+            
+        return processes
+
+    def kill_process_by_port(self, port: int, verbose: bool = True) -> bool:
+        """
+        Kill all processes using a specific port.
+        
+        Args:
+            port: The port number.
+            verbose: Whether to print detailed messages.
+            
+        Returns:
+            True if any processes were killed, False otherwise.
+        """
+        processes = self.find_processes_by_port(port)
+        
+        if not processes:
+            if verbose:
+                print(f"BackgroundProcessManager: No processes found using port {port}")
+            return False
+        
+        killed_any = False
+        
+        for pid, process_name in processes:
+            if verbose:
+                print(f"BackgroundProcessManager: Killing {process_name} (PID: {pid}) using port {port}")
+            
+            try:
+                if os.name == 'nt':  # Windows
+                    # Use taskkill for Windows
+                    result = subprocess.run(
+                        ['taskkill', '/F', '/PID', str(pid)],
+                        capture_output=True, text=True
+                    )
+                    if result.returncode == 0:
+                        if verbose:
+                            print(f"BackgroundProcessManager: Successfully killed {process_name} (PID: {pid})")
+                        killed_any = True
+                    else:
+                        if verbose:
+                            print(f"BackgroundProcessManager: Failed to kill {process_name} (PID: {pid}): {result.stderr}")
+                else:  # Linux/Unix
+                    # Try SIGTERM first, then SIGKILL if needed
+                    try:
+                        os.kill(pid, signal.SIGTERM)
+                        time.sleep(0.5)  # Give process time to terminate gracefully
+                        
+                        # Check if process still exists
+                        try:
+                            os.kill(pid, 0)  # Doesn't actually kill, just checks if process exists
+                            # Process still exists, use SIGKILL
+                            os.kill(pid, signal.SIGKILL)
+                            if verbose:
+                                print(f"BackgroundProcessManager: Force killed {process_name} (PID: {pid}) with SIGKILL")
+                        except ProcessLookupError:
+                            # Process already terminated with SIGTERM
+                            if verbose:
+                                print(f"BackgroundProcessManager: Successfully killed {process_name} (PID: {pid}) with SIGTERM")
+                        killed_any = True
+                    except ProcessLookupError:
+                        if verbose:
+                            print(f"BackgroundProcessManager: Process {process_name} (PID: {pid}) was already terminated")
+                    except PermissionError:
+                        if verbose:
+                            print(f"BackgroundProcessManager: Permission denied to kill {process_name} (PID: {pid})")
+                            
+            except Exception as e:
+                if verbose:
+                    print(f"BackgroundProcessManager: Error killing {process_name} (PID: {pid}): {e}")
+        
+        return killed_any
+
+    def clear_port(self, port: int, verbose: bool = True) -> bool:
+        """
+        Convenience method to clear a port by killing any processes using it.
+        
+        Args:
+            port: The port number to clear.
+            verbose: Whether to print detailed messages.
+            
+        Returns:
+            True if any processes were killed, False otherwise.
+        """
+        if verbose:
+            print(f"BackgroundProcessManager: Clearing port {port}...")
+        
+        result = self.kill_process_by_port(port, verbose)
+        
+        if result and verbose:
+            print(f"BackgroundProcessManager: Port {port} cleared.")
+        elif verbose:
+            print(f"BackgroundProcessManager: Port {port} was already clear.")
+        
+        return result
+
+
 # --- Global instance for easy access ---
 # This ensures the BackgroundProcessManager is instantiated when the module is imported,
 # which in turn ensures the atexit handler is registered.
@@ -234,3 +405,15 @@ def kill_all_background_processes() -> None:
     for name in list(BackgroundProcessManager._processes.keys()):
         _process_manager_singleton.kill_process(name)
     print("BackgroundProcessManager: Manual cleanup attempt complete.")
+
+def kill_process_by_port(port: int, verbose: bool = True) -> bool:
+    """Convenience function to kill processes using a specific port."""
+    return _process_manager_singleton.kill_process_by_port(port, verbose)
+
+def clear_port(port: int, verbose: bool = True) -> bool:
+    """Convenience function to clear a port by killing any processes using it."""
+    return _process_manager_singleton.clear_port(port, verbose)
+
+def find_processes_by_port(port: int) -> list[tuple[int, str]]:
+    """Convenience function to find processes using a specific port."""
+    return _process_manager_singleton.find_processes_by_port(port)
