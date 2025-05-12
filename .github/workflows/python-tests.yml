@@ -6,54 +6,31 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  PYTHON_VERSION: "3.11.9"
+  OPENAI_API_KEY: "test_api_key"
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    env:
-      POETRY_HTTP_CONCURRENCY: 1  # Forces single-threaded downloads
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils tesseract-ocr libtesseract-dev libmagic-dev
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
         
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.11.9'
-
-      - name: Install Poetry
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install poetry==1.8.5
-
-      - name: Configure Poetry
-        run: poetry config virtualenvs.in-project true
-
-      # - name: Cache Poetry download cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ~/.cache/pypoetry
-      #     key: ${{ runner.os }}-poetry-cache-${{ hashFiles('poetry.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-poetry-cache-
-
-      # - name: Cache virtual environment
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: .venv
-      #     key: ${{ runner.os }}-venv-${{ hashFiles('poetry.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-venv-
-
-      - name: Install dependencies
-        run: poetry install --all-extras
-
-      - name: Set environment variables
-        run: echo "OPENAI_API_KEY=test_api_key" >> $GITHUB_ENV
-
+      - name: Ensure Python version
+        run: uv python install ${{ env.PYTHON_VERSION }}
+  
       - name: Run tests
-        run: poetry run pytest --maxfail=10 --disable-warnings -v --ignore self_serve_platform/tests/integration
+        run: >
+          uv run --python ${{ env.PYTHON_VERSION }} --with-editable ".[all,test]" pytest
+          --maxfail=10 -v
+          --deselect=tests/lib/services/agents/test_agents_integration.py
+          --deselect=tests/lib/services/chat/test_chat_integration.py
+          --deselect=tests/lib/services/rag/test_rag_integration.py

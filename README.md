@@ -1,13 +1,21 @@
 # LLM Agentic Tool Mesh
 
-Welcome to LLM Agentic Tool Mesh, a pioneering initiative by HPE Athonet aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
+Welcome to LLM Agentic Tool Mesh, a pioneering initiative by HPE aimed at democratizing Generative Artificial Intelligence (Gen AI). Our vision is to make Gen AI accessible and beneficial to a broader audience, enabling users from various backgrounds to leverage cutting-edge Gen AI technology effortlessly.
+
+The project consists of two main components:
+
+* **Athon (agentic-python library):** A Python library that provides the core functions and abstractions required to build agentic applications. It serves as the foundation for creating, orchestrating, and managing Gen AI agents and workflows.
+
+* **Agentic Tool Mesh Platform:** A service-based platform built on top of the agentic-python library. It offers a complete ecosystem of tools, APIs, and infrastructure needed to deploy, operate, and scale Gen AI-driven applications in real-world environments.
+
+Together, these components form a flexible and extensible framework for building next-generation AI solutions with minimal friction.
 
 ## Understanding the Challenges
 
 Gen AI has the potential to revolutionize businesses, but adopting it comes with challenges:
 
-- **Technical Complexity**: Gen AI tools are powerful but often require both coding and machine learning expertise. This makes it difficult for companies to use these tools effectively without specialized skills.
-- **Organizational Challenges**: Simply adding a Gen AI team isn’t enough. The real value comes from using the knowledge of your existing teams, especially those who may not be tech experts. However, if not done right, Gen AI can impact team dynamics. It’s important to find ways to use Gen AI that enhance collaboration and make the most of everyone’s expertise.
+* **Technical Complexity**: Gen AI tools are powerful but often require both coding and machine learning expertise. This makes it difficult for companies to use these tools effectively without specialized skills.
+* **Organizational Challenges**: Simply adding a Gen AI team isn’t enough. The real value comes from using the knowledge of your existing teams, especially those who may not be tech experts. However, if not done right, Gen AI can impact team dynamics. It’s important to find ways to use Gen AI that enhance collaboration and make the most of everyone’s expertise.
 
 ## Our Approach
 
@@ -23,21 +31,22 @@ We have created a series of tools and examples to demonstrate what you can do wi
 
 The project is organized into the following directories:
 
-- **self_serve_platform**: Contains all self-serve platform services for creating tools and web applications. These services are grouped into:
-  - **Chat Services**
-  - **RAG (Retrieval-Augmented Generation) Services**
-  - **Agent Services**
-  - **System Platform Services**
-- **examples**: Includes four Gen AI tools based on LLMs that demonstrate various capabilities:
-  - **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
-  - **Web Applications**:
-    - A chatbot that orchestrates all these tools.
-    - An agentic memory for sharing chat messages among different users.
-    - A back panel that allows configuring a tool via a user interface.
-- **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
-  - **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
-  - **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
-- **federated_governance**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
+* **src**: Sourve code
+  * **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
+    * **Chat Services**
+    * **RAG (Retrieval-Augmented Generation) Services**
+    * **Agent Services**
+    * **System Platform Services**
+  * **platform**: Includes the **`agentic tool mesh`** with examples of Gen AI applications that demonstrate various capabilities:
+    * **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
+    * **Web Applications**:
+      * A chatbot that orchestrates all these tools.
+      * An agentic memory for sharing chat messages among different users.
+      * A back panel that allows configuring a tool via a user interface.
+  * **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
+    * **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+    * **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
+* **policies**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
 
 ### Prerequisites
 
@@ -45,17 +54,42 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 
 #### General Requirements
 
-- **Python 3.11**: Ensure Python 3.11 is installed on your machine.
-- **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
+* **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
+* **Python 3.11**: Ensure Python 3.11 is installed on your machine.
+
+  * It's recommended to install **`uv`**, a drop-in replacement for `pip`, `venv`, and other Python tooling.
+  * You can install `uv` either via script or with `pip`:
+
+  **Option 1: Install via script (macOS/Linux)**
+
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  source $HOME/.local/bin/env
+  ```
+
+  **Option 2: Install via pip**
+
+  ```bash
+  pip install uv
+  ```
+
+  * Optional: Enable shell completions
+
+  ```bash
+  echo 'eval "$(uv generate-shell-completion bash)"' >> ~/.bashrc
+  echo 'eval "$(uvx --generate-shell-completion bash)"' >> ~/.bashrc
+  ```
+
+  > Note: "Drop-in" means you can use `uv` in place of the original tools (e.g., `pip`, `venv`) without changing your workflow.
 
 ### Installation Options
 
 #### Option 1: Install LLM Agentic Tool Mesh Services Only
 
-If you only need the core LLM Agentic Tool Mesh services without the example applications, you can install them directly via `pip`:
+If you only need the core LLM Agentic Tool Mesh services without the example applications, you can install them directly via `uv pip`:
 
   ```bash
-  pip install 'llmesh[all]'
+  uv pip install -e '.[all]'
   ```
 
 After installation, refer to the [Usage Guide](https://github.com/HewlettPackard/llmesh/wiki/Usage#using-library-services) for instructions on using platform services.
@@ -73,16 +107,20 @@ To use the complete setup, including examples and demo applications, follow thes
 
 2. **Install Dependencies**: All dependencies required by the platform are specified in the `pyproject.toml` file. Use the following commands to install them:
 
-   ```bash
-   pip install poetry==1.8.5
-   poetry install --all-extras
-   ```
+  ```bash
+  # Install with all extras
+  uv pip install -e ".[all]"
+  # Install with specific extras
+  uv pip install -e ".[chat,agents,rag]"
+  # Install with development/testing dependencies
+  uv pip install -e ".[all,test]"
+  ```
 
 3. **Setup for Specific Tools**: Some tools, including **tool_rag**, **tool_agents**, and **tool_analyzer**, require additional setup (e.g., copying specific data files and initializing configurations). For detailed setup instructions, refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
 
 ### Running the UIs
 
-You can run the tools and web applications individually or use the provided script `run_examples.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
+You can run the tools and web applications individually or use the provided script `src/infra/scripts/start_examples.sh` to run them all together. Once everything is started, you can access the chatbot app at [https://127.0.0.1:5001/](https://127.0.0.1:5001/) and the back panel at [https://127.0.0.1:5011/](https://127.0.0.1:5011/).
 
 ### Running the Games
 
