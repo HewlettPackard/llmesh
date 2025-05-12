@@ -47,7 +47,7 @@ def register_prompts(mcp: FastMCP):
     @mcp.prompt("system_prompt")
     async def system_prompt_template(user_query: str, mode: str = 'translate') -> List[Union[str, UserMessage, AssistantMessage]]:
         """System prompt template for chat responses for one of two modes.
-        
+
         Mode 1: Translate user query to pirate language.
         Mode 2: Answer the user query in pirate language.
 
@@ -60,9 +60,9 @@ def register_prompts(mcp: FastMCP):
         """
         if mode not in ('translate', 'answer'):
             raise ValueError("Mode must be 'translate' or 'answer'.")
-        
+
         system_instruction = f"You are a helpful assistant who is fluent in pirate language. Please '{mode}' the following text."
-        
+
         examples = []
         if mode == 'translate':
             examples = [
@@ -78,6 +78,6 @@ def register_prompts(mcp: FastMCP):
                 UserMessage(content="How do I bake a chocolate cake?"),
                 AssistantMessage(content="Ahoy! To bake a chocolate cake, ye need to gather yer ingredients: flour, sugar, cocoa powder, and other treasures. Mix 'em together in a big bowl, pour into a vessel, and cook in yer hot box until a knife comes out clean, arr! Don't be burnin' it or the crew will make ye walk the plank!"),
             ]
-        
+
         examples.append(UserMessage(content=user_query))
         return [system_instruction] + examples

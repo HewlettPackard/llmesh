@@ -44,6 +44,6 @@ app = Starlette(
 if __name__ == "__main__":
     # Method 1: Run with Starlette/Uvicorn (uncomment to use)
     uvicorn.run(app, host="0.0.0.0", port=8000)
-    
+
     # Method 2: Run directly with MCP SDK (uncomment to use instead of the above)
     # mcp.run(transport="sse", mount_path="/math")
