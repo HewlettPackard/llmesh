@@ -18,7 +18,7 @@ from src.notebooks.platform_services.lablib.mcp.client_util import run_demo
 async def main():
     server_url = "http://localhost:8000/math/sse"
     print(f"Connecting to SSE server at {server_url}...")
-    
+
     # Connect to the SSE server
     async with sse_client(url=server_url) as (reader, writer):
         async with ClientSession(reader, writer) as session:
