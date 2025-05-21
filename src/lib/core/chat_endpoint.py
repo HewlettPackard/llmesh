@@ -34,6 +34,10 @@ class ChatEndpoint:
             default="/v1",
             description="Base path prefix for all API endpoints."
         )
+        available_models: List[str] = Field(
+            default_factory=lambda: ["gpt-4o"],
+            description="List of model identifiers exposed by this endpoint."
+        )
 
     class Message(BaseModel):
         """
@@ -96,6 +100,46 @@ class ChatEndpoint:
         created: int
         model: str
         choices: List["ChatEndpoint.ChatResponseChoice"]
+        usage: Dict[str, int]
+
+    class ModelInfo(BaseModel):
+        """
+        Model information.
+        """
+        id: str
+        object: str = "model"
+        owned_by: str = "local"
+
+    class ModelsResponse(BaseModel):
+        """
+        Full models response, following OpenAI response format.
+        """
+        object: str = "list"
+        data: List["ChatEndpoint.ModelInfo"]
+
+    class ChatStreamDelta(BaseModel):
+        """
+        Delta message for streaming chunk.
+        """
+        content: Optional[str] = None
+
+    class ChatStreamChoice(BaseModel):
+        """
+        Single choice in a stream chunk.
+        """
+        delta: "ChatEndpoint.ChatStreamDelta"
+        index: int = 0
+        finish_reason: Optional[str] = None
+
+    class ChatStreamChunk(BaseModel):
+        """
+        Streaming-compatible response chunk.
+        """
+        id: str
+        object: str = "chat.completion.chunk"
+        created: int
+        model: str
+        choices: List["ChatEndpoint.ChatStreamChoice"]
 
     def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
         """
@@ -153,5 +197,69 @@ class ChatEndpoint:
                         content=assistant_reply
                     )
                 )
+            ],
+            usage={
+                "prompt_tokens": len(user_message.split()),
+                "completion_tokens": len(assistant_reply.split()),
+                "total_tokens": len(user_message.split()) + len(assistant_reply.split())
+            }
+        )
+
+    def get_models(self) -> "ChatEndpoint.ModelsResponse":
+        """
+        Return a list of available models in OpenAI-compatible format.
+
+        :return: ModelsResponse object
+        """
+        models = [
+            ChatEndpoint.ModelInfo(id=model_name)
+            for model_name in self.config.available_models
+        ]
+        return ChatEndpoint.ModelsResponse(data=models)
+
+    def build_stream_chunk(
+        self,
+        content: str,
+        model: Optional[str] = None,
+        index: int = 0,
+        message_id: Optional[str] = None,
+        created_at: Optional[int] = None,
+        finish_reason: Optional[str] = None
+    ) -> "ChatStreamChunk":
+        """
+        Build a streaming-compatible response chunk using Pydantic model.
+
+        :param content: The partial assistant message.
+        :param model: Optional model name override.
+        :param index: Index of the choice.
+        :param message_id: Optional response ID.
+        :param created_at: Optional timestamp.
+        :param finish_reason: Optional reason for finish.
+        :return: ChatStreamChunk model instance.
+        """
+        return ChatEndpoint.ChatStreamChunk(
+            id=message_id or f"chatcmpl-{uuid.uuid4().hex}",
+            object="chat.completion.chunk",
+            created=created_at or int(time.time()),
+            model=model or self.config.available_models[0],
+            choices=[
+                ChatEndpoint.ChatStreamChoice(
+                    delta=ChatEndpoint.ChatStreamDelta(content=content),
+                    index=index,
+                    finish_reason=finish_reason
+                )
             ]
         )
+
+# Resolve forward references
+ChatEndpoint.ChatResponse.model_rebuild()
+ChatEndpoint.ChatResponseChoice.model_rebuild()
+ChatEndpoint.MessageResponse.model_rebuild()
+ChatEndpoint.ChatStreamChoice.model_rebuild()
+ChatEndpoint.ChatStreamDelta.model_rebuild()
+ChatEndpoint.ChatStreamChunk.model_rebuild()
+ChatEndpoint.ModelsResponse.model_rebuild()
+ChatEndpoint.ModelInfo.model_rebuild()
+ChatEndpoint.ChatRequest.model_rebuild()
+ChatEndpoint.Message.model_rebuild()
+ChatEndpoint.Config.model_rebuild()

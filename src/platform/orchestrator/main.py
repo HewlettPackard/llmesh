@@ -1,161 +1,119 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
-Web Chat Application with Reasoning Engine Integration
+LLM Endpoint Server with Reasoning Engine Integration
 
-This script serves as the main entry point for the HPE Athonet LLM Platform's web application, 
-integrating a reasoning engine to provide an interactive chat interface. The application 
-utilizes Flask for web server capabilities, rendering a chat interface, and handling user input. 
-The reasoning engine, created as a separate component, is responsible for processing user 
-messages and generating intelligent responses.
+This script replaces the Flask web app with a FastAPI-based OpenAI-compatible
+LLM endpoint, while keeping project handling and reasoning engine integration.
 """
 
-from flask import Flask, render_template, request, jsonify
-from src.lib.package.athon.system import Config, Logger, ToolDiscovery
-from src.lib.package.athon.chat import ChatMemory, PromptRender
-from src.lib.package.athon.agents import ToolRepository, ReasoningEngine
+import os
+import uvicorn
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from athon.system import Config, Logger, ToolDiscovery, ChatEndpoint
+from athon.chat import ChatMemory
+from athon.agents import ToolRepository, ReasoningEngine
 
 
-# Supported Brands
-BRANDS = ["athonet", "hpe"]
-# Parse command-line arguments and start the application
-PATH = 'src/platform/app_chatbot/'
-CONFIG = Config(PATH+'config.yaml').get_settings()
-# Create Logger
+# Load configuration
+PATH = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(PATH, 'config.yaml')
+CONFIG = Config(config_path).get_settings()
 logger = Logger().configure(CONFIG['logger']).get_logger()
 
+# Global project context
+selected_project_id = [1]
+project_settings = {
+    "tool_repository": None,
+    "projects": [],
+    "engine": None
+}
 
-def create_webapp(config):
+def main():
     """
-    Create the Flask application with its routes and
-    the reasoning engine.
+    Main function that starts the FastAPI app using Uvicorn.
+    Reads host, port, and optional SSL context from the configuration.
     """
-    logger.debug("Create Flask Web App")
-    app = Flask(__name__, template_folder = "./html/templates", static_folder = "./html/static")
-    logger.debug("Configure Web App Routes")
-    _configure_routes(app, config)
-    return app
-
-def _configure_routes(app, config):
-    """
-    Configures the routes for the Flask application.
-    """
-
-    # Using a list to hold the selected project ID to allow modification within inner functions
-    selected_project_id = [1]
-    project_settings = {
-        "tool_repository": _discover_project_tools(
-            config["projects"],
-            config["chat"]["tools"],
-            config["chat"]["discovery"]),
-        "projects": [],
-        "engine": None
+    logger.info("Starting the LLM Endpoint...")
+    webapp_config = CONFIG.get('webapp') or {'ip': '127.0.0.1'}
+    app_run_args = {
+        'host': webapp_config.get('ip', '127.0.0.1'),
+        'port': webapp_config.get('port', 5001)
     }
+    if 'ssh_cert' in webapp_config:
+        cert_config = webapp_config['ssh_cert']
+        app_run_args['ssl_certfile'] = cert_config.get('certfile')
+        app_run_args['ssl_keyfile'] = cert_config.get('keyfile')
+    app = _create_llm_app(CONFIG)
+    uvicorn.run(app, **app_run_args)
 
-    @app.route("/")
-    def index():
+def _create_llm_app(config):
+    """
+    Create the FastAPI application and configure its routes.
+    """
+    logger.debug("Creating FastAPI LLM App")
+    _init_project(config)
+    app = FastAPI()
+    chat_endpoint = ChatEndpoint() #TODO: add config with model from projects
+    # Enable CORS
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    @app.post("/v1/chat/completions")
+    async def chat_completions(request: Request):
         """
-        Route to the index page.
-        Clears the engine's chat history and renders the chat interface.
-        """
-        logger.debug("Load Home page")
-        _clear_all_memories()
-        _init_project(project_settings, config)
-        project = project_settings["projects"][0]
-        project_settings["engine"].set_tools(project["tools"])
-        project_settings["engine"].set_memory(project["memory"])
-        session_variables = _get_session_variables(config["webapp"]["brand"])
-        result = render_template('index.html', **session_variables)
-        return result
-
-
-    def _clear_all_memories():
-        for project in project_settings["projects"]:
-            project["memory"].clear()
-
-    def _get_session_variables(brand):
-        if brand not in BRANDS:
-            brand = "intelligen"
-        session_variables = {}
-        session_variables['theme'] = brand
-        return session_variables
-
-    @app.route("/message", methods=['POST'])
-    def chat():
-        """
-        Route to handle chat requests.
-        Accepts POST requests. Retrieves the user's message from the request,
-        and passes it to the chat response generator.
+        OpenAI-compatible endpoint for chat completions. Uses the reasoning engine
+        to generate a response based on the latest user message.
         """
         try:
-            data = request.get_json()  # Parse JSON data
-            msg = data.get("msg")  # Get the 'msg' value from the JSON data
-            logger.debug("Invoke LLM model")
-            result = project_settings["engine"].run(msg)
+            body = await request.json()
+            chat_request = ChatEndpoint.ChatRequest(**body)
+            chat_endpoint.validate_request(chat_request)
+            # Select current project and apply its context
+            for project in project_settings["projects"]:
+                if project["id"] == selected_project_id[0]:
+                    project_settings["engine"].set_tools(project["tools"])
+                    project_settings["engine"].set_memory(project["memory"])
+                    break
+            user_message = next(
+                (m.content for m in reversed(chat_request.messages)
+                if m.role == "user"), ""
+            )
+            result = project_settings["engine"].run(user_message)
             if result.status == "failure":
                 raise RuntimeError(result.error_message)
-            return result.completion
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.error("Catch Exception running LLM or Tools")
-            prompt = PromptRender.create(config["prompts"])
-            result = prompt.load("chat_error_message", error = {str(e)})
-            return result.content
+            if chat_request.stream:
+                def event_stream():
+                    # You can later tokenize here if needed
+                    chunk = chat_endpoint.build_stream_chunk(result.completion)
+                    yield f"data: {chunk.model_dump_json()}\n\n"
+                    yield "data: [DONE]\n\n"
+                return StreamingResponse(event_stream(), media_type="text/event-stream")
+            return chat_endpoint.build_response(chat_request, content=result.completion)
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            logger.error("Error handling chat completion: %s", exc)
+            return JSONResponse(
+                status_code=500,
+                content={"error": str(exc)}
+            )
 
-    @app.route('/tools', methods=['GET'])
-    def get_tools():
-        """Endpoint to get a list of tools."""
-        project_id = selected_project_id[0]
-        for project in project_settings["projects"]:
-            if project_id == project["id"]:
-                project_name = project["project"]
-                result = project_settings["tool_repository"].get_tools(
-                    metadata_filter={"project": project_name})
-                if result.status == "success":
-                    filtered_tools = [
-                        {"id": tool["metadata"]["id"], "name": tool["metadata"]["name"]}
-                        for tool in result.tools
-                    ]
-                    return jsonify(filtered_tools)
-        return jsonify([])
+    @app.get("/v1/models")
+    async def get_models():
+        """
+        OpenAI-compatible endpoint to list available models.
+        """
+        return chat_endpoint.get_models()
 
-    @app.route('/tools/<int:tool_id>/fields', methods=['GET'])
-    def get_tool_fields(tool_id):
-        """Endpoint to get the fields for a specific tool."""
-        result = project_settings["tool_repository"].get_tools(metadata_filter={"id": tool_id})
-        if result.status == "success":
-            return jsonify(result.tools[0]["metadata"]["interface"])
-        return jsonify({})
+    return app
 
-    @app.route('/projects', methods=['GET'])
-    def get_projects():
-        """Endpoint to get a list of projects."""
-        projects = []
-        for project in project_settings["projects"]:
-            projects.append({
-                "id": project["id"],
-                "name": project["project"]
-            })
-        return jsonify(projects)
-
-    @app.route('/projects/<int:project_id>', methods=['GET'])
-    def select_project(project_id):
-        """Endpoint to select the project"""
-        selected_project_id[0] = project_id
-        for project in project_settings["projects"]:
-            if project_id == project["id"]:
-                project_name = project["project"]
-                logger.debug(f"Project selected: {project_name}")
-                project_settings["engine"].set_tools(project["tools"])
-                project_settings["engine"].set_memory(project["memory"])
-                response = {
-                    "status": "success",
-                    "selected_project": project_name
-                }
-                return jsonify(response)
-        return jsonify({})
-
-def _init_project(project_settings, config):
+def _init_project(config):
     project_settings["tool_repository"] = _discover_project_tools(
         config["projects"],
         config["chat"]["tools"],
@@ -166,7 +124,7 @@ def _init_project(project_settings, config):
         project_settings["tool_repository"])
     project_settings["engine"] = ReasoningEngine.create(config["chat"])
 
-def _discover_project_tools(projects_config, tools_config, discovery_config,update=False):
+def _discover_project_tools(projects_config, tools_config, discovery_config, update=False):
     tool_repository = ToolRepository.create(tools_config)
     tool_discovery = ToolDiscovery(discovery_config)
     tool_id_counter = 1
@@ -178,10 +136,8 @@ def _discover_project_tools(projects_config, tools_config, discovery_config,upda
                     "id": tool_id_counter,
                     "project": project["name"],
                     "name": tool_info["name"],
-                    "interface": None
+                    "interface": tool_info.get("interface", {}).get("fields")
                 }
-                if tool_info.get("interface"):
-                    tool_metadata["interface"] = tool_info["interface"]["fields"]
                 if update:
                     tool_repository.update_tool(tool_info["name"], tool_info["tool"], tool_metadata)
                 else:
@@ -217,26 +173,5 @@ def _get_project_memory(memory_config):
     return None
 
 
-def main():
-    """
-    Main function that serves as the entry point for the application.
-    It create the Flask web app with all its routes and run it.
-    """
-    logger.info('Starting the Web App...')
-    chat_bot = create_webapp(CONFIG)
-    # Assuming self.settings['webapp'] is a dictionary with configuration settings
-    webapp_config = CONFIG.get('webapp') or {'ip': '127.0.0.1'}
-    # Run App using settings web app params
-    app_run_args = {
-        'host': webapp_config.get('ip', '127.0.0.1')
-    }
-    if 'port' in webapp_config:
-        app_run_args['port'] = webapp_config['port']
-    if 'ssh_cert' in webapp_config:
-        app_run_args['ssl_context'] = webapp_config['ssh_cert']
-    chat_bot.run(**app_run_args)
-
-
 if __name__ == "__main__":
-     # Run web application.
     main()

@@ -22,7 +22,7 @@ def chat_endpoint():
     Returns:
         ChatEndpoint: An instance of ChatEndpoint.
     """
-    return ChatEndpoint()
+    return ChatEndpoint(config={"available_models": ["gpt-3.5-turbo", "local-model"]})
 
 
 @pytest.fixture
@@ -107,6 +107,17 @@ def test_warn_on_extra_fields(caplog):
     for r in caplog.records:
         print(f"LOG: {r.name} - {r.message}")
     assert any("Unexpected field in request: unexpected_field" in r.message for r in caplog.records)
+
+
+def test_get_models(chat_endpoint):  # pylint: disable=W0621
+    """
+    Test to verify that get_models returns the expected model list.
+    """
+    models_response = chat_endpoint.get_models()
+    model_ids = [model.id for model in models_response.data]
+    assert "gpt-3.5-turbo" in model_ids
+    assert "local-model" in model_ids
+    assert models_response.object == "list"
 
 
 if __name__ == "__main__":
