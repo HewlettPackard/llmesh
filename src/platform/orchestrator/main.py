@@ -9,7 +9,7 @@ LLM endpoint, while keeping project handling and reasoning engine integration.
 
 import os
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from athon.system import Config, Logger, ToolDiscovery, ChatEndpoint
@@ -24,7 +24,6 @@ CONFIG = Config(config_path).get_settings()
 logger = Logger().configure(CONFIG['logger']).get_logger()
 
 # Global project context
-selected_project_id = [1]
 project_settings = {
     "tool_repository": None,
     "projects": [],
@@ -55,8 +54,9 @@ def _create_llm_app(config):
     """
     logger.debug("Creating FastAPI LLM App")
     _init_project(config)
+    llm_endpoint_config = _prepare_llm_endpoint_config(config)
+    chat_endpoint = ChatEndpoint(llm_endpoint_config)
     app = FastAPI()
-    chat_endpoint = ChatEndpoint() #TODO: add config with model from projects
     # Enable CORS
     app.add_middleware(
         CORSMiddleware,
@@ -76,12 +76,20 @@ def _create_llm_app(config):
             body = await request.json()
             chat_request = ChatEndpoint.ChatRequest(**body)
             chat_endpoint.validate_request(chat_request)
-            # Select current project and apply its context
-            for project in project_settings["projects"]:
-                if project["id"] == selected_project_id[0]:
-                    project_settings["engine"].set_tools(project["tools"])
-                    project_settings["engine"].set_memory(project["memory"])
-                    break
+            # Match project by name against requested model
+            matched_project = next(
+                (project for project in project_settings["projects"]
+                if project.get("project") == chat_request.model),
+                None
+            )
+            if not matched_project:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"No project found for model '{chat_request.model}'"
+                )
+            # Set tools and memory for the matched project
+            project_settings["engine"].set_tools(matched_project["tools"])
+            project_settings["engine"].set_memory(matched_project["memory"])
             user_message = next(
                 (m.content for m in reversed(chat_request.messages)
                 if m.role == "user"), ""
@@ -117,8 +125,7 @@ def _init_project(config):
     project_settings["tool_repository"] = _discover_project_tools(
         config["projects"],
         config["chat"]["tools"],
-        config["chat"]["discovery"],
-        update=True)
+        config["chat"]["discovery"])
     project_settings["projects"] = _create_project_manager(
         config["projects"],
         project_settings["tool_repository"])
@@ -171,6 +178,12 @@ def _get_project_memory(memory_config):
     if result.status == "success":
         return result.memory
     return None
+
+def _prepare_llm_endpoint_config(config: dict) -> dict:
+    project_names = [project.get("name") for project in config.get("projects", [])]
+    llm_endpoint = config.get("webapp", {}).get("llm_endpoint", {}).copy()
+    llm_endpoint["available_models"] = project_names
+    return llm_endpoint
 
 
 if __name__ == "__main__":

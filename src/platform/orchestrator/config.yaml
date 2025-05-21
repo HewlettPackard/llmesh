@@ -5,6 +5,9 @@ webapp:
   # ssh_cert:
   #   certfile: "/path/to/cert.pem"
   #   keyfile: "/path/to/key.pem"
+  llm_endpoint:
+    endpoint_prefix: "/v1"
+    available_models: []
 
 chat:
   type: LangChainAgentExecutor
@@ -60,7 +63,6 @@ prompts:
   environment: src/platform/orchestrator/prompts/
   templates:
     chat_system_prompt: chat_system_prompt.txt
-    chat_error_message: chat_error_message.txt
 
 logger:
   name: ATHON

@@ -64,7 +64,7 @@ done
 apps_directories=(
     "src/platform/app_memory"           #5010
     "src/platform/app_backpanel"        #5011
-    "src/platform/app_chatbot"          #5001
+    "src/platform/orchestrator"         #5001
 )
 
 # Activate and launch apps
