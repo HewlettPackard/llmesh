@@ -28,6 +28,7 @@ chat:
     timeout: 100
     cert_verify: false
   verbose: true
+  stateless: true
 
 projects:
   - name: "Personal Chat"

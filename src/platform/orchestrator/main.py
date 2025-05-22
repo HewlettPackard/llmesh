@@ -76,41 +76,19 @@ def _create_llm_app(config):
             body = await request.json()
             chat_request = ChatEndpoint.ChatRequest(**body)
             chat_endpoint.validate_request(chat_request)
-            # Match project by name against requested model
-            matched_project = next(
-                (project for project in project_settings["projects"]
-                if project.get("project") == chat_request.model),
-                None
-            )
-            if not matched_project:
-                raise HTTPException(
-                    status_code=404,
-                    detail=f"No project found for model '{chat_request.model}'"
-                )
-            # Set tools and memory for the matched project
-            project_settings["engine"].set_tools(matched_project["tools"])
-            project_settings["engine"].set_memory(matched_project["memory"])
-            user_message = next(
-                (m.content for m in reversed(chat_request.messages)
-                if m.role == "user"), ""
-            )
-            result = project_settings["engine"].run(user_message)
+            matched_project = _match_project(chat_request.model)
+            engine = project_settings["engine"]
+            _configure_engine(engine, matched_project)
+            engine_input = _prepare_engine_input(engine, chat_request.messages)
+            result = engine.run(engine_input)
             if result.status == "failure":
                 raise RuntimeError(result.error_message)
             if chat_request.stream:
-                def event_stream():
-                    # You can later tokenize here if needed
-                    chunk = chat_endpoint.build_stream_chunk(result.completion)
-                    yield f"data: {chunk.model_dump_json()}\n\n"
-                    yield "data: [DONE]\n\n"
-                return StreamingResponse(event_stream(), media_type="text/event-stream")
+                return _build_streaming_response(chat_endpoint, result.completion)
             return chat_endpoint.build_response(chat_request, content=result.completion)
         except Exception as exc:  # pylint: disable=broad-exception-caught
             logger.error("Error handling chat completion: %s", exc)
-            return JSONResponse(
-                status_code=500,
-                content={"error": str(exc)}
-            )
+            return JSONResponse(status_code=500, content={"error": str(exc)})
 
     @app.get("/v1/models")
     async def get_models():
@@ -184,6 +162,35 @@ def _prepare_llm_endpoint_config(config: dict) -> dict:
     llm_endpoint = config.get("webapp", {}).get("llm_endpoint", {}).copy()
     llm_endpoint["available_models"] = project_names
     return llm_endpoint
+
+def _match_project(model_name: str) -> dict:
+    matched = next(
+        (p for p in project_settings["projects"] if p.get("project") == model_name),
+        None
+    )
+    if not matched:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No project found for model '{model_name}'"
+        )
+    return matched
+
+def _configure_engine(engine, project: dict) -> None:
+    engine.set_tools(project["tools"])
+    if not getattr(engine.config, "stateless", False):
+        engine.set_memory(project["memory"])
+
+def _prepare_engine_input(engine, messages: list) -> str | list:
+    if getattr(engine.config, "stateless", False):
+        return messages
+    return next((m.content for m in reversed(messages) if m.role == "user"), "")
+
+def _build_streaming_response(chat_endpoint, content: str) -> StreamingResponse:
+    def event_stream():
+        chunk = chat_endpoint.build_stream_chunk(content)
+        yield f"data: {chunk.model_dump_json()}\n\n"
+        yield "data: [DONE]\n\n"
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 if __name__ == "__main__":

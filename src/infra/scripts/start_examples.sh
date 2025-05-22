@@ -12,8 +12,20 @@ tools_directories=(
 # Activate virtual environment 
 source .venv/bin/activate
 
-# Download example data files
-python src/platform/tool_rag/rag_data_loader.py    # Download spec files for tool_rag example
+# Check if data download should be executed
+WITH_DATA=false
+for arg in "$@"; do
+    if [ "$arg" = "--with-data" ]; then
+        WITH_DATA=true
+    fi
+done
+# Conditionally download example data files
+if [ "$WITH_DATA" = true ]; then
+    echo "Downloading example data files..."
+    python src/platform/tool_rag/rag_data_loader.py
+else
+    echo "Skipping data download. Use --with-data to enable."
+fi
 
 # Launch tools
 for dir in "${tools_directories[@]}"; do

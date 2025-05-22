@@ -49,7 +49,6 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         super().__init__()
         self.config = LlamaIndexReActEngine.Config(**config)
         self.result = LlamaIndexReActEngine.Result()
-        self.memory_key = self.config.memory["memory_key"]  # pylint: disable=E1136
         self.tool_repository = self._init_tool_repository()
         self.engine = {}
         self._init_engine()
@@ -75,7 +74,11 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         self.engine['model'] = self._init_model(
             self.config.model,
             self.config.system_prompt)
-        self.engine['memory'] = self._init_memory(self.config.memory)
+        if not self.config.stateless:
+            self.engine['memory'] = self._init_memory(self.config.memory)
+        else:
+            logger.debug("Running in stateless mode: memory is not initialized.")
+            self.engine['memory'] = None
 
     def _get_tools(self, tool_list: Optional[List[str]] = None) -> Optional[List[StructuredTool]]:
         """
@@ -163,7 +166,7 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
             verbose=True)
 
 
-    def run(self, message: str) -> 'LlamaIndexReActEngine.Result':
+    def run(self, messages: Any) -> 'LlamaIndexReActEngine.Result':
         """
         Execute the agent with the input message.
 
@@ -172,7 +175,14 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         """
         try:
             self.result.status = "success"
-            response = self.executor.chat(message)
+            if self.config.stateless and isinstance(messages, list):
+                # In stateless mode, allow a list of messages and join their 'content' fields.
+                message_str = "\n".join(
+                    [msg.get("content", "") for msg in messages]
+                )
+            else:
+                message_str = messages
+            response = self.executor.chat(message_str)
             self.result.completion = response.response
             logger.debug(f"Prompt generated {self.result.completion}")
         except Exception as e:  # pylint: disable=broad-except
@@ -189,9 +199,12 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         :return: The result of the operation, containing status and completion or error message.
         """
         try:
+            if not self.config.stateless and self.engine.get("memory"):
+                self.engine['memory'].clear()
+                logger.debug("Memory cleared")
+            else:
+                logger.warning("Clear Memory ignored: engine is stateless")
             self.result.status = "success"
-            self.engine['memory'].clear()
-            logger.debug("Memory cleared")
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
             self.result.error_message = f"An error occurred while clearing the engine memory: {e}"
@@ -207,9 +220,12 @@ class LlamaIndexReActEngine(BaseReasoningEngine):
         :return: The result of the operation, containing status and completion or error message.
         """
         try:
+            if not self.config.stateless:
+                self.executor.memory = memory
+                logger.debug("Changed Engine Memory")
+            else:
+                logger.warning("Set Memory ignored: engine is stateless")
             self.result.status = "success"
-            self.executor.memory = memory
-            logger.debug("Changed Engine Memory")
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
             self.result.error_message = f"An error occurred while setting the engine memory: {e}"
