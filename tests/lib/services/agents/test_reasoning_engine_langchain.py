@@ -28,6 +28,18 @@ from src.lib.services.agents.reasoning_engines.langchain.agent_executor import (
             'verbose': True
         },
         LangChainAgentExecutor
+    ),
+    (
+        {
+            'type': 'LangChainAgentExecutor',
+            'model': {'setting1': 'value1'},
+            'memory': {'setting2': 'value2', 'memory_key': 'value3'},
+            'tools': {'type': 'SomeToolType', 'list': ['tool1']},
+            'system_prompt': 'stateless test',
+            'verbose': True,
+            'stateless': True
+        },
+        LangChainAgentExecutor
     )
 ])
 def test_create(config, expected_class):
@@ -168,6 +180,50 @@ def test_set_tools(mock_set_tools, langchain_for_openai_engine_config):  # pylin
         result = engine.set_tools(["tool1", "tool2"])
         assert result.status == "success"
         mock_set_tools.assert_called_once_with(["tool1", "tool2"])
+
+
+@pytest.fixture
+def langchain_stateless_config():
+    """
+    Stateless LangChainAgentExecutor config
+    """
+    return {
+        'type': 'LangChainAgentExecutor',
+        'model': {'setting1': 'value1'},
+        'memory': {'setting2': 'value2', 'memory_key': 'value3'},  # Still required by schema
+        'tools': {'type': 'SomeToolType', 'list': ['tool1']},
+        'system_prompt': 'You are stateless.',
+        'verbose': False,
+        'stateless': True
+    }
+
+@patch(
+    'src.lib.services.agents.reasoning_engines.langchain.agent_executor.LangChainAgentExecutor.run',
+    return_value=MagicMock(status="success", completion="Stateless response")
+)
+def test_run_stateless(mock_run, langchain_stateless_config):
+    """
+    Ensure that run() accepts a list of messages in stateless mode.
+    """
+    with patch(
+        'src.lib.services.agents.reasoning_engines.langchain.agent_executor.LangChainAgentExecutor._init_tool_repository',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ), patch(
+        'src.lib.services.agents.reasoning_engines.langchain.agent_executor.LangChainAgentExecutor._init_engine',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ), patch(
+        'src.lib.services.agents.reasoning_engines.langchain.agent_executor.LangChainAgentExecutor._init_executor',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ):
+        engine = ReasoningEngine.create(langchain_stateless_config)
+        messages = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Hello, what’s 2 + 2?"}
+        ]
+        result = engine.run(messages)
+        assert result.status == "success"
+        assert result.completion == "Stateless response"
+        mock_run.assert_called_once_with(messages)
 
 
 if __name__ == "__main__":

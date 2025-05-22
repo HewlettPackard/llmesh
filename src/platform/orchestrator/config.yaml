@@ -2,7 +2,12 @@ webapp:
   ip: 0.0.0.0
   port: 5001
   brand: hpe
-  ssh_cert: adhoc
+  # ssh_cert:
+  #   certfile: "/path/to/cert.pem"
+  #   keyfile: "/path/to/key.pem"
+  llm_endpoint:
+    endpoint_prefix: "/v1"
+    available_models: []
 
 chat:
   type: LangChainAgentExecutor
@@ -23,6 +28,7 @@ chat:
     timeout: 100
     cert_verify: false
   verbose: true
+  stateless: true
 
 projects:
   - name: "Personal Chat"
@@ -55,12 +61,11 @@ projects:
 
 prompts:
   type: JinjaTemplate
-  environment: src/platform/app_chatbot/prompts/
+  environment: src/platform/orchestrator/prompts/
   templates:
     chat_system_prompt: chat_system_prompt.txt
-    chat_error_message: chat_error_message.txt
 
 logger:
   name: ATHON
-  log_file: src/platform/app_chatbot/logs/athon.log
+  log_file: src/platform/orchestrator/logs/athon.log
   level: DEBUG

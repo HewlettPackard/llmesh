@@ -29,6 +29,18 @@ from src.lib.services.agents.reasoning_engines.llamaindex.react import (
             'verbose': True
         },
         LlamaIndexReActEngine
+    ),
+    (
+        {
+            'type': 'LlamaIndexReAct',
+            'model': {'setting1': 'value1'},
+            'memory': {'setting2': 'value2', 'memory_key': 'value3'},
+            'tools': {'type': 'SomeToolType', 'list': ['tool1']},
+            'system_prompt': 'template1',
+            'verbose': True,
+            'stateless': True
+        },
+        LlamaIndexReActEngine
     )
 ])
 def test_create(config, expected_class):
@@ -72,7 +84,6 @@ def llama_index_react_engine_config():
         'system_prompt': 'template1',
         'verbose': True
     }
-
 
 @patch(
     'src.lib.services.agents.reasoning_engines.llamaindex.react.LlamaIndexReActEngine.run',
@@ -170,6 +181,50 @@ def test_set_tools(mock_set_tools, llama_index_react_engine_config):  # pylint: 
         assert result.status == "failure"
         assert result.error_message == "Not possible change tool in LlamaIndexReActEngine"
         mock_set_tools.assert_called_once_with(["tool1", "tool2"])
+
+
+@pytest.fixture
+def llama_index_stateless_config():
+    """
+    Mockup LlamaIndexReActEngine configuration stateless
+    """
+    return {
+        'type': 'LlamaIndexReAct',
+        'model': {'setting1': 'value1'},
+        'memory': {'setting2': 'value2', 'memory_key': 'value3'},  # Required by schema
+        'tools': {'type': 'SomeToolType', 'list': ['tool1']},
+        'system_prompt': 'stateless prompt',
+        'verbose': False,
+        'stateless': True
+    }
+
+@patch(
+    'src.lib.services.agents.reasoning_engines.llamaindex.react.LlamaIndexReActEngine.run',
+    return_value=MagicMock(status="success", completion="Stateless mocked response"))
+def test_run_stateless(mock_run, llama_index_stateless_config):  # pylint: disable=W0621
+    """
+    Test the run method of LlamaIndexReActEngine to verify it returns a result
+    with the correct status and completion with stateless mode.
+    """
+    with patch(
+        'src.lib.services.agents.reasoning_engines.llamaindex.react.LlamaIndexReActEngine._init_tool_repository',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ), patch(
+        'src.lib.services.agents.reasoning_engines.llamaindex.react.LlamaIndexReActEngine._init_engine',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ), patch(
+        'src.lib.services.agents.reasoning_engines.llamaindex.react.LlamaIndexReActEngine._init_executor',  # pylint: disable=C0301
+        return_value=MagicMock()
+    ):
+        engine = ReasoningEngine.create(llama_index_stateless_config)
+        messages = [
+            {"role": "system", "content": "You are a bot."},
+            {"role": "user", "content": "Hi, what is 3 + 3?"}
+        ]
+        result = engine.run(messages)
+        assert result.status == "success"
+        assert result.completion == "Stateless mocked response"
+        mock_run.assert_called_once_with(messages)
 
 
 if __name__ == "__main__":

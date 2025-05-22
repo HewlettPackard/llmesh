@@ -50,7 +50,6 @@ class LangChainAgentExecutor(BaseReasoningEngine):
         super().__init__()
         self.config = LangChainAgentExecutor.Config(**config)
         self.result = LangChainAgentExecutor.Result()
-        self.memory_key = self.config.memory["memory_key"]  # pylint: disable=E1136
         self.tool_repository = self._init_tool_repository()
         self.engine = {}
         self._init_engine()
@@ -74,7 +73,8 @@ class LangChainAgentExecutor(BaseReasoningEngine):
         self.engine['prompt'] = self._init_prompt(self.config.system_prompt)
         self.engine['tools'] = self._get_tools()
         self.engine['model'] = self._init_model(self.config.model)
-        self.engine['memory'] = self._init_memory(self.config.memory)
+        if not self.config.stateless:
+            self.engine['memory'] = self._init_memory(self.config.memory)
         self.engine['agent'] = self._init_agent()
 
     def _init_prompt(self, system_prompt: str) -> ChatPromptTemplate:
@@ -85,12 +85,11 @@ class LangChainAgentExecutor(BaseReasoningEngine):
         :return: An instance of ChatPromptTemplate initialized with the provided system prompt.
         """
         logger.debug(f"Reasoning Engine system prompt: '{system_prompt}'")
-        return ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            MessagesPlaceholder(variable_name=self.memory_key),
-            ("user", "{input}"),
-            MessagesPlaceholder(variable_name="agent_scratchpad")
-        ])
+        messages = [("system", system_prompt), ("user", "{input}")]
+        if not self.config.stateless:
+            messages.insert(1, MessagesPlaceholder(variable_name=self.config.memory["memory_key"]))
+        messages.append(MessagesPlaceholder(variable_name="agent_scratchpad"))
+        return ChatPromptTemplate.from_messages(messages)
 
     def _get_tools(self, tool_list: Optional[List[str]] = None) -> Optional[List[StructuredTool]]:
         """
@@ -163,26 +162,28 @@ class LangChainAgentExecutor(BaseReasoningEngine):
 
         :return: The initialized AgentExecutor.
         """
-        return AgentExecutor(
-            agent=self.engine['agent'],
-            tools=self.engine['tools'],
-            memory=self.engine['memory'],
-            verbose=self.config.verbose,
-            handle_parsing_errors=True
-        )
+        kwargs = {
+            "agent": self.engine['agent'],
+            "tools": self.engine['tools'],
+            "verbose": self.config.verbose,
+            "handle_parsing_errors": True
+        }
+        if not self.config.stateless:
+            kwargs["memory"] = self.engine['memory']
+        return AgentExecutor(**kwargs)
 
 
-    def run(self, message: str) -> 'LangChainAgentExecutor.Result':
+    def run(self, messages: Any) -> 'LangChainAgentExecutor.Result':
         """
         Execute the chain with the input message.
 
-        :param message: The input message to process.
+        :param messages: The input messages to process.
         :return: The result of the execution, containing status and completion or error message.
         """
         try:
             self.result.status = "success"
-            messages = self.executor.invoke({"input": message})
-            self.result.completion = messages["output"]
+            output = self.executor.invoke({"input": messages})
+            self.result.completion = output.get("output", "")
             logger.debug(f"Prompt generated {self.result.completion}")
         except Exception as e:  # pylint: disable=broad-except
             self.result.status = "failure"
@@ -197,14 +198,18 @@ class LangChainAgentExecutor(BaseReasoningEngine):
 
         :return: The result of the operation, containing status and completion or error message.
         """
-        try:
+        if not self.config.stateless:
+            try:
+                self.result.status = "success"
+                self.engine['memory'].clear()
+                logger.debug("Memory cleared")
+            except Exception as e:  # pylint: disable=broad-except
+                self.result.status = "failure"
+                self.result.error_message = f"An error occurred while clearing the memory: {e}"
+                logger.error(self.result.error_message)
+        else:
             self.result.status = "success"
-            self.engine['memory'].clear()
-            logger.debug("Memory cleared")
-        except Exception as e:  # pylint: disable=broad-except
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while clearing the engine memory: {e}"
-            logger.error(self.result.error_message)
+            logger.warning("Clear Memory ignoerd: engine is stateless")
         return self.result
 
 
@@ -215,14 +220,18 @@ class LangChainAgentExecutor(BaseReasoningEngine):
         :param memory: The new memory to set for the engine.
         :return: The result of the operation, containing status and completion or error message.
         """
-        try:
+        if not self.config.stateless:
+            try:
+                self.result.status = "success"
+                self.executor.memory = memory
+                logger.debug("Changed Engine Memory")
+            except Exception as e:  # pylint: disable=broad-except
+                self.result.status = "failure"
+                self.result.error_message = f"An error occurred while setting the memory: {e}"
+                logger.error(self.result.error_message)
+        else:
             self.result.status = "success"
-            self.executor.memory = memory
-            logger.debug("Changed Engine Memory")
-        except Exception as e:  # pylint: disable=broad-except
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while setting the engine memory: {e}"
-            logger.error(self.result.error_message)
+            logger.warning("Set Memory ignoerd: engine is stateless")
         return self.result
 
 
