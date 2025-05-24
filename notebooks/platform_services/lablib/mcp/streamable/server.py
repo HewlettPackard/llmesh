@@ -15,7 +15,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.prompts.base import UserMessage, AssistantMessage 
 from fastapi import FastAPI
 import uvicorn
-from src.notebooks.platform_services.lablib.mcp.definitions import (
+from notebooks.platform_services.lablib.mcp.definitions import (
     register_tools,
     register_resources,
     register_prompts

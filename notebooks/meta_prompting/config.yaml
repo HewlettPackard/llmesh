@@ -18,7 +18,7 @@ llms:
     seed: 42
 
 tools:
-  path: src.notebooks.meta_prompting.tools
+  path: notebooks.meta_prompting.tools
   close_function: close_case
   modules:
     - get_order_status

@@ -14,8 +14,8 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from src.lib.package.athon.chat import PromptRender, ChatModel
 from src.lib.package.athon.system import Config
 from src.lib.core.file_cache import FileCache
-from src.notebooks.meta_prompting.tool_manager import load_tools
-from src.notebooks.meta_prompting.agent_simulator import PersonaAgent, simluate_conversation
+from notebooks.meta_prompting.tool_manager import load_tools
+from notebooks.meta_prompting.agent_simulator import PersonaAgent, simluate_conversation
 
 
 # Read config file in current folder

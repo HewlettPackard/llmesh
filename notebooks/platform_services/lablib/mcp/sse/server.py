@@ -14,7 +14,7 @@ from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from starlette.routing import Mount
 import uvicorn
-from src.notebooks.platform_services.lablib.mcp.definitions import (
+from notebooks.platform_services.lablib.mcp.definitions import (
     register_tools,
     register_resources,
     register_prompts
