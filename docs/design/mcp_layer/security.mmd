@@ -1,0 +1,76 @@
+graph TB
+    subgraph "Kubernetes Cluster"
+        subgraph "LATMesh Namespace"
+            subgraph "LATMesh Host Security"
+                HostAuth[Host Authentication<br/>User Sessions, API Keys]
+                ConfigVal[Configuration Validation<br/>MCP Server Configs]
+            end
+            
+            subgraph "MCP Server Security"
+                ServerAuth[Server Authentication<br/>Each server implements own auth]
+                ServerVal[Server Validation<br/>Input/output validation]
+                ServerSandbox[Server Sandboxing<br/>Resource limits, process isolation]
+            end
+        end
+        
+        subgraph "K8s Network Security"
+            NetPol[NetworkPolicies<br/>- Default deny<br/>- Allow configured endpoints<br/>- Log all traffic]
+            PodSec[Pod Security Standards<br/>- Non-root containers<br/>- ReadOnly root filesystem<br/>- Resource limits]
+        end
+        
+        subgraph "Configuration Security"
+            Secrets[K8s Secrets<br/>API keys, certificates]
+            ConfigMaps[ConfigMaps<br/>Non-sensitive MCP configs]
+            RBAC[RBAC Policies<br/>Who can configure MCP]
+        end
+    end
+
+    subgraph "MCP Transport Security"
+        TLSConn[TLS 1.3<br/>For HTTPS/SSE connections]
+        StdioSec[STDIO Security<br/>Process isolation, limited permissions]
+        AuthTokens[Auth Tokens<br/>Bearer tokens, API keys per server]
+    end
+
+    subgraph "Threats & Mitigations"
+        MaliciousServer[Malicious MCP Server]
+        DataExfil[Data Exfiltration]
+        UnauthorizedAccess[Unauthorized Access]
+        
+        Monitoring[Security Monitoring<br/>- Audit logs<br/>- Anomaly detection<br/>- Rate limiting]
+    end
+
+    %% Security Flow
+    HostAuth --> ConfigVal
+    ConfigVal --> ServerAuth
+    ServerAuth --> ServerSandbox
+    
+    %% Network Security
+    NetPol -.->|Block| MaliciousServer
+    PodSec -.->|Isolate| ServerSandbox
+    
+    %% Configuration Security
+    Secrets --> ServerAuth
+    ConfigMaps --> ConfigVal
+    RBAC --> HostAuth
+    
+    %% Transport Security
+    TLSConn -.->|Encrypt| ServerAuth
+    StdioSec -.->|Isolate| ServerSandbox
+    
+    %% Monitoring
+    Monitoring -.->|Detect| DataExfil
+    Monitoring -.->|Prevent| UnauthorizedAccess
+
+    classDef host fill:#4fc3f7,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef server fill:#ffb74d,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef k8s fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef transport fill:#f48fb1,stroke:#c2185b,stroke-width:2px,color:#000
+    classDef threat fill:#e57373,stroke:#d32f2f,stroke-width:2px,color:#000
+    classDef monitor fill:#ba68c8,stroke:#7b1fa2,stroke-width:2px,color:#fff
+
+    class HostAuth,ConfigVal host
+    class ServerAuth,ServerVal,ServerSandbox server
+    class NetPol,PodSec,Secrets,ConfigMaps,RBAC k8s
+    class TLSConn,StdioSec,AuthTokens transport
+    class MaliciousServer,DataExfil,UnauthorizedAccess threat
+    class Monitoring monitor

@@ -1,0 +1,46 @@
+sequenceDiagram
+    participant Agent as LATMesh Agent
+    participant Client as MCP Client
+    participant Server as MCP Server
+    participant DataSource as Data Source
+
+    Note over Agent, DataSource: MCP Resource Access
+
+    Agent->>Client: read_resource(customer_db://user/123)
+    Client->>Server: JSON-RPC read_resource request
+    Server->>DataSource: Query customer database
+    DataSource->>Server: Customer record data
+    Server->>Client: Resource content (structured data)
+    Client->>Agent: Customer context for LLM
+
+    Note over Agent, DataSource: MCP Tool Usage
+
+    Agent->>Client: call_tool(update_customer, {id: 123, status: "active"})
+    Client->>Server: JSON-RPC call_tool request
+    Server->>DataSource: Execute UPDATE statement
+    DataSource->>Server: Update confirmation
+    Server->>Client: Tool execution result
+    Client->>Agent: "Customer status updated successfully"
+
+    Note over Agent, DataSource: MCP Prompt Access
+
+    Agent->>Client: get_prompt(customer_analysis_template)
+    Client->>Server: JSON-RPC get_prompt request
+    Server->>Client: Prompt template with instructions
+    Client->>Agent: Structured prompt for customer analysis
+
+    Note over Agent, DataSource: Combined Usage Pattern
+
+    Agent->>Client: get_prompt(customer_report_prompt)
+    Client->>Agent: Report generation instructions
+    Agent->>Client: read_resource(customer_db://recent_orders)
+    Client->>Agent: Recent order data for context
+    Agent->>Client: call_tool(generate_pdf_report, {customer_id: 123})
+    Client->>Agent: Generated report file path
+
+    Note over Agent, DataSource: Resource Subscription
+
+    Agent->>Client: subscribe_to_resource(live_metrics://cpu_usage)
+    Client->>Server: Setup resource subscription
+    Server->>Client: Real-time metric updates (streaming)
+    Client->>Agent: Continuous context updates

@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant Admin as Platform Admin
+    participant Helm as Helm Chart
+    participant K8s as Kubernetes
+    participant LATMesh as LATMesh Host
+    participant Config as Config Store
+    participant Client as MCP Client
+    participant Server as MCP Server
+
+    Note over Admin, Server: Deployment & MCP Configuration
+
+    Admin->>Helm: helm install latmesh ./charts/latmesh
+    Helm->>K8s: Deploy LATMesh pods & services
+    K8s->>LATMesh: Start LATMesh Host application
+    LATMesh->>Config: Initialize configuration store
+
+    Note over Admin, Server: User Configures MCP Server via UI
+
+    Admin->>LATMesh: Access MCP configuration UI
+    LATMesh->>Config: GET current server configurations
+    Config->>LATMesh: Existing MCP server list
+    Admin->>LATMesh: Add GitHub server config<br/>{url: "...", transport: "sse", auth: "..."}
+    LATMesh->>Config: Validate & store configuration
+    LATMesh->>Client: Create MCP client for GitHub
+    Client->>Server: Test connection (HTTPS/SSE)
+    Server->>Client: Connection successful + capabilities
+    Client->>LATMesh: Server ready, capabilities cached
+    LATMesh->>Admin: GitHub server configured successfully
+
+    Note over Admin, Server: Runtime Usage
+
+    Admin->>LATMesh: "Create issue in my repo"
+    LATMesh->>Client: Find GitHub tools
+    Client->>LATMesh: [create_issue, list_repos, ...] available
+    LATMesh->>Client: call_tool(create_issue, params)
+    Client->>Server: Execute GitHub API call
+    Server->>Client: Issue created successfully
+    Client->>LATMesh: Task completed
+    LATMesh->>Admin: "Issue #123 created successfully"

@@ -1,0 +1,76 @@
+graph TB
+    subgraph "Corporate Kubernetes Environment"
+        subgraph "LATMesh Namespace"
+            subgraph "LATMesh Host Application"
+                UI[Configuration UI]
+                Agents[AI Agents]
+                
+                subgraph "MCP Client Pool"
+                    C1[Client → JIRA]
+                    C2[Client → GitHub] 
+                    C3[Client → DB]
+                    C4[Client → Files]
+                    C5[Client → External APIs]
+                end
+            end
+        end
+        
+        subgraph "Corporate Infrastructure (MCP Servers)"
+            subgraph "Internal Servers (STDIO)"
+                JIRAServ[JIRA MCP Server<br/>Sidecar Pod]
+                DBServ[Database MCP Server<br/>Sidecar Pod]
+                FileServ[File System Server<br/>Pod Volume]
+            end
+            
+            subgraph "Network Services (HTTP/SSE)"
+                ADServ[Active Directory<br/>MCP Server]
+                ShareServ[SharePoint<br/>MCP Server]
+            end
+        end
+        
+        subgraph "Developer Workstations"
+            DevMCP[Developer Tools<br/>MCP Servers]
+        end
+    end
+
+    subgraph "External SaaS (HTTPS/SSE)"
+        SlackServ[Slack MCP Server]
+        GitHubServ[GitHub MCP Server] 
+        NotionServ[Notion MCP Server]
+    end
+
+    %% Configuration
+    UI -.->|Configure| C1
+    UI -.->|Configure| C2
+    UI -.->|Configure| C3
+
+    %% Agent Usage
+    Agents --> C1
+    Agents --> C2
+    Agents --> C3
+    Agents --> C4
+    Agents --> C5
+
+    %% MCP Connections (Transport-specific)
+    C1 -.->|STDIO/Pod| JIRAServ
+    C2 -.->|HTTPS/SSE| GitHubServ
+    C3 -.->|STDIO/Pod| DBServ
+    C4 -.->|STDIO/Volume| FileServ
+    C5 -.->|HTTPS/SSE| SlackServ
+
+    %% Additional Connections
+    C1 -.->|HTTP/Internal| ADServ
+    C2 -.->|SSH/Network| DevMCP
+    C5 -.->|HTTPS/SSE| NotionServ
+
+    classDef host fill:#4fc3f7,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef client fill:#f48fb1,stroke:#c2185b,stroke-width:2px,color:#000
+    classDef internal fill:#ffb74d,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef external fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef dev fill:#ba68c8,stroke:#7b1fa2,stroke-width:2px,color:#fff
+
+    class UI,Agents host
+    class C1,C2,C3,C4,C5 client
+    class JIRAServ,DBServ,FileServ,ADServ,ShareServ internal
+    class SlackServ,GitHubServ,NotionServ external
+    class DevMCP dev
