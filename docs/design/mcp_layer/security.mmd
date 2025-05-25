@@ -26,9 +26,9 @@ graph TB
     end
 
     subgraph "MCP Transport Security"
-        TLSConn[TLS 1.3<br/>For HTTPS/SSE connections]
+        TLSConn[TLS<br/>For HTTPS/SSE connections]
         StdioSec[STDIO Security<br/>Process isolation, limited permissions]
-        AuthTokens[Auth Tokens<br/>Bearer tokens, API keys per server]
+        AuthTokens[Auth Tokens<br/>Bearer tokens, API keys]
     end
 
     subgraph "Threats & Mitigations"
