@@ -1,0 +1,20 @@
+sequenceDiagram
+  participant User
+  participant Chatbot as Chatbot / Workflow Tool
+  participant API as OpenAI API /v1/chat/completions
+  participant Endpoint as ChatEndpoint
+  participant Engine as Reasoning Engine
+  participant MCP as MCP Host / Tool Server
+  participant Tools as Agentic Tools
+
+  User->>Chatbot: Sends message
+  Chatbot->>API: Sends API call
+  API->>Endpoint: Forward request
+  Endpoint->>Engine: Pass chat messages
+  Engine->>MCP: Request tool execution
+  MCP->>Tools: Invoke tool(s)
+  Tools-->>MCP: Return tool result
+  MCP-->>Engine: Pass result
+  Engine-->>Endpoint: Generate final response
+  Endpoint-->>Chatbot: Return response
+  Chatbot-->>User: Display response
