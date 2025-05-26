@@ -18,7 +18,7 @@ from typing import Any, List
 from langchain.schema import SystemMessage, HumanMessage, AIMessage
 from mcp import ClientSession
 from src.lib.services.chat.models.langchain.chat_openai import LangChainChatOpenAIModel
-from src.notebooks.platform_services.lablib.env_util import get_services_env
+from notebooks.platform_services.lablib.env_util import get_services_env
 
 # LLM Setup
 llm_api_key, llm_model_name, _ = get_services_env()

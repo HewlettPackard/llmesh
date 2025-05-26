@@ -14,7 +14,7 @@ with the server's tools, resources, and prompts.
 import asyncio
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from src.notebooks.platform_services.lablib.mcp.client_util import run_demo
+from notebooks.platform_services.lablib.mcp.client_util import run_demo
 
 async def main():
     import os
