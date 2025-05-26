@@ -11,7 +11,7 @@ handling of unexpected fields.
 import os
 import logging
 import pytest
-from src.lib.core.chat_endpoint import ChatEndpoint
+from src.lib.core.chat_endpoint import ChatEndpoint, Message
 
 
 @pytest.fixture
@@ -35,7 +35,7 @@ def basic_request():
     """
     return ChatEndpoint.ChatRequest(
         model="gpt-3.5-turbo",
-        messages=[ChatEndpoint.Message(role="user", content="Hello")]
+        messages=[Message(role="user", content="Hello")]
     )
 
 

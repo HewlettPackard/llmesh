@@ -19,6 +19,50 @@ from src.lib.core.log import Logger
 logger = Logger().get_logger()
 
 
+class Message(BaseModel):
+    """
+    Message model representing a single chat message.
+    """
+    role: Literal["system", "user", "assistant"]
+    content: str
+
+class MessageResponse(BaseModel):
+    """
+    Message model for assistant response.
+    """
+    role: str
+    content: str
+
+class ChatResponseChoice(BaseModel):
+    """
+    Single choice object for response, containing the assistant message.
+    """
+    index: int
+    message: MessageResponse
+    finish_reason: str = "stop"
+
+class ChatStreamDelta(BaseModel):
+    """
+    Delta message for streaming chunk.
+    """
+    content: Optional[str] = None
+
+class ChatStreamChoice(BaseModel):
+    """
+    Single choice in a stream chunk.
+    """
+    delta: ChatStreamDelta
+    index: int = 0
+    finish_reason: Optional[str] = None
+
+class ModelInfo(BaseModel):
+    """
+    Model information.
+    """
+    id: str
+    object: str = "model"
+    owned_by: str = "local"
+
 class ChatEndpoint:
     """
     A class used to handle OpenAI-compatible /v1/chat/completions endpoint logic.
@@ -39,20 +83,13 @@ class ChatEndpoint:
             description="List of model identifiers exposed by this endpoint."
         )
 
-    class Message(BaseModel):
-        """
-        Message model representing a single chat message.
-        """
-        role: Literal["system", "user", "assistant"]
-        content: str
-
     class ChatRequest(BaseModel):
         """
         Request model for chat completion following OpenAI API schema.
         Accepts extra fields and logs them as warnings.
         """
         model: str
-        messages: List["ChatEndpoint.Message"]
+        messages: List[Message]
         temperature: Optional[float] = None
         top_p: Optional[float] = None
         n: Optional[int] = None
@@ -76,21 +113,6 @@ class ChatEndpoint:
                     logger.warning("Unexpected field in request: %s=%s", key, values[key])
             return values
 
-    class MessageResponse(BaseModel):
-        """
-        Message model for assistant response.
-        """
-        role: str
-        content: str
-
-    class ChatResponseChoice(BaseModel):
-        """
-        Single choice object for response, containing the assistant message.
-        """
-        index: int
-        message: "ChatEndpoint.MessageResponse"
-        finish_reason: str = "stop"
-
     class ChatResponse(BaseModel):
         """
         Full chat response model, following OpenAI response format.
@@ -99,37 +121,15 @@ class ChatEndpoint:
         object: str = "chat.completion"
         created: int
         model: str
-        choices: List["ChatEndpoint.ChatResponseChoice"]
+        choices: List[ChatResponseChoice]
         usage: Dict[str, int]
-
-    class ModelInfo(BaseModel):
-        """
-        Model information.
-        """
-        id: str
-        object: str = "model"
-        owned_by: str = "local"
 
     class ModelsResponse(BaseModel):
         """
         Full models response, following OpenAI response format.
         """
         object: str = "list"
-        data: List["ChatEndpoint.ModelInfo"]
-
-    class ChatStreamDelta(BaseModel):
-        """
-        Delta message for streaming chunk.
-        """
-        content: Optional[str] = None
-
-    class ChatStreamChoice(BaseModel):
-        """
-        Single choice in a stream chunk.
-        """
-        delta: "ChatEndpoint.ChatStreamDelta"
-        index: int = 0
-        finish_reason: Optional[str] = None
+        data: List[ModelInfo]
 
     class ChatStreamChunk(BaseModel):
         """
@@ -139,7 +139,7 @@ class ChatEndpoint:
         object: str = "chat.completion.chunk"
         created: int
         model: str
-        choices: List["ChatEndpoint.ChatStreamChoice"]
+        choices: List[ChatStreamChoice]
 
     def __init__(self, config: Optional[Dict[str, Any]] = None) -> None:
         """
@@ -164,12 +164,12 @@ class ChatEndpoint:
 
     def build_response(
         self,
-        request: "ChatRequest",
+        request: ChatRequest,
         content: Optional[str] = None,
         message_index: int = 0,
         message_id: Optional[str] = None,
         created_at: Optional[int] = None
-    ) -> "ChatResponse":
+    ) -> ChatResponse:
         """
         Build a response compatible with OpenAI's chat completion format.
 
@@ -190,9 +190,9 @@ class ChatEndpoint:
             created=created_at or int(time.time()),
             model=request.model,
             choices=[
-                ChatEndpoint.ChatResponseChoice(
+                ChatResponseChoice(
                     index=message_index,
-                    message=ChatEndpoint.MessageResponse(
+                    message=MessageResponse(
                         role="assistant",
                         content=assistant_reply
                     )
@@ -212,7 +212,7 @@ class ChatEndpoint:
         :return: ModelsResponse object
         """
         models = [
-            ChatEndpoint.ModelInfo(id=model_name)
+            ModelInfo(id=model_name)
             for model_name in self.config.available_models
         ]
         return ChatEndpoint.ModelsResponse(data=models)
@@ -225,7 +225,7 @@ class ChatEndpoint:
         message_id: Optional[str] = None,
         created_at: Optional[int] = None,
         finish_reason: Optional[str] = None
-    ) -> "ChatStreamChunk":
+    ) -> ChatStreamChunk:
         """
         Build a streaming-compatible response chunk using Pydantic model.
 
@@ -243,23 +243,10 @@ class ChatEndpoint:
             created=created_at or int(time.time()),
             model=model or self.config.available_models[0],
             choices=[
-                ChatEndpoint.ChatStreamChoice(
-                    delta=ChatEndpoint.ChatStreamDelta(content=content),
+                ChatStreamChoice(
+                    delta=ChatStreamDelta(content=content),
                     index=index,
                     finish_reason=finish_reason
                 )
             ]
         )
-
-# Resolve forward references
-ChatEndpoint.ChatResponse.model_rebuild()
-ChatEndpoint.ChatResponseChoice.model_rebuild()
-ChatEndpoint.MessageResponse.model_rebuild()
-ChatEndpoint.ChatStreamChoice.model_rebuild()
-ChatEndpoint.ChatStreamDelta.model_rebuild()
-ChatEndpoint.ChatStreamChunk.model_rebuild()
-ChatEndpoint.ModelsResponse.model_rebuild()
-ChatEndpoint.ModelInfo.model_rebuild()
-ChatEndpoint.ChatRequest.model_rebuild()
-ChatEndpoint.Message.model_rebuild()
-ChatEndpoint.Config.model_rebuild()
