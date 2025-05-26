@@ -48,6 +48,10 @@ class BaseReasoningEngine(abc.ABC):
             default=False,
             description="Boolean flag to control verbosity of the system logs."
         )
+        stateless: Optional[bool] = Field(
+            default=False,
+            description="Boolean flag to control stateful (with memory) or stateless mode."
+        )
 
     class Result(BaseModel):
         """
@@ -67,11 +71,11 @@ class BaseReasoningEngine(abc.ABC):
         )
 
     @abc.abstractmethod
-    def run(self, message: str) -> 'BaseReasoningEngine.Result':
+    def run(self, messages: Any) -> 'BaseReasoningEngine.Result':
         """
         Run the reasoning engine.
 
-        :param message: Message to be processed by the engine.
+        :param messagse: Messages to be processed by the engine.
         :return: Result object containing the outcome of the reasoning process.
         """
 

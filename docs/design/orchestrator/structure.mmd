@@ -1,0 +1,38 @@
+flowchart TD
+  %% Orchestrator Layer (Middle)
+  subgraph ORCH["Orchestrator"]
+    direction TB
+    B1[OpenAI API /v1/chat/completions]
+    B2[ChatEndpoint]
+    B3[Reasoning Engine]
+    B4[MCP Host / Tool Server]
+    B1 --> B2 --> B3 --> B4
+  end
+
+  %% Mesh Layer (Bottom)
+  subgraph MESH["Mesh"]
+    direction TB
+    C1[Agentic Tools]
+  end
+
+  %% UI Layer (Top)
+  subgraph UI["UI Layer"]
+    direction TB
+    A1[User]
+    A2[Chatbot / Workflow Tool]
+    A1 --> A2
+  end
+
+  %% Cross-layer Flow
+  A2 -->|API Call| B1
+  B4 -->|Invoke Tools| C1
+  C1 -->|Tool Result| B4
+  B2 -->|Final Response| A2
+
+  %% Styling
+  classDef ui fill:#e0f7fa,stroke:#00796b,stroke-width:2px;
+  classDef orch fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+  classDef mesh fill:#fce4ec,stroke:#ad1457,stroke-width:2px;
+  class A1,A2 ui;
+  class B1,B2,B3,B4 orch;
+  class C1 mesh;

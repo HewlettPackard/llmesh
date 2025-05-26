@@ -12,6 +12,7 @@ its focus on building and managing agentic behaviors in Python-based systems.
 
 from src.lib.core.config import Config
 from src.lib.core.log import Logger
+from src.lib.core.chat_endpoint import ChatEndpoint
 from src.lib.system_services.tool_client import AthonTool
 from src.lib.system_services.tool_server import ToolDiscovery
 
@@ -19,6 +20,7 @@ from src.lib.system_services.tool_server import ToolDiscovery
 __all__ = [
     'Config',
     'Logger',
+    'ChatEndpoint',
     'AthonTool',
     'ToolDiscovery'
 ]
