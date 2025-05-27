@@ -52,7 +52,7 @@ class BasePromptRender(abc.ABC):
         )
 
     @abc.abstractmethod
-    def render(self, template_string: str, **params: str) -> None:
+    def render(self, template_string: str, **params: str) -> Result:
         """
         Render prompt from template.
 
@@ -61,7 +61,7 @@ class BasePromptRender(abc.ABC):
         """
 
     @abc.abstractmethod
-    def load(self, prompt_name: str, **params: str) -> None:
+    def load(self, prompt_name: str, **params: str) -> Result:
         """
         Load prompt from file.
 
@@ -70,7 +70,7 @@ class BasePromptRender(abc.ABC):
         """
 
     @abc.abstractmethod
-    def save(self, prompt_name: str, content: str) -> None:
+    def save(self, prompt_name: str, content: str) -> Result:
         """
         Save prompt to file.
 

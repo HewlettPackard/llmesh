@@ -25,8 +25,8 @@ class BaseChatModel(abc.ABC):
             ...,
             description="Type of the model deployment."
         )
-        api_key: str = Field(
-            ...,
+        api_key: Optional[str] = Field(
+            "",
             description="API key or JWT token for accessing the model."
         )
         model_name: Optional[str] = Field(

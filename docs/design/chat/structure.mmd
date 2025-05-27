@@ -1,0 +1,30 @@
+flowchart TD
+    A[Chat Service Interface] -->|ask / stream| B[Chat Manager]
+
+    B -->|render| C[Prompt Renderer]
+    B -->|get_messages| D[Memory Manager]
+
+    C --> E[[System Prompt - data]]
+    D --> F[[Memory Messages - data]]
+
+    E --> G
+    F --> G
+
+    G[Message Manager]
+    G -->|format_messages| H[[Formatted Message List - data]]
+    H -->|invoke / stream| I[Model Proxy]
+    I --> J[[LLM Response - data]]
+
+    %% Styling for clarity
+    style A fill:#dff,stroke:#333,stroke-width:1px
+    style B fill:#cfc,stroke:#333,stroke-width:1px
+    style C fill:#ccf,stroke:#333,stroke-width:1px
+    style D fill:#ccf,stroke:#333,stroke-width:1px
+    style G fill:#ffc,stroke:#333,stroke-width:1px
+    style I fill:#fcc,stroke:#333,stroke-width:1px
+
+    %% Data nodes
+    style E fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style F fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style H fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style J fill:#fffacd,stroke:#999,stroke-dasharray: 5
