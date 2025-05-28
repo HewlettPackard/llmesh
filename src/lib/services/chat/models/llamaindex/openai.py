@@ -10,7 +10,7 @@ This module allows to:
 - invoke a LLM to calculate the content of a prompt
 """
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Iterator, AsyncIterator
 from pydantic import Field
 from llama_index.llms.openai import OpenAI
 from src.lib.core.log import Logger
@@ -69,25 +69,6 @@ class LlamaIndexOpenAIModel(BaseChatModel):
             args["temperature"] = self.config.temperature
         return args
 
-    def invoke(self, message: str) -> 'LlamaIndexOpenAIModel.Result':
-        """
-        Call the LLM inference.
-
-        :param message: Message to be processed by the model.
-        :return: Result object containing the generated content.
-        """
-        try:
-            self.result.status = "success"
-            response = self.model.complete(message)
-            self.result.content = response.text
-            self.result.metadata = response.additional_kwargs
-            logger.debug(f"Prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while invoking LLM: {e}"
-            logger.error(self.result.error_message)
-        return self.result
-
     def get_model(self) -> 'LlamaIndexOpenAIModel.Result':
         """
         Return the LLM model instance.
@@ -102,3 +83,69 @@ class LlamaIndexOpenAIModel(BaseChatModel):
             self.result.status = "failure"
             logger.error("No model present")
         return self.result
+
+    def invoke(self, messages: Any) -> 'LlamaIndexOpenAIModel.Result':
+        """
+        Call the LLM inference.
+
+        :param messages: Messages to be processed by the model.
+        :return: Result object containing the generated content.
+        """
+        try:
+            self.result.status = "success"
+            response = self.model.chat(messages)
+            self.result.content = response.text
+            self.result.metadata = response.additional_kwargs
+            logger.debug(f"Prompt generated {self.result.content}")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"An error occurred while invoking LLM: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def stream(self, messages: Any) -> Iterator[str]:
+        '''
+        Synchronously stream the model response token by token.
+
+        :param messages: Message string or list formatted for the model.
+        :return: Iterator yielding response chunks.
+        '''
+        try:
+            for chunk in self.model.stream_chat(messages):
+                yield chunk.delta
+        except Exception as e:  # pylint: disable=W0718
+            logger.error(f"Streaming error: {e}")
+            raise
+
+    async def ainvoke(self, messages: Any) -> 'LlamaIndexOpenAIModel.Result':
+        '''
+        Asynchronously invoke the model with a list of messages.
+
+        :param messages: Message string or list formatted for the model.
+        :return: Result object with content and metadata.
+        '''
+        try:
+            self.result.status = "success"
+            response = await self.model.achat(messages)
+            self.result.content = response.text
+            self.result.metadata = response.additional_kwargs
+            logger.debug(f"Async prompt generated: {self.result.content}")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Async error: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    async def astream(self, messages: Any) -> AsyncIterator[str]:
+        '''
+        Asynchronously stream the model response token by token.
+
+        :param messages: Message string or list formatted for the model.
+        :return: Async iterator yielding response chunks.
+        '''
+        try:
+            async for chunk in self.model.astream_chat(messages):
+                yield chunk.delta
+        except Exception as e:  # pylint: disable=W0718
+            logger.error(f"Async streaming error: {e}")
+            raise
