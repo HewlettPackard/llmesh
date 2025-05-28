@@ -13,6 +13,7 @@ This module allows to:
 from typing import Optional, Dict, Any, Iterator, AsyncIterator
 from pydantic import Field
 from llama_index.llms.openai import OpenAI
+from llama_index.core.llms import ChatMessage, MessageRole
 from src.lib.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
 
@@ -93,7 +94,8 @@ class LlamaIndexOpenAIModel(BaseChatModel):
         """
         try:
             self.result.status = "success"
-            response = self.model.chat(messages)
+            normalized_messages = self._normalize_messages(messages)
+            response = self.model.chat(normalized_messages)
             self.result.content = response.text
             self.result.metadata = response.additional_kwargs
             logger.debug(f"Prompt generated {self.result.content}")
@@ -111,7 +113,8 @@ class LlamaIndexOpenAIModel(BaseChatModel):
         :return: Iterator yielding response chunks.
         '''
         try:
-            for chunk in self.model.stream_chat(messages):
+            normalized_messages = self._normalize_messages(messages)
+            for chunk in self.model.stream_chat(normalized_messages):
                 yield chunk.delta
         except Exception as e:  # pylint: disable=W0718
             logger.error(f"Streaming error: {e}")
@@ -126,7 +129,8 @@ class LlamaIndexOpenAIModel(BaseChatModel):
         '''
         try:
             self.result.status = "success"
-            response = await self.model.achat(messages)
+            normalized_messages = self._normalize_messages(messages)
+            response = await self.model.achat(normalized_messages)
             self.result.content = response.text
             self.result.metadata = response.additional_kwargs
             logger.debug(f"Async prompt generated: {self.result.content}")
@@ -144,8 +148,30 @@ class LlamaIndexOpenAIModel(BaseChatModel):
         :return: Async iterator yielding response chunks.
         '''
         try:
-            async for chunk in self.model.astream_chat(messages):
+            normalized_messages = self._normalize_messages(messages)
+            # ✅ Fix: await the coroutine that returns an async generator
+            stream_gen = await self.model.astream_chat(normalized_messages)
+            async for chunk in stream_gen:
                 yield chunk.delta
         except Exception as e:  # pylint: disable=W0718
             logger.error(f"Async streaming error: {e}")
             raise
+
+    def _normalize_messages(self, messages: Any) -> list:
+        """
+        Normalize input messages to a list of ChatMessage.
+
+        :param messages: A string, a ChatMessage, or a list of them.
+        :return: List of ChatMessage objects.
+        """
+        if isinstance(messages, str):
+            return [ChatMessage(role=MessageRole.USER, content=messages)]
+        elif isinstance(messages, ChatMessage):
+            return [messages]
+        elif isinstance(messages, list):
+            return [
+                ChatMessage(role=MessageRole.USER, content=m) if isinstance(m, str) else m
+                for m in messages
+            ]
+        else:
+            raise TypeError("Messages must be a string, ChatMessage, or list of those.")
