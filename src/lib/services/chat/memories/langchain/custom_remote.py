@@ -11,6 +11,7 @@ This module allows to:
 from typing import Optional, Any, Dict
 from pydantic import Field
 import requests
+from langchain_core.messages import BaseMessage
 from langchain.schema import BaseMemory
 from src.lib.core.log import Logger
 from src.lib.services.chat.message_manager import MessageManager
@@ -205,5 +206,63 @@ class LangChainRemoteMemory(BaseChatMemory):
         else:
             self.result.status = "failure"
             self.result.error_message = "No memory present"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def save_message(self, message: Any) -> 'LangChainRemoteMemory.Result':
+        """
+        Save a message pair (HumanMessage, AIMessage) to the remote memory via the API.
+
+        :param message: A list or tuple of two messages (HumanMessage, AIMessage).
+        :return: Result object containing the status of the save operation.
+        """
+        try:
+            self.result.status = "success"
+
+            # Validate the message structure
+            if not (
+                isinstance(message, (list, tuple)) and
+                len(message) == 2 and
+                isinstance(message[0], BaseMessage) and
+                isinstance(message[1], BaseMessage)
+            ):
+                raise TypeError(
+                    "Remote memory expects a [HumanMessage, AIMessage] list/tuple."
+                )
+
+            human_msg, ai_msg = message
+
+            # Convert inputs using message manager
+            result = self.memory.message_manager.convert_to_strings([human_msg])
+            if result.status != "success":
+                raise ValueError(result.error_message or "Failed to convert human message.")
+
+            # Call remote save_context
+            self.memory.save_context(result.prompts, ai_msg.content)
+            logger.debug("Message pair saved to remote memory")
+
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error saving message pair to remote: {e}"
+            logger.error(self.result.error_message)
+
+        return self.result
+
+    def get_messages(self, limit: Optional[int] = None) -> 'LangChainRemoteMemory.Result':
+        """
+        Retrieve messages from remote memory.
+        :param limit: Optional max number of messages to return.
+        :return: Result object containing a list of messages.
+        """
+        try:
+            self.result.status = "success"
+            messages = self.memory.load_memory_variables({}) or []
+            if limit is not None:
+                messages = messages[-limit:]
+            self.result.messages = messages
+            logger.debug(f"Retrieved {len(messages)} messages from remote memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error retrieving messages: {e}"
             logger.error(self.result.error_message)
         return self.result

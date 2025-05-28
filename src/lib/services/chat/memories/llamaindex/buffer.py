@@ -10,6 +10,7 @@ This module allows to:
 
 from typing import Any, Dict, Optional
 from pydantic import Field
+from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.memory import ChatMemoryBuffer
 from src.lib.core.log import Logger
@@ -86,5 +87,49 @@ class LlamaIndexBufferMemory(BaseChatMemory):
         else:
             self.result.status = "failure"
             self.result.error_message = "No memory present"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def save_message(self, message: Any) -> 'LlamaIndexBufferMemory.Result':
+        """
+        Save a single ChatMessage to the LlamaIndex buffer memory.
+
+        :param message: A ChatMessage object.
+        :return: Result object with save status.
+        """
+        try:
+            self.result.status = "success"
+            if not isinstance(message, ChatMessage):
+                raise TypeError(
+                    f"Expected message of type ChatMessage, got {type(message).__name__}"
+                )
+            self.memory.put(message)
+            logger.debug("ChatMessage saved to LlamaIndex buffer memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error saving ChatMessage: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def get_messages(self, limit: Optional[int] = None) -> 'LlamaIndexBufferMemory.Result':
+        """
+        Retrieve messages from the LlamaIndex buffer memory.
+
+        :param limit: Optional max number of messages to return.
+        :return: Result object containing a list of ChatMessage.
+        """
+        try:
+            self.result.status = "success"
+            chat_turns = self.memory.get_all()
+            messages = []
+            for turn in chat_turns:
+                messages.append(turn)
+            if limit is not None:
+                messages = messages[-limit:]
+            self.result.messages = messages
+            logger.debug(f"Retrieved {len(messages)} ChatMessage(s) from LlamaIndex buffer memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error retrieving messages: {e}"
             logger.error(self.result.error_message)
         return self.result
