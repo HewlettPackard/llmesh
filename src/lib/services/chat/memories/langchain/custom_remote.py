@@ -9,12 +9,15 @@ This module allows to:
 """
 
 from typing import Optional, Any, Dict
+import json
 from pydantic import Field
 import requests
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import (
+    BaseMessage, HumanMessage, SystemMessage,
+    AIMessage, FunctionMessage, ToolMessage
+)
 from langchain.schema import BaseMemory
 from src.lib.core.log import Logger
-from src.lib.services.chat.message_manager import MessageManager
 from src.lib.services.chat.memories.base import BaseChatMemory
 
 
@@ -38,20 +41,6 @@ class CustomLangChainRemoteMemory(BaseMemory):
         kwargs["message_manager"] = Any
         super().__init__(**kwargs)
         self.config = config
-        self.message_manager = self._init_message_manager()
-
-    def _init_message_manager(self) -> MessageManager:
-        """
-        Initialize and return the MessageManager.
-
-        :return: MessageManager instance.
-        """
-        messages_config = {
-            "type": "LangChainPrompts",
-            "json_convert": True,
-            "memory_key": self.config.get("memory_key", "")
-        }
-        return MessageManager.create(messages_config)
 
     def load_memory_variables(self, inputs: Any) -> Optional[Any]:
         """
@@ -64,10 +53,10 @@ class CustomLangChainRemoteMemory(BaseMemory):
         data = {'inputs': inputs}
         response = self._post_request(url, data)
         if response:
-            result = self.message_manager.convert_to_messages(response.json())
-            if result.status == "success":
-                return result.prompts
-            logger.error(result.error_message)
+            result = self.convert_to_messages(response.json())
+            if result["status"] == "success":
+                return result["messages"]
+            logger.error(result["error_message"])
         return None
 
     def save_context(self, inputs: Any, outputs: Any) -> None:
@@ -78,15 +67,15 @@ class CustomLangChainRemoteMemory(BaseMemory):
         :param outputs: Outputs to save.
         """
         url = self._get_endpoint_url('store')
-        result = self.message_manager.convert_to_strings(inputs)
-        if result.status == "success":
+        result = self.convert_to_strings(inputs)
+        if result["status"] == "success":
             data = {
-                'inputs': result.prompts,
+                'inputs': result["messages"],
                 'outputs': outputs
             }
             self._post_request(url, data)
         else:
-            logger.error(result.error_message)
+            logger.error(result["error_message"])
 
     def clear(self) -> None:
         """
@@ -126,6 +115,92 @@ class CustomLangChainRemoteMemory(BaseMemory):
         except requests.exceptions.RequestException as e:
             logger.error(f"Request failed: {e}")
         return None
+
+    def convert_to_messages(self, prompts_dict: dict) -> dict:
+        """
+        Convert a dictionary into an array of prompts.
+
+        :param prompts_dict: Dictionary containing the prompts data.
+        :return: Result object containing the status and converted prompts.
+        """
+        try:
+            result = {}
+            result["status"] = "success"
+            result["messages"] = {}
+            memory_key = self.config.get("memory_key", "")
+            messages_dict = json.loads(prompts_dict[memory_key])
+            result["messages"] = {
+                memory_key: self._calculate_to_messages(messages_dict),
+            }
+            if "input" in prompts_dict:
+                result["messages"]["input"] = prompts_dict["input"]
+            logger.debug("Prompts converted to Langchain messages.")
+        except Exception as e:  # pylint: disable=W0718
+            result["status"] = "failure"
+            result["error_message"] = f"An error occurred while loading the prompts: {e}"
+            logger.error(result["error_message"])
+        return result
+
+    def _calculate_to_messages(self, prompts_dict: dict) -> list:
+        """
+        Convert a dictionary of messages into Langchain message objects.
+
+        :param prompts_dict: Dictionary containing the messages.
+        :return: List of message objects.
+        """
+        prompts = []
+        for message in prompts_dict:
+            message_type = message['type']
+            content = message['content']
+            if message_type == 'SystemMessage':
+                prompts.append(SystemMessage(content=content))
+            elif message_type == 'HumanMessage':
+                prompts.append(HumanMessage(content=content))
+            elif message_type == 'AIMessage':
+                prompts.append(AIMessage(content=content))
+            elif message_type == 'FunctionMessage':
+                prompts.append(FunctionMessage(content=content))
+            elif message_type == 'ToolMessage':
+                prompts.append(ToolMessage(content=content))
+            else:
+                logger.warning(f"Message type '{message_type}' not supported")
+        return prompts
+
+    def convert_to_strings(self, prompts: list) -> dict:
+        """
+        Convert each message to a dictionary with a type field.
+
+        :param prompts: List of message objects.
+        :return: Result object containing the status and dictionary of prompts.
+        """
+        try:
+            result = {}
+            result["status"] = "success"
+            result["messages"] = {}
+            memory_key = self.config.get("memory_key", "")
+            messages = self._calculate_dict(prompts[memory_key])
+            prompts[memory_key] = json.dumps(messages)
+            prompts_dict = prompts
+            result["messages"] = prompts_dict
+        except Exception as e:  # pylint: disable=W0718
+            result["status"] = "failure"
+            result["error_message"] = f"An error occurred while dumping the prompts: {e}"
+            logger.error(result["error_message"])
+        return result
+
+    def _calculate_dict(self, messages: list) -> list:
+        """
+        Convert a list of message objects to a list of dictionaries.
+
+        :param messages: List of message objects.
+        :return: List of dictionaries representing the messages.
+        """
+        return [
+            {
+                'type': message.__class__.__name__,
+                'content': message.content
+            } for message in messages
+        ]
 
     @property
     def memory_variables(self):
@@ -229,23 +304,18 @@ class LangChainRemoteMemory(BaseChatMemory):
                 raise TypeError(
                     "Remote memory expects a [HumanMessage, AIMessage] list/tuple."
                 )
-
             human_msg, ai_msg = message
-
             # Convert inputs using message manager
-            result = self.memory.message_manager.convert_to_strings([human_msg])
-            if result.status != "success":
-                raise ValueError(result.error_message or "Failed to convert human message.")
-
+            result = self.memory.convert_to_strings([human_msg])
+            if result["status"] != "success":
+                raise ValueError(result["error_message"] or "Failed to convert human message.")
             # Call remote save_context
-            self.memory.save_context(result.prompts, ai_msg.content)
+            self.memory.save_context(result["messages"], ai_msg.content)
             logger.debug("Message pair saved to remote memory")
-
         except Exception as e:  # pylint: disable=W0718
             self.result.status = "failure"
             self.result.error_message = f"Error saving message pair to remote: {e}"
             logger.error(self.result.error_message)
-
         return self.result
 
     def get_messages(self, limit: Optional[int] = None) -> 'LangChainRemoteMemory.Result':

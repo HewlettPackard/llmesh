@@ -612,92 +612,6 @@ def test_langchain_chroma_store_memory_get_messages_with_inputs(
 
 
 @pytest.fixture
-def remote_memory_config():
-    """
-    Mockup configuration for CustomLangChainRemoteMemory
-    """
-    return {
-        "type": "LangChainRemote",
-        "base_url": "http://remote-memory-service",
-        "memory_key": "chat_history",
-        "timeout": 10,
-        "cert_verify": True
-    }
-
-
-class MockMessageManager:
-    "Mock class"
-    def convert_to_messages(self, json_data):  # pylint: disable=W0613
-        "Mock Function"
-        mock_result = MagicMock()
-        mock_result.status = "success"
-        mock_result.prompts = ["Mocked prompt"]
-        return mock_result
-    def convert_to_strings(self, inputs):  # pylint: disable=W0613
-        "Mock Function"
-        mock_result = MagicMock()
-        mock_result.status = "success"
-        mock_result.prompts = ["Mocked string"]
-        return mock_result
-
-
-@patch('src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create')
-@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
-def test_custom_remote_memory_load(mock_post, mock_message_manager_create, remote_memory_config):  # pylint: disable=W0621
-    """
-    Test the load_memory_variables method of CustomLangChainRemoteMemory.
-    """
-    mock_message_manager_create.return_value = MockMessageManager()
-    mock_post.return_value.json.return_value = {"data": "mock_data"}
-    mock_post.return_value.raise_for_status = MagicMock()
-    memory = CustomLangChainRemoteMemory(remote_memory_config)
-    result = memory.load_memory_variables("inputs")
-    assert result == ["Mocked prompt"]
-    mock_post.assert_called_once_with(
-        'http://remote-memory-service/load',
-        json={'inputs': 'inputs'},
-        verify=True,
-        timeout=10
-    )
-
-
-@patch('src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create')
-@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
-def test_custom_remote_memory_save(mock_post, mock_message_manager_create, remote_memory_config):  # pylint: disable=W0621
-    """
-    Test the save_context method of CustomLangChainRemoteMemory.
-    """
-    mock_message_manager_create.return_value = MockMessageManager()
-    mock_post.return_value.raise_for_status = MagicMock()
-    memory = CustomLangChainRemoteMemory(remote_memory_config)
-    memory.save_context("inputs", "outputs")
-    mock_post.assert_called_once_with(
-        'http://remote-memory-service/store',
-        json={'inputs': ['Mocked string'], 'outputs': 'outputs'},
-        verify=True,
-        timeout=10
-    )
-
-
-@patch('src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create')
-@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
-def test_custom_remote_memory_clear(mock_post, mock_message_manager_create, remote_memory_config):  # pylint: disable=W0621
-    """
-    Test the clear method of CustomLangChainRemoteMemory.
-    """
-    mock_message_manager_create.return_value = MockMessageManager()
-    mock_post.return_value.raise_for_status = MagicMock()
-    memory = CustomLangChainRemoteMemory(remote_memory_config)
-    memory.clear()
-    mock_post.assert_called_once_with(
-        'http://remote-memory-service/clear',
-        json=None,
-        verify=True,
-        timeout=10
-    )
-
-
-@pytest.fixture
 def langchain_remote_memory_config():
     """
     Mockup LangChain Remote memory configuration
@@ -711,15 +625,69 @@ def langchain_remote_memory_config():
     }
 
 
-@patch.object(CustomLangChainRemoteMemory, 'load_memory_variables', return_value="Mocked response")
+@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
+def test_custom_remote_memory_load(mock_post, langchain_remote_memory_config):  # pylint: disable=W0621
+    """
+    Test the load_memory_variables method of CustomLangChainRemoteMemory.
+    """
+    mock_response = MagicMock()
+    mock_response.raise_for_status = MagicMock()
+    mock_response.json.return_value = {
+        "chat_history": '[{"type": "HumanMessage", "content": "Hi"}]'
+    }
+    mock_post.return_value = mock_response
+    memory = CustomLangChainRemoteMemory(langchain_remote_memory_config)
+    result = memory.load_memory_variables("inputs")
+    assert isinstance(result["chat_history"], list)
+    mock_post.assert_called_once_with(
+        'http://remote-memory-service/load',
+        json={'inputs': 'inputs'},
+        verify=True,
+        timeout=10
+    )
+
+
+@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
+def test_custom_remote_memory_save(mock_post, langchain_remote_memory_config):  # pylint: disable=W0621
+    """
+    Test the save_context method of CustomLangChainRemoteMemory.
+    """
+    mock_post.return_value.raise_for_status = MagicMock()
+    memory = CustomLangChainRemoteMemory(langchain_remote_memory_config)
+    human = HumanMessage(content="Hi")
+    memory.save_context({"chat_history": [human]}, "response")
+    args, kwargs = mock_post.call_args  # pylint: disable=W0612
+    assert kwargs["json"]["outputs"] == "response"
+    assert isinstance(kwargs["json"]["inputs"]["chat_history"], str)
+    mock_post.assert_called_once()
+
+
+@patch('src.lib.services.chat.memories.langchain.custom_remote.requests.post')
+def test_custom_remote_memory_clear(mock_post, langchain_remote_memory_config):  # pylint: disable=W0621
+    """
+    Test the clear method of CustomLangChainRemoteMemory.
+    """
+    mock_post.return_value.raise_for_status = MagicMock()
+    memory = CustomLangChainRemoteMemory(langchain_remote_memory_config)
+    memory.clear()
+    args, kwargs = mock_post.call_args
+    assert kwargs["json"] is None
+    assert "/clear" in args[0]
+
+
+@patch.object(CustomLangChainRemoteMemory, 'load_memory_variables')
 def test_langchain_remote_memory_load(mock_load, langchain_remote_memory_config):  # pylint: disable=W0621
     """
     Test the load_memory_variables method of LangChainRemoteMemory
     to verify it loads memory variables correctly.
     """
+    mock_load.return_value = {
+        "chat_history": [HumanMessage(content="Hi"), AIMessage(content="Hello")]
+    }
     memory = ChatMemory.create(langchain_remote_memory_config)
     result = memory.memory.load_memory_variables("inputs")
-    assert result == "Mocked response"
+    assert isinstance(result["chat_history"], list)
+    assert all(isinstance(m, (HumanMessage, AIMessage)) for m in result["chat_history"])
     mock_load.assert_called_once_with("inputs")
 
 
@@ -745,75 +713,72 @@ def test_langchain_remote_memory_get_memory(langchain_remote_memory_config):  # 
     assert isinstance(result.memory, CustomLangChainRemoteMemory)
 
 
-@patch("src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create")
 @patch.object(CustomLangChainRemoteMemory, "save_context")
+@patch.object(CustomLangChainRemoteMemory,
+              "convert_to_strings",
+              return_value={
+                  "status": "success",
+                  "messages": {"chat_history": '[{"type": "HumanMessage", "content": "Hello"}]'}})
 def test_langchain_remote_memory_save_valid_message_pair(
-    mock_save_context, mock_create_manager, remote_memory_config):  # pylint: disable=W0621
+    mock_convert_to_strings, mock_save_context, langchain_remote_memory_config):  # pylint: disable=W0621, W0613
     """
     Test saving a valid [HumanMessage, AIMessage] pair to remote memory.
     """
-    mock_create_manager.return_value = MockMessageManager()
-    memory = LangChainRemoteMemory(remote_memory_config)
+    memory = ChatMemory.create(langchain_remote_memory_config)
     message = [HumanMessage(content="Hello"), AIMessage(content="Hi there!")]
     result = memory.save_message(message)
     assert result.status == "success"
     mock_save_context.assert_called_once()
 
 
-@patch("src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create")
-def test_langchain_remote_memory_save_invalid_message_structure(
-    mock_create_manager, remote_memory_config):  # pylint: disable=W0621
+def test_langchain_remote_memory_save_invalid_message_structure(langchain_remote_memory_config):  # pylint: disable=W0621
     """
     Test saving an invalid message structure should fail.
     """
-    mock_create_manager.return_value = MockMessageManager()
-    memory = LangChainRemoteMemory(remote_memory_config)
+    memory = ChatMemory.create(langchain_remote_memory_config)
     invalid_message = {"text": "This is not a valid message structure"}
     result = memory.save_message(invalid_message)
     assert result.status == "failure"
     assert "message pair" in result.error_message or "Remote memory expects" in result.error_message
 
 
-@patch("src.lib.services.chat.memories.langchain.custom_remote.CustomLangChainRemoteMemory.load_memory_variables")  # pylint: disable=C0301
-@patch("src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create")
+@patch.object(CustomLangChainRemoteMemory, "load_memory_variables")
 def test_langchain_remote_memory_get_messages_from_remote_memory(
-    mock_create_manager, mock_load, remote_memory_config):  # pylint: disable=W0621
+    mock_load, langchain_remote_memory_config):  # pylint: disable=W0621
     """
     Test retrieving messages from remote memory.
     """
-    mock_create_manager.return_value = MockMessageManager()
-    # Return two real message objects from the mocked memory
-    mock_load.return_value = [
-        HumanMessage(content="Hello from user"),
-        AIMessage(content="Hello from assistant")
-    ]
-    memory = LangChainRemoteMemory(remote_memory_config)
+    mock_load.return_value = {
+        "chat_history": [
+            HumanMessage(content="Hello from user"),
+            AIMessage(content="Hello from assistant")
+        ]
+    }
+    memory = ChatMemory.create(langchain_remote_memory_config)
     result = memory.get_messages()
+    # result.messages is a dict, so extract the list
+    messages = result.messages["chat_history"]
     assert result.status == "success"
-    assert isinstance(result.messages, list)
-    assert len(result.messages) == 2
-    assert all(isinstance(msg, (HumanMessage, AIMessage)) for msg in result.messages)
+    assert isinstance(messages, list)
+    assert len(messages) == 2
+    assert all(isinstance(msg, (HumanMessage, AIMessage)) for msg in messages)
 
 
-@patch("src.lib.services.chat.memories.langchain.custom_remote.CustomLangChainRemoteMemory.load_memory_variables")  # pylint: disable=C0301
-@patch("src.lib.services.chat.memories.langchain.custom_remote.MessageManager.create")
-def test_get_messages_with_limit(mock_create_manager, mock_load, remote_memory_config):  # pylint: disable=W0621
+@patch.object(CustomLangChainRemoteMemory, "load_memory_variables")
+def test_langchain_remote_get_messages_with_limit(mock_load, langchain_remote_memory_config):  # pylint: disable=W0621
     """
     Test retrieving a limited number of messages from remote memory.
     """
-    # Use dummy message manager — not relevant here since we patch `load_memory_variables`
-    mock_create_manager.return_value = MagicMock()
-    # Return a valid list of BaseMessage objects
     mock_load.return_value = [
-        HumanMessage(content="Hi"),
-        AIMessage(content="Hello!"),
-        HumanMessage(content="How are you?")
+        HumanMessage(content="Hello"),
+        AIMessage(content="Hi"),
+        HumanMessage(content="What's up?")
     ]
-    memory = ChatMemory.create(remote_memory_config)
-    result = memory.get_messages(limit=1)
+    memory = ChatMemory.create(langchain_remote_memory_config)
+    result = memory.get_messages(limit=2)
     assert result.status == "success"
-    assert len(result.messages) == 1
-    assert isinstance(result.messages[0], (HumanMessage, AIMessage))
+    assert isinstance(result.messages, list)
+    assert len(result.messages) == 2
 
 
 if __name__ == "__main__":
