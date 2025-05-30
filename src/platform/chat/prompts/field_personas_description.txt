@@ -1,0 +1,1 @@
+Use the 'personas' field to choose a specific assistant style or expertise, such as "pirate" or "5g_expert". Leave it empty for the default assistant behavior.
