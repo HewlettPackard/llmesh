@@ -11,7 +11,7 @@ This module allows to:
 """
 
 import os
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Iterator, AsyncIterator
 from pydantic import Field
 from langchain_community.llms.vllm import VLLM
 from src.lib.core.log import Logger
@@ -75,25 +75,6 @@ class LangChainChatVLLMModel(BaseChatModel):
             args["tensor_parallel_size"] = self.config.tensor_parallel_size
         return args
 
-    def invoke(self, message: str) -> 'LangChainChatVLLMModel.Result':
-        """
-        Call the LLM inference.
-
-        :param message: Message to be processed by the model.
-        :return: Result object containing the generated content.
-        """
-        try:
-            self.result.status = "success"
-            response = self.model.invoke(message)
-            self.result.content = response
-            self.result.metadata = {}
-            logger.debug(f"Prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while invoking LLM: {e}"
-            logger.error(self.result.error_message)
-        return self.result
-
     def get_model(self) -> 'LangChainChatVLLMModel.Result':
         """
         Return the LLM model instance.
@@ -108,3 +89,68 @@ class LangChainChatVLLMModel(BaseChatModel):
             self.result.status = "failure"
             logger.error("No model present")
         return self.result
+
+    def invoke(self, messages: Any) -> 'LangChainChatVLLMModel.Result':
+        """
+        Call the LLM inference.
+
+        :param messages: Messages to be processed by the model.
+        :return: Result object containing the generated content.
+        """
+        try:
+            self.result.status = "success"
+            response = self.model.invoke(messages)
+            self.result.content = response
+            self.result.metadata = {}
+            logger.debug(f"Prompt generated {self.result.content}")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"An error occurred while invoking LLM: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+    def stream(self, messages: Any) -> Iterator[str]:
+        '''
+        Synchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Iterator yielding response chunks.
+        '''
+        try:
+            for chunk in self.model.stream(messages):
+                yield chunk.content
+        except Exception as e:  # pylint: disable=W0718
+            logger.error(f"Streaming error: {e}")
+            raise
+
+    async def ainvoke(self, messages: Any) -> 'LangChainChatVLLMModel.Result':
+        '''
+        Asynchronously invoke the model with a list of messages.
+
+        :param messages: Message list formatted for the model.
+        :return: Result object with content and metadata.
+        '''
+        try:
+            self.result.status = "success"
+            response = await self.model.ainvoke(messages)
+            self.result.content = response
+            self.result.metadata = {}
+            logger.debug(f"Async prompt generated: {self.result.content}")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Async error: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    async def astream(self, messages: Any) -> AsyncIterator[str]:
+        '''
+        Asynchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Async iterator yielding response chunks.
+        '''
+        try:
+            async for chunk in self.model.astream(messages):
+                yield chunk.content
+        except Exception as e:  # pylint: disable=W0718
+            logger.error(f"Async streaming error: {e}")
+            raise

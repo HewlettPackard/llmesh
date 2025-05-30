@@ -9,7 +9,7 @@ model's methods to ensure correct setup and functionality.
 """
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 import pytest
 from langchain_openai import ChatOpenAI
 from langchain_openai import AzureChatOpenAI
@@ -145,6 +145,51 @@ def test_langchain_chatopenaimodel_get_model(langchain_chatopenai_model_config):
     assert isinstance(result.model, ChatOpenAI)
 
 
+@patch.object(ChatOpenAI, 'stream')
+def test_langchain_chatopenaimodel_stream(mock_stream, langchain_chatopenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method of LangChainChatOpenAIModel to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainChatOpenAIModel(langchain_chatopenai_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(ChatOpenAI, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_chatopenaimodel_ainvoke(mock_ainvoke, langchain_chatopenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method of LangChainChatOpenAIModel to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainChatOpenAIModel(langchain_chatopenai_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(ChatOpenAI, 'astream', side_effect=mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_chatopenaimodel_astream(mock_astream, langchain_chatopenai_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method of LangChainChatOpenAIModel to verify it returns the model instance.
+    """
+    model = LangChainChatOpenAIModel(langchain_chatopenai_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
+
+
 @pytest.fixture
 def langchain_azurechatopenai_model_config():
     """
@@ -179,6 +224,54 @@ def test_langchain_azurechatopenai_model_invoke(
     assert result.content == "Mocked response"
     assert result.metadata == {"key": "value"}  # Update this to match expected metadata
     mock_invoke.assert_called_once_with("Hello, world!")
+
+
+@patch.object(AzureChatOpenAI, 'stream')
+def test_langchain_azurechatopenai_model_stream(
+    mock_stream, langchain_azurechatopenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainAzureChatOpenAIModel(langchain_azurechatopenai_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(AzureChatOpenAI, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_azurechatopenai_model_ainvoke(
+    mock_ainvoke, langchain_azurechatopenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainAzureChatOpenAIModel(langchain_azurechatopenai_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def azure_mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(AzureChatOpenAI, 'astream', side_effect=azure_mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_azurechatopenai_model_astream(
+    mock_astream, langchain_azurechatopenai_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    model = LangChainAzureChatOpenAIModel(langchain_azurechatopenai_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
 
 
 def test_langchain_azurechatopenai_model_get_model(langchain_azurechatopenai_model_config):  # pylint: disable=W0621
@@ -230,6 +323,54 @@ def test_langchain_chatgooglegenai_model_invoke(
     mock_invoke.assert_called_once_with("Hello, world!")
 
 
+@patch.object(ChatGoogleGenerativeAI, 'stream')
+def test_langchain_chatgooglegenai_model_stream(
+    mock_stream, langchain_chatgooglegenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainChatGoogleGenAIModel(langchain_chatgooglegenai_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(ChatGoogleGenerativeAI, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_chatgooglegenai_model_ainvoke(
+    mock_ainvoke, langchain_chatgooglegenai_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainChatGoogleGenAIModel(langchain_chatgooglegenai_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def googlegenai_mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(ChatGoogleGenerativeAI, 'astream', side_effect=googlegenai_mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_chatgooglegenai_model_astream(
+    mock_astream, langchain_chatgooglegenai_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    model = LangChainChatGoogleGenAIModel(langchain_chatgooglegenai_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
+
+
 def test_langchain_chatgooglegenai_model_get_model(langchain_chatgooglegenai_model_config):  # pylint: disable=W0621
     """
     Test the get_model method of LangChainChatGoogleGenAIModel to verify
@@ -279,6 +420,53 @@ def test_langchain_chatanthropic_model_invoke(
     mock_invoke.assert_called_once_with("Hello, world!")
 
 
+@patch.object(ChatAnthropic, 'stream')
+def test_langchain_chatanthropic_model_stream(mock_stream, langchain_chatanthropic_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainChatAnthropicModel(langchain_chatanthropic_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(ChatAnthropic, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_chatanthropic_model_ainvoke(
+    mock_ainvoke, langchain_chatanthropic_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainChatAnthropicModel(langchain_chatanthropic_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def anthropic_mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(ChatAnthropic, 'astream', side_effect=anthropic_mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_chatanthropic_model_astream(
+    mock_astream, langchain_chatanthropic_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    model = LangChainChatAnthropicModel(langchain_chatanthropic_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
+
+
 def test_langchain_chatanthropic_model_get_model(langchain_chatanthropic_model_config):  # pylint: disable=W0621
     """
     Test the get_model method of LangChainChatAnthropicModel to verify
@@ -324,6 +512,53 @@ def test_langchain_chatmixtral_model_invoke(
     assert result.content == "Mocked response"
     # If metadata is expected, you can include assertions for it here
     mock_invoke.assert_called_once_with("Hello, world!")
+
+
+@patch.object(ChatMistralAI, 'stream')
+def test_langchain_chatmixtral_model_stream(mock_stream, langchain_chatmixtral_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainChatMistralAIModel(langchain_chatmixtral_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(ChatMistralAI, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_chatmixtral_model_ainvoke(
+    mock_ainvoke, langchain_chatmixtral_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainChatMistralAIModel(langchain_chatmixtral_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def mistralai_mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(ChatMistralAI, 'astream', side_effect=mistralai_mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_chatmixtral_model_astream(
+    mock_astream, langchain_chatmixtral_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    model = LangChainChatMistralAIModel(langchain_chatmixtral_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
 
 
 def test_langchain_chatmixtral_model_get_model(langchain_chatmixtral_model_config):  # pylint: disable=W0621
@@ -372,6 +607,51 @@ def test_langchain_chatnvidia_model_invoke(
     assert result.content == "Mocked response"
     # Check that the model was called with the correct input
     mock_invoke.assert_called_once_with("Hello, world!")
+
+
+@patch.object(ChatNVIDIA, 'stream')
+def test_langchain_chatnvidia_model_stream(mock_stream, langchain_chatnvidia_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_stream.return_value = iter([MagicMock(content="chunk1"), MagicMock(content="chunk2")])
+    model = LangChainChatNvidiaModel(langchain_chatnvidia_model_config)
+    chunks = list(model.stream("Hello"))
+    assert chunks == ["chunk1", "chunk2"]
+
+
+@patch.object(ChatNVIDIA, 'ainvoke', new_callable=AsyncMock)
+@pytest.mark.asyncio
+async def test_langchain_chatnvidia_model_ainvoke(mock_ainvoke, langchain_chatnvidia_model_config):  # pylint: disable=W0621
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    mock_response = MagicMock()
+    mock_response.content = "async response"
+    mock_response.response_metadata = {}
+    mock_ainvoke.return_value = mock_response
+    model = LangChainChatNvidiaModel(langchain_chatnvidia_model_config)
+    result = await model.ainvoke("Hello")
+    assert result.status == "success"
+    assert result.content == "async response"
+
+
+async def nvidia_mock_astream_gen(*args, **kwargs):  # pylint: disable=W0613
+    """
+    The async generator function to use as the mock
+    """
+    for part in ["a", "b"]:
+        yield MagicMock(content=part)
+
+@patch.object(ChatNVIDIA, 'astream', side_effect=nvidia_mock_astream_gen)
+@pytest.mark.asyncio
+async def test_langchain_chatnvidia_model_astream(mock_astream, langchain_chatnvidia_model_config):  # pylint: disable=W0621, W0613
+    """
+    Test the get_model method to verify it returns the model instance.
+    """
+    model = LangChainChatNvidiaModel(langchain_chatnvidia_model_config)
+    chunks = [chunk async for chunk in model.astream("Hello")]
+    assert chunks == ["a", "b"]
 
 
 def test_langchain_chatnvidia_model_get_model(langchain_chatnvidia_model_config):  # pylint: disable=W0621

@@ -189,3 +189,60 @@ class LangChainChromaStoreMemory(BaseChatMemory):
             self.result.error_message = "No memory present"
             logger.error(self.result.error_message)
         return self.result
+
+    def save_message(self, message: Any) -> 'LangChainChromaStoreMemory.Result':
+        """
+        Save a message or message pair to the vector store memory.
+        For vector store memory, you typically save a pair of HumanMessage and AIMessage.
+
+        :param message: A list of two messages (HumanMessage, AIMessage).
+        :return: Result object containing the status of the save operation.
+        """
+        try:
+            self.result.status = "success"
+            # Expecting a tuple or list: [HumanMessage, AIMessage]
+            if not (
+                isinstance(message, (list, tuple)) and
+                len(message) == 2 and
+                isinstance(message[0], BaseMessage) and
+                isinstance(message[1], BaseMessage)
+            ):
+                raise TypeError(
+                    "Vector store memory expects a [HumanMessage, AIMessage] list/tuple."
+                )
+            human_msg, ai_msg = message
+            # Save as a string with 'input:' and 'output:' markers
+            self.memory.save_context({}, {"input": human_msg.content, "output": ai_msg.content})
+            logger.debug("Message pair saved to vector store memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error saving message pair: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def get_messages(
+            self, limit: int = None, inputs: dict = None
+        ) -> 'LangChainChromaStoreMemory.Result':
+        """
+        Retrieve messages from vector store memory.
+
+        :param limit: Maximum number of messages to return (optional).
+        :param inputs: Input dictionary for retrieval (optional).
+        :return: Result object containing a list of messages.
+        """
+        try:
+            self.result.status = "success"
+            if inputs is None:
+                inputs = {}
+            if limit is not None:
+                # Inject the limit into the search kwargs for retriever, if possible
+                inputs['k'] = limit
+            memory_vars = self.memory.load_memory_variables(inputs)
+            messages = memory_vars.get(self.config.memory_key, [])
+            self.result.messages = messages
+            logger.debug(f"Retrieved {len(messages)} messages from vector store memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error retrieving messages: {e}"
+            logger.error(self.result.error_message)
+        return self.result

@@ -1,0 +1,3 @@
+ChatService is an intelligent and adaptive chat tool assistant designed to provide helpful, context-aware responses.
+It supports multiple expert personas, such as technical specialists or playful characters, and maintains memory across interactions for a more personalized experience.
+Simply ask a question or start a conversation — the assistant will respond appropriately, with tone and expertise tailored to your needs.

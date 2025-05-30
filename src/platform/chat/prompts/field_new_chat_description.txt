@@ -1,0 +1,1 @@
+Set the 'new' field to true if you want to start a new conversation. This clears previous memory and resets the context.

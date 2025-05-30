@@ -8,8 +8,9 @@ This module allows to:
 - initialize and return the LangChain buffer window memory
 """
 
-from typing import Optional
+from typing import Any, Optional
 from pydantic import Field
+from langchain_core.messages import BaseMessage
 from langchain.memory import ConversationBufferWindowMemory
 from src.lib.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory
@@ -88,5 +89,45 @@ class LangChainBufferWindowMemory(BaseChatMemory):
         else:
             self.result.status = "failure"
             self.result.error_message = "No memory present"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def save_message(self, message: Any) -> 'LangChainBufferWindowMemory.Result':
+        """
+        Save a new message to the memory.
+
+        :param message: The message object to save.
+        :return: Result object containing the status of the save operation.
+        """
+        try:
+            self.result.status = "success"
+            if not isinstance(message, BaseMessage):
+                raise TypeError(
+                    f"Expected message of type BaseMessage, got {type(message).__name__}"
+                )
+            self.memory.chat_memory.add_message(message)  # pylint: disable=E1101
+            logger.debug("Message saved to buffer window memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error saving message: {e}"
+            logger.error(self.result.error_message)
+        return self.result
+
+    def get_messages(self, limit: Optional[int] = None) -> 'LangChainBufferWindowMemory.Result':
+        """
+        Retrieve messages from buffer window memory.
+        :param limit: Optional max number of messages to return.
+        :return: Result object containing a list of messages.
+        """
+        try:
+            self.result.status = "success"
+            messages = self.memory.chat_memory.messages  # pylint: disable=E1101
+            if limit is not None:
+                messages = messages[-limit:]
+            self.result.messages = messages
+            logger.debug(f"Retrieved {len(messages)} messages from buffer window memory")
+        except Exception as e:  # pylint: disable=W0718
+            self.result.status = "failure"
+            self.result.error_message = f"Error retrieving messages: {e}"
             logger.error(self.result.error_message)
         return self.result

@@ -8,6 +8,8 @@ This script is designed to generate a prompt from a file using
 Jinja2 and some input parameters.
 """
 
+from typing import Dict, Optional
+from pydantic import Field
 from jinja2 import Template, Environment, FileSystemLoader
 from src.lib.core.log import Logger
 from src.lib.services.chat.prompt_renders.base import BasePromptRender
@@ -20,6 +22,19 @@ class JinjaTemplatePromptRender(BasePromptRender):
     """
     Prompt Render class to manage prompts.
     """
+
+    class Config(BasePromptRender.Config):
+        """
+        Configuration for the Prompt Render class.
+        """
+        environment: Optional[str] = Field(
+            None,
+            description="Path to the environment configuration folder"
+        )
+        templates: Optional[Dict[str, str]] = Field(
+            None,
+            description="Dictionary of templates with key-value pairs representing template details"
+        )
 
     def __init__(self, config: dict) -> None:
         """

@@ -13,6 +13,11 @@ its focus on building and managing agentic behaviors in Python-based systems.
 from src.lib.services.chat.model import ChatModel
 from src.lib.services.chat.memory import ChatMemory
 from src.lib.services.chat.message_manager import MessageManager
+from src.lib.services.chat.message_managers.message import (
+    MessageRole,
+    TextBlock,
+    ChatMessage
+)
 from src.lib.services.chat.prompt_render import PromptRender
 
 
@@ -20,5 +25,8 @@ __all__ = [
     'ChatModel',
     'ChatMemory',
     'MessageManager',
+    'MessageRole',
+    'TextBlock',
+    'ChatMessage',
     'PromptRender'
 ]

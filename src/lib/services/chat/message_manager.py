@@ -11,8 +11,10 @@ based on the document type.
 """
 
 from typing import Type, Dict, Any
-from src.lib.services.chat.message_managers.langchain.prompts import (
-    LangChainPromptsMessageManager)
+from src.lib.services.chat.message_managers.langchain.chat import (
+    LangChainChatMessageManager)
+from src.lib.services.chat.message_managers.llamaindex.chat import (
+    LlamaIndexChatMessageManager)
 
 
 class MessageManager:  # pylint: disable=R0903
@@ -21,7 +23,8 @@ class MessageManager:  # pylint: disable=R0903
     """
 
     _messages: Dict[str, Type] = {
-        'LangChainPrompts': LangChainPromptsMessageManager,
+        'LangChainChat': LangChainChatMessageManager,
+        'LlamaIndexChat': LlamaIndexChatMessageManager,
     }
 
     @staticmethod

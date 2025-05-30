@@ -27,13 +27,13 @@ The **Mesh Orchestrator** is a modular middleware layer that connects chat inter
 
 ## Diagrams
 
-### ▶️ Sequence Flow Diagram  
+### Sequence Flow Diagram  
 
 Shows the runtime message path from user input to tool response and back.
 
 👉 [View sequence.mmd](./sequence.mmd)
 
-### 📊 Slim Architecture Diagram  
+### Slim Architecture Diagram  
 
 Illustrates the system layers: UI → Orchestrator → Mesh.
 

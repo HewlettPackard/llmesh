@@ -39,7 +39,7 @@ function generatePromptToolConfigurationForm(tool) {
     settingsForm += generateSystemPromptForm();
     settingsForm += generateLLMForm();
     document.getElementById('toolConfiguration').innerHTML = settingsForm;
-    let functionSettings = tool.settings.function
+    let functionSettings = tool.settings.service
     populateSystemPrompt(functionSettings.system_prompt);
     let options = tool.options
     populateLLMOptions(options.llms, functionSettings.llm);

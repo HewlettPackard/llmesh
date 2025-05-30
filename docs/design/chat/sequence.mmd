@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant User
+    participant ChatService
+    participant ChatManager
+    participant PromptRenderer
+    participant MemoryManager
+    participant MessageManager
+    participant ModelProxy
+
+    User->>ChatService: ask(session_id, input)
+    ChatService->>ChatManager: invoke()
+    ChatManager->>PromptRenderer: render(persona/system)
+    ChatManager->>MemoryManager: get_messages(session_id)
+    ChatManager->>MessageManager: build_messages(system, memory, user_input)
+    MessageManager->>ModelProxy: format + invoke()
+    ModelProxy-->>MessageManager: LLM response
+    MessageManager-->>MemoryManager: save user + assistant message
+    MessageManager-->>ChatManager: formatted result
+    ChatManager-->>ChatService: return response
+    ChatService-->>User: response.content
