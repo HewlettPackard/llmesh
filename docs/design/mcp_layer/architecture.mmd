@@ -1,0 +1,99 @@
+graph TB
+    subgraph "Kubernetes Cluster Namespace"
+        subgraph "LATMesh Helm Chart Deployment"
+            subgraph "LATMesh Platform (MCP Host)"
+                subgraph "UI Layer"
+                    UI[LATMesh Web UI]
+                    ChatUI[Chat Interface]
+                    PromptUI[Prompt Management]
+                    RAGUI[RAG Configuration]
+                    MCPUI[MCP Server Configuration]
+                end
+                
+                subgraph "Agent Orchestrator"
+                    A[Reasoning Engine]
+                    B[Task Force]
+                    P[3rd Party Integrations e.g. langChain]
+                end
+                
+                subgraph "Built-in AI Services"
+                    C[RAG Service]
+                    D[Chat Service] 
+                end
+                
+                subgraph "MCP Client Connections"
+                    Client1[MCP Client<br/>→ Internal RAG Server]
+                    Client2[MCP Client<br/>→ GitHub Server]
+                    Client3[MCP Client<br/>→ User's DB Server]
+                    ClientN[MCP Client<br/>→ External Server N]
+                end
+                
+                subgraph "Configuration & Registry"
+                    ConfigStore[MCP Server Configs]
+                    Registry[Capability Discovery Cache]
+                end
+            end
+        end
+
+        subgraph "MCP Servers"
+            subgraph "Internal MCP Servers"
+                RAGServer[RAG MCP Server<br/>STDIO]
+                PromptServer[Prompt Template Server<br/>STDIO]
+            end
+            
+            subgraph "User Defined Servers"
+                DBServer[Database MCP Server<br/>STDIO/Sidecar]
+                FileServer[File System Server<br/>STDIO]
+            end
+        end
+    end
+
+    subgraph "External MCP Ecosystem"
+        GitHubServer[GitHub MCP Server<br/>HTTPS/SSE]
+        SlackServer[Slack MCP Server<br/>HTTPS/SSE]
+        CommunityServer[Community Servers<br/>HTTPS/SSE]
+    end
+
+    %% UI Configuration Flow
+    MCPUI --> ConfigStore
+    ConfigStore -.->|Configure| Client2
+    ConfigStore -.->|Configure| Client3
+    ConfigStore -.->|Configure| ClientN
+
+    %% Agent Orchestrator to MCP Clients
+    A --> Client1
+    A --> Client2
+    A --> Client3
+    B --> Client1
+    B --> ClientN
+    P --> ClientN
+    P --> Client1
+
+    %% Built-in Services Expose via MCP
+    C -.->|Exposes Tools/Resources| RAGServer
+    D -.->|Exposes Tools/Resources| PromptServer
+
+    %% MCP Client to Server Connections (Transport-specific)
+    Client1 -.->|STDIO| RAGServer
+    Client2 -.->|HTTPS/SSE| GitHubServer
+    Client3 -.->|STDIO/Pod Network| DBServer
+    ClientN -.->|HTTPS/SSE| CommunityServer
+
+    %% Discovery & Caching
+    Client1 --> Registry
+    Client2 --> Registry
+    Client3 --> Registry
+
+    classDef host fill:#4fc3f7,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef ui fill:#ba68c8,stroke:#7b1fa2,stroke-width:2px,color:#fff
+    classDef client fill:#f48fb1,stroke:#c2185b,stroke-width:2px,color:#000
+    classDef internal fill:#ffb74d,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef external fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef config fill:#fff176,stroke:#f9a825,stroke-width:2px,color:#000
+
+    class A,B,C,D,E,P,Q,R host
+    class UI,ChatUI,PromptUI,RAGUI,MCPUI ui
+    class Client1,Client2,Client3,ClientN client
+    class RAGServer,PromptServer,DBServer,FileServer internal
+    class GitHubServer,SlackServer,CommunityServer external
+    class ConfigStore,Registry config

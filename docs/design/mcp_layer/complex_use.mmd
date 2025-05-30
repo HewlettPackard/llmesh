@@ -1,0 +1,70 @@
+flowchart TD
+    subgraph "LATMesh K8s Deployment"
+        subgraph "LATMesh Host Application"
+            WebUI[Web Interface]
+            
+            subgraph "Agent Orchestrator"
+                A[User Request: Security Report]
+                B[CrewAI Task Force]
+                C[Research Agent]
+                D[Analysis Agent] 
+                E[Report Agent]
+            end
+            
+            subgraph "MCP Client Pool"
+                Client1[MCP Client JIRA]
+                Client2[MCP Client Security] 
+                Client3[MCP Client Reports]
+            end
+        end
+        
+        subgraph "Configured MCP Servers"
+            JiraMCP[JIRA MCP Server<br/>STDIO Transport]
+            SecMCP[Security Analysis Server<br/>STDIO Transport]
+            ReportMCP[Report Generator<br/>STDIO Transport]
+        end
+    end
+
+    subgraph "User Infrastructure"
+        JiraAPI[Corporate JIRA API]
+        SecDB[(Security Database)]
+        ReportStore[Report Storage]
+    end
+
+    %% UI Flow
+    WebUI --> A
+    A --> B
+    B --> C
+    B --> D  
+    B --> E
+    
+    %% Agent to MCP Client Connections
+    C --> Client1
+    D --> Client2
+    E --> Client3
+    
+    %% MCP Client to Server Connections
+    Client1 -.->|STDIO/Pod| JiraMCP
+    Client2 -.->|STDIO/Pod| SecMCP
+    Client3 -.->|STDIO/Pod| ReportMCP
+    
+    %% Server to Infrastructure
+    JiraMCP -.->|HTTP API| JiraAPI
+    SecMCP -.->|Database| SecDB
+    ReportMCP -.->|File System| ReportStore
+    
+    %% MCP Tool Calls
+    C -.->|call_tool: fetch_tickets| Client1
+    D -.->|call_tool: analyze_vulnerability| Client2
+    E -.->|call_tool: create_report| Client3
+
+    classDef host fill:#4fc3f7,stroke:#0277bd,stroke-width:3px,color:#000
+    classDef agent fill:#81c784,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef client fill:#f48fb1,stroke:#c2185b,stroke-width:2px,color:#000
+    classDef server fill:#ffb74d,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef infra fill:#ba68c8,stroke:#7b1fa2,stroke-width:2px,color:#fff
+
+    class WebUI,A,B,C,D,E host
+    class Client1,Client2,Client3 client
+    class JiraMCP,SecMCP,ReportMCP server
+    class JiraAPI,SecDB,ReportStore infra

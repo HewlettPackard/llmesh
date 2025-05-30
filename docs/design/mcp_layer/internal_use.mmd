@@ -1,0 +1,41 @@
+sequenceDiagram
+    participant UI as LATMesh UI
+    participant Host as LATMesh Host
+    participant Client as MCP Client
+    participant Server as Internal MCP Server
+    participant Service as RAG Service
+
+    Note over UI, Service: MCP Lifecycle: Initialization → Discovery → Invocation
+
+    %% Initialization Phase
+    UI->>Host: Configure internal RAG server
+    Host->>Client: Create MCP client for RAG server
+    Client->>Server: Initialize connection (STDIO)
+    Server->>Client: Handshake response
+    Client->>Server: Request capabilities
+    Server->>Client: Available tools/resources/prompts
+    Client->>Host: Cache capabilities in registry
+
+    %% Discovery Phase  
+    Host->>Client: list_tools()
+    Client->>Host: [search_documents, summarize_content, ...]
+    Host->>Client: list_resources() 
+    Client->>Host: [document_corpus, embeddings, ...]
+    Host->>Client: list_prompts()
+    Client->>Host: [rag_query_prompt, summary_prompt, ...]
+
+    %% Invocation Phase
+    Host->>Client: call_tool(search_documents, {query: "AI"})
+    Client->>Server: JSON-RPC call_tool request
+    Server->>Service: Execute search_documents("AI")
+    Service->>Server: Search results
+    Server->>Client: JSON-RPC response with results
+    Client->>Host: Structured tool response
+
+    Note over UI, Service: Resource Access Pattern
+    Host->>Client: read_resource(document_corpus://latest)
+    Client->>Server: JSON-RPC read_resource request  
+    Server->>Service: Fetch latest document corpus
+    Service->>Server: Document data
+    Server->>Client: Resource content
+    Client->>Host: Document corpus for context

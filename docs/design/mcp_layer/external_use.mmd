@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant ExtApp as External App
+    participant LATMesh as LATMesh Host
+    participant OutClient as Outbound MCP Client
+    participant ExtServer as External MCP Server
+    participant InClient as Inbound Connection
+    participant InternalSrv as LATMesh RAG Server
+
+    Note over ExtApp, InternalSrv: External App → LATMesh Services
+
+    ExtApp->>LATMesh: Connect via HTTPS/SSE
+    LATMesh->>InClient: Create client for external app
+    InClient->>InternalSrv: Initialize connection
+    InternalSrv->>InClient: Available LATMesh capabilities
+    ExtApp->>InClient: list_tools()
+    InClient->>ExtApp: [rag_search, document_analysis, ...]
+    ExtApp->>InClient: call_tool(rag_search, {query: "data"})
+    InClient->>InternalSrv: Execute rag_search
+    InternalSrv->>InClient: Search results
+    InClient->>ExtApp: Tool response
+
+    Note over ExtApp, InternalSrv: LATMesh → External Services
+
+    LATMesh->>OutClient: Need weather data for agent
+    OutClient->>ExtServer: Initialize if not connected
+    ExtServer->>OutClient: Handshake & capabilities
+    OutClient->>LATMesh: Cache external capabilities
+    LATMesh->>OutClient: call_tool(get_weather, {city: "SF"})
+    OutClient->>ExtServer: JSON-RPC tool call
+    ExtServer->>OutClient: Weather data
+    OutClient->>LATMesh: Provide weather context

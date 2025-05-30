@@ -1,0 +1,514 @@
+classDiagram
+  class src {
+  }
+  class lib {
+  }
+  class core {
+  }
+  class config {
+  }
+  class file_cache {
+  }
+  class log {
+  }
+  class template_engine {
+  }
+  class package {
+  }
+  class athon {
+  }
+  class agents {
+  }
+  class chat {
+  }
+  class rag {
+  }
+  class system {
+  }
+  class services {
+  }
+  class agents {
+  }
+  class reasoning_engine {
+  }
+  class reasoning_engines {
+  }
+  class base {
+  }
+  class langchain {
+  }
+  class agent_executor {
+  }
+  class llamaindex {
+  }
+  class react {
+  }
+  class task_force {
+  }
+  class task_forces {
+  }
+  class base {
+  }
+  class crewai {
+  }
+  class crew {
+  }
+  class langgraph {
+  }
+  class state_graph {
+  }
+  class tool_repositories {
+  }
+  class base {
+  }
+  class langchain {
+  }
+  class structured_tool {
+  }
+  class tool_repository {
+  }
+  class chat {
+  }
+  class memories {
+  }
+  class base {
+  }
+  class langchain {
+  }
+  class buffer {
+  }
+  class buffer_window {
+  }
+  class chroma_store_retriever {
+  }
+  class custom_remote {
+  }
+  class summary {
+  }
+  class llamaindex {
+  }
+  class buffer {
+  }
+  class memory {
+  }
+  class message_manager {
+  }
+  class message_managers {
+  }
+  class base {
+  }
+  class langchain {
+  }
+  class prompts {
+  }
+  class model {
+  }
+  class models {
+  }
+  class base {
+  }
+  class langchain {
+  }
+  class azure_chat_openai {
+  }
+  class chat_anthropic {
+  }
+  class chat_google_genai {
+  }
+  class chat_mistralai {
+  }
+  class chat_nvidia {
+  }
+  class chat_openai {
+  }
+  class chat_vllm {
+  }
+  class llamaindex {
+  }
+  class openai {
+  }
+  class prompt_render {
+  }
+  class prompt_renders {
+  }
+  class base {
+  }
+  class jinja {
+  }
+  class template {
+  }
+  class rag {
+  }
+  class data_extractor {
+  }
+  class data_extractors {
+  }
+  class base {
+  }
+  class markitdown {
+  }
+  class sections {
+  }
+  class pandas {
+  }
+  class read_excel {
+  }
+  class pymupdf {
+  }
+  class sections {
+  }
+  class unstructured {
+  }
+  class sections {
+  }
+  class data_loader {
+  }
+  class data_loaders {
+  }
+  class base {
+  }
+  class chroma {
+  }
+  class sentences {
+  }
+  class milvus {
+  }
+  class sentences {
+  }
+  class qdrant {
+  }
+  class sentences {
+  }
+  class data_retriever {
+  }
+  class data_retrievers {
+  }
+  class base {
+  }
+  class chroma {
+  }
+  class sentences {
+  }
+  class milvus {
+  }
+  class sentences {
+  }
+  class qdrant {
+  }
+  class sentences {
+  }
+  class data_storage {
+  }
+  class data_storages {
+  }
+  class base {
+  }
+  class chroma {
+  }
+  class collection {
+  }
+  class milvus {
+  }
+  class collection {
+  }
+  class qdrant {
+  }
+  class collection {
+  }
+  class data_transformer {
+  }
+  class data_transformers {
+  }
+  class base {
+  }
+  class clean {
+  }
+  class regex {
+  }
+  class cte_action_runner {
+  }
+  class enrich {
+  }
+  class metadata {
+  }
+  class transform {
+  }
+  class chunk {
+  }
+  class llm {
+  }
+  class section {
+  }
+  class system_services {
+  }
+  class tool_client {
+  }
+  class tool_server {
+  }
+  class platform {
+  }
+  class app_backpanel {
+  }
+  class main {
+  }
+  class tool_manager {
+  }
+  class agent {
+  }
+  class base {
+  }
+  class prompt {
+  }
+  class rag {
+  }
+  class app_chatbot {
+  }
+  class main {
+  }
+  class app_games {
+  }
+  class game {
+  }
+  class games {
+  }
+  class base {
+  }
+  class fantasia_genesis {
+  }
+  class fantasia_genesis_tools {
+  }
+  class who_am_i {
+  }
+  class main {
+  }
+  class app_memory {
+  }
+  class main {
+  }
+  class tool_agents {
+  }
+  class main {
+  }
+  class openapi_tool {
+  }
+  class tool_analyzer {
+  }
+  class main {
+  }
+  class tool_api {
+  }
+  class main {
+  }
+  class tool_copywriter {
+  }
+  class main {
+  }
+  class tool_rag {
+  }
+  class main {
+  }
+  class rag_data_loader {
+  }
+  config --> log
+  config --> template_engine
+  file_cache --> log
+  template_engine --> log
+  agents --> reasoning_engine
+  agents --> task_force
+  agents --> tool_repository
+  chat --> memory
+  chat --> message_manager
+  chat --> model
+  chat --> prompt_render
+  rag --> data_extractor
+  rag --> data_loader
+  rag --> data_retriever
+  rag --> data_storage
+  rag --> data_transformer
+  system --> config
+  system --> log
+  system --> tool_client
+  system --> tool_server
+  reasoning_engine --> agent_executor
+  reasoning_engine --> react
+  agent_executor --> log
+  agent_executor --> base
+  agent_executor --> tool_repository
+  agent_executor --> memory
+  agent_executor --> model
+  react --> log
+  react --> base
+  react --> tool_repository
+  react --> memory
+  react --> model
+  task_force --> crew
+  task_force --> state_graph
+  crew --> log
+  crew --> base
+  crew --> model
+  state_graph --> log
+  state_graph --> base
+  state_graph --> model
+  state_graph --> prompt_render
+  structured_tool --> log
+  structured_tool --> base
+  tool_repository --> structured_tool
+  buffer --> log
+  buffer --> base
+  buffer_window --> log
+  buffer_window --> base
+  chroma_store_retriever --> log
+  chroma_store_retriever --> base
+  custom_remote --> log
+  custom_remote --> base
+  custom_remote --> message_manager
+  summary --> log
+  summary --> base
+  summary --> model
+  buffer --> log
+  buffer --> base
+  memory --> buffer
+  memory --> buffer_window
+  memory --> chroma_store_retriever
+  memory --> custom_remote
+  memory --> summary
+  memory --> buffer
+  message_manager --> prompts
+  prompts --> log
+  prompts --> base
+  model --> azure_chat_openai
+  model --> chat_anthropic
+  model --> chat_google_genai
+  model --> chat_mistralai
+  model --> chat_nvidia
+  model --> chat_openai
+  model --> chat_vllm
+  model --> openai
+  azure_chat_openai --> log
+  azure_chat_openai --> base
+  chat_anthropic --> log
+  chat_anthropic --> base
+  chat_google_genai --> log
+  chat_google_genai --> base
+  chat_mistralai --> log
+  chat_mistralai --> base
+  chat_nvidia --> log
+  chat_nvidia --> base
+  chat_openai --> log
+  chat_openai --> base
+  chat_vllm --> log
+  chat_vllm --> base
+  openai --> log
+  openai --> base
+  prompt_render --> template
+  template --> log
+  template --> base
+  data_extractor --> sections
+  data_extractor --> read_excel
+  data_extractor --> sections
+  data_extractor --> sections
+  sections --> file_cache
+  sections --> log
+  sections --> base
+  read_excel --> file_cache
+  read_excel --> log
+  read_excel --> base
+  sections --> file_cache
+  sections --> log
+  sections --> base
+  sections --> file_cache
+  sections --> log
+  sections --> base
+  data_loader --> sentences
+  data_loader --> sentences
+  data_loader --> sentences
+  sentences --> log
+  sentences --> base
+  sentences --> log
+  sentences --> base
+  sentences --> log
+  sentences --> base
+  data_retriever --> sentences
+  data_retriever --> sentences
+  data_retriever --> sentences
+  sentences --> log
+  sentences --> base
+  sentences --> log
+  sentences --> base
+  sentences --> log
+  sentences --> base
+  data_storage --> collection
+  data_storage --> collection
+  data_storage --> collection
+  collection --> log
+  collection --> base
+  collection --> log
+  collection --> base
+  collection --> log
+  collection --> base
+  data_transformer --> cte_action_runner
+  cte_action_runner --> log
+  cte_action_runner --> base
+  cte_action_runner --> clean
+  cte_action_runner --> regex
+  cte_action_runner --> enrich
+  cte_action_runner --> metadata
+  cte_action_runner --> transform
+  cte_action_runner --> chunk
+  cte_action_runner --> llm
+  cte_action_runner --> section
+  llm --> model
+  tool_client --> config
+  tool_client --> log
+  tool_client --> template_engine
+  tool_server --> log
+  main --> system
+  main --> agent
+  main --> prompt
+  main --> rag
+  agent --> chat
+  agent --> system
+  agent --> base
+  prompt --> chat
+  prompt --> system
+  prompt --> base
+  rag --> chat
+  rag --> rag
+  rag --> system
+  rag --> base
+  main --> agents
+  main --> chat
+  main --> system
+  game --> fantasia_genesis
+  game --> who_am_i
+  fantasia_genesis --> agents
+  fantasia_genesis --> chat
+  fantasia_genesis --> rag
+  fantasia_genesis --> system
+  fantasia_genesis --> base
+  fantasia_genesis --> fantasia_genesis_tools
+  fantasia_genesis_tools --> rag
+  fantasia_genesis_tools --> system
+  who_am_i --> agents
+  who_am_i --> chat
+  who_am_i --> system
+  who_am_i --> base
+  main --> chat
+  main --> system
+  main --> game
+  main --> chat
+  main --> rag
+  main --> system
+  main --> agents
+  main --> system
+  main --> openapi_tool
+  openapi_tool --> chat
+  openapi_tool --> system
+  main --> chat
+  main --> system
+  main --> system
+  main --> chat
+  main --> system
+  main --> chat
+  main --> rag
+  main --> system
