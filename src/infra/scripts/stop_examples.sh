@@ -2,8 +2,8 @@
 
 # List of ports
 ports=(
-    5001    # Chatbot
-    5002    # Basic Copywriter
+    5001    # Orchestrator
+    5002    # Chat Service
     5003    # Temperature Finder    
     5004    # Temperature Analyzer
     5005    # OpenAPI Manager

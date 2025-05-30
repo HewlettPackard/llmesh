@@ -37,8 +37,8 @@ projects:
       memory_key: chat_history
       return_messages: true
     tools:
-      # - "src/platform/tool_copywriter"    # BasicCopywriter as local tool
-      - "https://127.0.0.1:5002/"     # BasicCopywriter
+      # - "src/platform/chat"    # ChatService as local tool
+      - "https://127.0.0.1:5002/"     # ChatService
   - name: "Project 5G Network"
     memory:
       type: LangChainRemote
