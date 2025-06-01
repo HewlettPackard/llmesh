@@ -11,6 +11,7 @@ and handling user input.
 """
 
 import re
+import json
 from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from langchain.agents import AgentExecutor, create_tool_calling_agent
@@ -19,7 +20,7 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages.utils import get_buffer_string
 from langchain_core.runnables.config import get_executor_for_config
 from langchain_core.tools import tool
-from src.lib.package.athon.chat import ChatModel, ChatMemory, MessageManager, PromptRender
+from src.lib.package.athon.chat import ChatModel, ChatMemory, PromptRender
 from src.lib.package.athon.rag import DataStorage, DataLoader, DataRetriever
 from src.lib.package.athon.system import Config, Logger
 
@@ -152,7 +153,7 @@ def _configure_routes(app, config, agent):
         data = request.json
         if 'inputs'in data:
             result = _load_memories(data['inputs'])
-            return jsonify(_convert_to_json(result)), 200
+            return jsonify(_convert_to_json(result, MESSAGE_MEMORY_KEY)), 200
         return jsonify({"error": "No message provided"}), 400
 
     def _load_memories(inputs):
@@ -206,10 +207,18 @@ def _configure_routes(app, config, agent):
         )
         return result.content
 
-    def _convert_to_json(prompts):
-        messages = MessageManager.create(config["messages"])
-        result = messages.convert_to_strings(prompts)
-        return result.prompts
+    def _convert_to_json(prompts, memory_key):
+        messages = _calculate_dict(prompts[memory_key])
+        prompts[memory_key] = json.dumps(messages)
+        return prompts
+
+    def _calculate_dict(messages):
+        return [
+            {
+                'type': message.__class__.__name__,
+                'content': message.content
+            } for message in messages
+        ]
 
     @app.route('/store', methods=['POST'])
     def store_memory():

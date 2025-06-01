@@ -18,7 +18,7 @@ from langchain.schema import HumanMessage, SystemMessage
 from src.lib.package.athon.chat import ChatModel
 
 
-@pytest.mark.parametrize("config", [
+model_configs = [
     {
         "type": "LangChainChatOpenAI",
         "model_name": "gpt-4o-mini",
@@ -57,10 +57,11 @@ from src.lib.package.athon.chat import ChatModel
         "azure_subscription_key": os.getenv("HPE_SUBSCRIPTION_KEY"),
         "https_verify": False,
     },
-])
+]
 
 @pytest.mark.integration
 @pytest.mark.chat
+@pytest.mark.parametrize("config", model_configs)
 def test_chat_model_invoke_pirate_language(config):
     """
     Test invoking the ChatModel to convert a message into pirate language
@@ -80,6 +81,71 @@ def test_chat_model_invoke_pirate_language(config):
     assert result.content is not None, "The content of the result should not be None"
     assert "pirate" in result.content.lower() or "arr" in result.content.lower(), \
         f"Expected pirate-like response, but got: {result.content}"
+
+
+@pytest.mark.integration
+@pytest.mark.chat
+@pytest.mark.parametrize("config", model_configs)
+def test_chat_model_stream_pirate_language(config):
+    """
+    Test streaming with ChatModel to convert message into pirate language.
+    """
+    chat = ChatModel.create(config)
+    prompts = [
+        SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),
+        HumanMessage(content="Today is a sunny day and the sky is blue")
+    ]
+    chunks = list(chat.stream(prompts))
+    # Join or check content as appropriate for your models
+    joined_content = "".join(
+        chunk for chunk in chunks if isinstance(chunk, str) or hasattr(chunk, "content"))
+    assert "pirate" in joined_content.lower() or "arr" in joined_content.lower(), \
+        f"Expected pirate-like response, but got: {joined_content}"
+
+
+@pytest.mark.integration
+@pytest.mark.chat
+@pytest.mark.asyncio
+@pytest.mark.parametrize("config", model_configs)
+async def test_chat_model_ainvoke_pirate_language(config):
+    """
+    Test async invoke with ChatModel for pirate language.
+    """
+    chat = ChatModel.create(config)
+    prompts = [
+        SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),
+        HumanMessage(content="Today is a sunny day and the sky is blue")
+    ]
+    result = await chat.ainvoke(prompts)
+    assert result.status == "success", f"Chat ainvoke failed: {result.error_message}"
+    assert result.content is not None, "The content of the result should not be None"
+    assert "pirate" in result.content.lower() or "arr" in result.content.lower(), \
+        f"Expected pirate-like response, but got: {result.content}"
+
+
+@pytest.mark.integration
+@pytest.mark.chat
+@pytest.mark.asyncio
+@pytest.mark.parametrize("config", model_configs)
+async def test_chat_model_astream_pirate_language(config):
+    """
+    Test async streaming with ChatModel for pirate language.
+    """
+    chat = ChatModel.create(config)
+    prompts = [
+        SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),
+        HumanMessage(content="Today is a sunny day and the sky is blue")
+    ]
+    collected_chunks = []
+    async for chunk in chat.astream(prompts):
+        # Many streaming APIs return objects, but sometimes just strings
+        if hasattr(chunk, "content"):
+            collected_chunks.append(chunk.content)
+        elif isinstance(chunk, str):
+            collected_chunks.append(chunk)
+    joined_content = "".join(collected_chunks)
+    assert "pirate" in joined_content.lower() or "arr" in joined_content.lower(), \
+        f"Expected pirate-like response, but got: {joined_content}"
 
 
 if __name__ == "__main__":

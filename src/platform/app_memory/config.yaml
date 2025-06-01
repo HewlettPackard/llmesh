@@ -10,11 +10,6 @@ llm:
   temperature: 0  
   seed: 42
 
-messages:
-  type: LangChainPrompts
-  json_convert: true
-  memory_key: chat_history
-
 memories:
   messages:
     type: LangChainBufferWindow

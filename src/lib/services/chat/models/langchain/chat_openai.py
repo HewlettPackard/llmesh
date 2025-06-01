@@ -10,13 +10,15 @@ This module allows to:
 - invoke a LLM to calculate the content of a prompt
 """
 
+from __future__ import annotations
 import os
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Iterator, AsyncIterator
 import httpx
 from pydantic import Field
 from langchain_openai import ChatOpenAI
 from src.lib.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
+from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 
 
 logger = Logger().get_logger()
@@ -31,13 +33,25 @@ class LangChainChatOpenAIModel(BaseChatModel):
         """
         Configuration for the Chat Model class.
         """
+        seed: Optional[int] = Field(
+            None,
+            description="Seed for model randomness."
+        )
         base_url: Optional[str] = Field(
             None,
             description="Endpoint for the model API."
         )
-        seed: Optional[int] = Field(
+        max_tokens: Optional[int] = Field(
             None,
-            description="Seed for model randomness."
+            description="Max number of tokens to return."
+        )
+        timeout: Optional[float] = Field(
+            None,
+            description="Timeout of generation."
+        )
+        max_retries: Optional[int] = Field(
+            None,
+            description="Max retries on API."
         )
         https_verify: Optional[bool] = Field(
             None,
@@ -78,30 +92,17 @@ class LangChainChatOpenAIModel(BaseChatModel):
             args["seed"] = self.config.seed
         if self.config.base_url is not None:
             args["base_url"] = self.config.base_url
+        if self.config.max_tokens is not None:
+            args["max_tokens"] = self.config.max_tokens
+        if self.config.timeout is not None:
+            args["timeout"] = self.config.timeout
+        if self.config.max_retries is not None:
+            args["max_retries"] = self.config.max_retries
         if self.config.https_verify is not None:
             args["http_client"] = httpx.Client(verify=self.config.https_verify)
         return args
 
-    def invoke(self, message: str) -> 'LangChainChatOpenAIModel.Result':
-        """
-        Call the LLM inference.
-
-        :param message: Message to be processed by the model.
-        :return: Result object containing the generated content.
-        """
-        try:
-            self.result.status = "success"
-            response = self.model.invoke(message)
-            self.result.content = response.content
-            self.result.metadata = response.response_metadata
-            logger.debug(f"Prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while invoking LLM: {e}"
-            logger.error(self.result.error_message)
-        return self.result
-
-    def get_model(self) -> 'LangChainChatOpenAIModel.Result':
+    def get_model(self) -> LangChainChatOpenAIModel.Result:
         """
         Return the LLM model instance.
 
@@ -115,3 +116,55 @@ class LangChainChatOpenAIModel(BaseChatModel):
             self.result.status = "failure"
             logger.error("No model present")
         return self.result
+
+    @model_error_handler("An error occurred while invoking LLM")
+    def invoke(self, messages: Any) -> LangChainChatOpenAIModel.Result:
+        """
+        Call the LLM inference.
+
+        :param messages: Messages to be processed by the model.
+        :return: Result object containing the generated content.
+        """
+        self.result.status = "success"
+        response = self.model.invoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Prompt generated {self.result.content}")
+        return self.result
+
+    @stream_error_handler("Streaming error")
+    def stream(self, messages: Any) -> Iterator[str]:
+        '''
+        Synchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Iterator yielding response chunks.
+        '''
+        for chunk in self.model.stream(messages):
+            yield chunk.content
+
+    @model_error_handler("An error occurred while async invoking LLM")
+    async def ainvoke(self, messages: Any) -> LangChainChatOpenAIModel.Result:
+        '''
+        Asynchronously invoke the model with a list of messages.
+
+        :param messages: Message list formatted for the model.
+        :return: Result object with content and metadata.
+        '''
+        self.result.status = "success"
+        response = await self.model.ainvoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Async prompt generated {self.result.content}")
+        return self.result
+
+    @stream_error_handler("Async streaming error")
+    async def astream(self, messages: Any) -> AsyncIterator[str]:
+        '''
+        Asynchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Async iterator yielding response chunks.
+        '''
+        async for chunk in self.model.astream(messages):
+            yield chunk.content

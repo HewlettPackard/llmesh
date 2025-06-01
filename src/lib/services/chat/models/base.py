@@ -8,7 +8,7 @@ Placeholder class that has to be overwritten.
 """
 
 import abc
-from typing import Optional, Any
+from typing import Optional, Any, Iterator, AsyncIterator
 from pydantic import BaseModel, Field
 
 
@@ -25,13 +25,13 @@ class BaseChatModel(abc.ABC):
             ...,
             description="Type of the model deployment."
         )
-        api_key: str = Field(
-            ...,
-            description="API key or JWT token for accessing the model."
-        )
         model_name: Optional[str] = Field(
             None,
             description="Name of the model deployment."
+        )
+        api_key: Optional[str] = Field(
+            "",
+            description="API key or JWT token for accessing the model."
         )
         temperature: Optional[float] = Field(
             None,
@@ -46,21 +46,21 @@ class BaseChatModel(abc.ABC):
             default="success",
             description="Status of the operation, e.g., 'success' or 'failure'."
         )
-        error_message: Optional[str] = Field(
-            default=None,
-            description="Detailed error message if the operation failed."
+        model: Optional[Any] = Field(
+            None,
+            description="Instance of the Chat model."
         )
         content: Optional[str] = Field(
             None,
             description="LLM completion content."
         )
+        error_message: Optional[str] = Field(
+            default=None,
+            description="Detailed error message if the operation failed."
+        )
         metadata: Optional[str] = Field(
             None,
             description="LLM response metadata."
-        )
-        model: Optional[Any] = Field(
-            None,
-            description="Instance of the Chat model."
         )
 
     @abc.abstractmethod
@@ -72,10 +72,37 @@ class BaseChatModel(abc.ABC):
         """
 
     @abc.abstractmethod
-    def invoke(self, message) -> 'BaseChatModel.Result':
+    def invoke(self, messages: Any) -> 'BaseChatModel.Result':
         """
-        Invoke the LLM to create content.
+        Synchronously invoke the model with a list of messages.
 
-        :param message: Message to be processed by the model.
-        :return: Result object containing the generated content and model instance.
+        :param messages: List of messages formatted for the LLM input.
+        :return: Result object containing the generated content and metadata.
+        """
+
+    @abc.abstractmethod
+    def stream(self, messages: Any) -> Iterator[str]:
+        """
+        Synchronously stream the model response token by token.
+
+        :param messages: List of messages formatted for the LLM input.
+        :return: Iterator that yields response chunks as strings.
+        """
+
+    @abc.abstractmethod
+    async def ainvoke(self, messages: Any) -> 'BaseChatModel.Result':
+        """
+        Asynchronously invoke the model with a list of messages.
+
+        :param messages: List of messages formatted for the LLM input.
+        :return: Result object containing the generated content and metadata.
+        """
+
+    @abc.abstractmethod
+    async def astream(self, messages: Any) -> AsyncIterator[str]:
+        """
+        Asynchronously stream the model response token by token.
+
+        :param messages: List of messages formatted for the LLM input.
+        :return: Async iterator that yields response chunks as strings.
         """

@@ -10,14 +10,16 @@ This module allows to:
 - invoke an LLM to calculate the content of a prompt
 """
 
+from __future__ import annotations
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Iterator, AsyncIterator
 import httpx
 import requests
 from pydantic import Field
 from langchain_openai import AzureChatOpenAI
 from src.lib.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
+from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 
 
 logger = Logger().get_logger()
@@ -32,9 +34,9 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         """
         Configuration for the Chat Model class.
         """
-        azure_deployment: str = Field(
-            ...,
-            description="Name of the deployment instance."
+        seed: Optional[int] = Field(
+            None,
+            description="Seed for model randomness."
         )
         endpoint: str = Field(
             ...,
@@ -43,6 +45,10 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         api_version: str = Field(
             ...,
             description="API version."
+        )
+        azure_deployment: str = Field(
+            ...,
+            description="Name of the deployment instance."
         )
         azure_jwt_server: Optional[str] = Field(
             None,
@@ -67,14 +73,6 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         https_timeout: Optional[int] = Field(
             10,
             description="Timeout for HTTP request"
-        )
-        azure_subscription_key: Optional[str] = Field(
-            None,
-            description="Subscription Key."
-        )
-        seed: Optional[int] = Field(
-            None,
-            description="Seed for model randomness."
         )
 
     def __init__(self, config: Dict[str, Any]) -> None:
@@ -153,26 +151,7 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
             args["default_headers"] = default_headers
         return args
 
-    def invoke(self, message: str) -> 'LangChainAzureChatOpenAIModel.Result':
-        """
-        Call the LLM inference.
-
-        :param message: Message to be processed by the model.
-        :return: Result object containing the generated content.
-        """
-        try:
-            self.result.status = "success"
-            response = self.model.invoke(message)
-            self.result.content = response.content
-            self.result.metadata = response.response_metadata
-            logger.debug(f"Prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while invoking LLM: {e}"
-            logger.error(self.result.error_message)
-        return self.result
-
-    def get_model(self) -> 'LangChainAzureChatOpenAIModel.Result':
+    def get_model(self) -> LangChainAzureChatOpenAIModel.Result:
         """
         Return the LLM model instance.
 
@@ -181,8 +160,60 @@ class LangChainAzureChatOpenAIModel(BaseChatModel):
         self.result.model = self.model
         if self.model:
             self.result.status = "success"
-            logger.debug(f"Returned model '{self.config.model_name}'")
+            logger.debug(f"Returned model '{self.config.azure_deployment}'")
         else:
             self.result.status = "failure"
             logger.error("No model present")
         return self.result
+
+    @model_error_handler("An error occurred while invoking LLM")
+    def invoke(self, messages: Any) -> LangChainAzureChatOpenAIModel.Result:
+        """
+        Call the LLM inference.
+
+        :param messages: Messages to be processed by the model.
+        :return: Result object containing the generated content.
+        """
+        self.result.status = "success"
+        response = self.model.invoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Prompt generated {self.result.content}")
+        return self.result
+
+    @stream_error_handler("Streaming error")
+    def stream(self, messages: Any) -> Iterator[str]:
+        '''
+        Synchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Iterator yielding response chunks.
+        '''
+        for chunk in self.model.stream(messages):
+            yield chunk.content
+
+    @model_error_handler("An error occurred while async invoking LLM")
+    async def ainvoke(self, messages: Any) -> LangChainAzureChatOpenAIModel.Result:
+        '''
+        Asynchronously invoke the model with a list of messages.
+
+        :param messages: Message list formatted for the model.
+        :return: Result object with content and metadata.
+        '''
+        self.result.status = "success"
+        response = await self.model.ainvoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Async prompt generated {self.result.content}")
+        return self.result
+
+    @stream_error_handler("Async streaming error")
+    async def astream(self, messages: Any) -> AsyncIterator[str]:
+        '''
+        Asynchronously stream the model response token by token.
+
+        :param messages: Message list formatted for the model.
+        :return: Async iterator yielding response chunks.
+        '''
+        async for chunk in self.model.astream(messages):
+            yield chunk.content

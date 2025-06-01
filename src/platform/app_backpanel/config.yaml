@@ -5,7 +5,7 @@ webapp:
   ssh_cert: adhoc
 
 tools:
-  - name: BasicCopywriter
+  - name: ChatService
     type: PromptTool
     base_url: https://127.0.0.1:5002/
     version: 
@@ -47,11 +47,11 @@ tools:
           api_key: $ENV{MISTRAL_API_KEY}
           temperature: 0
     default:
-      path: src/platform/app_backpanel/tools/tool_copywriter/
+      path: src/platform/app_backpanel/tools/chat/
       files: 
         config: config.yaml
       prompts:
-        system_prompt: system_prompt.txt
+        system_prompt: default_prompt.txt
   - name: TelcoExpert
     type: RagTool
     base_url: https://127.0.0.1:5006/

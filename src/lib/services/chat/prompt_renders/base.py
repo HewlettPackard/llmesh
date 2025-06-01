@@ -8,7 +8,7 @@ Placeholder class that has to be overwritten
 """
 
 import abc
-from typing import Dict, Optional
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -24,14 +24,6 @@ class BasePromptRender(abc.ABC):
         type: str = Field(
             ...,
             description="Type of the render deployment."
-        )
-        environment: Optional[str] = Field(
-            None,
-            description="Path to the environment configuration folder"
-        )
-        templates: Optional[Dict[str, str]] = Field(
-            None,
-            description="Dictionary of templates with key-value pairs representing template details"
         )
 
     class Result(BaseModel):
@@ -52,7 +44,7 @@ class BasePromptRender(abc.ABC):
         )
 
     @abc.abstractmethod
-    def render(self, template_string: str, **params: str) -> None:
+    def render(self, template_string: str, **params: str) -> Result:
         """
         Render prompt from template.
 
@@ -61,7 +53,7 @@ class BasePromptRender(abc.ABC):
         """
 
     @abc.abstractmethod
-    def load(self, prompt_name: str, **params: str) -> None:
+    def load(self, prompt_name: str, **params: str) -> Result:
         """
         Load prompt from file.
 
@@ -70,7 +62,7 @@ class BasePromptRender(abc.ABC):
         """
 
     @abc.abstractmethod
-    def save(self, prompt_name: str, content: str) -> None:
+    def save(self, prompt_name: str, content: str) -> Result:
         """
         Save prompt to file.
 
