@@ -15,6 +15,7 @@ from src.lib.services.chat.message_managers.message import (
     MessageRole,
     TextBlock
 )
+from src.lib.services.chat.message_managers.error_handler import message_error_handler
 
 
 class BaseMessageManager(abc.ABC):
@@ -100,6 +101,7 @@ class SharedLogicMessageManager:
         self.config = BaseMessageManager.Config(**config)
         self.result = BaseMessageManager.Result()
 
+    @message_error_handler("Error creating message")
     def create_message(self, role: MessageRole, content: str) -> BaseMessageManager.Result:
         """
         Create a single ChatMessage with a text block.
@@ -108,17 +110,14 @@ class SharedLogicMessageManager:
         :param content: Text content of the message.
         :return: Result object with a single ChatMessage stored in `message` field.
         """
-        try:
-            if not isinstance(role, MessageRole):
-                raise ValueError(f"Invalid role: {role}")
-            msg = ChatMessage(role=role, blocks=[TextBlock(text=content)])
-            self.result.status = "success"
-            self.result.messages = [msg]
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = str(e)
+        if not isinstance(role, MessageRole):
+            raise ValueError(f"Invalid role: {role}")
+        msg = ChatMessage(role=role, blocks=[TextBlock(text=content)])
+        self.result.status = "success"
+        self.result.messages = [msg]
         return self.result
 
+    @message_error_handler("Error adding message")
     def add_messages(
             self,
             messages: List[ChatMessage],
@@ -133,18 +132,15 @@ class SharedLogicMessageManager:
         :param index: Position to insert at (default: append to end).
         :return: Result object with the updated list stored in `messages`.
         """
-        try:
-            if index is None:
-                combined = messages + new_messages
-            else:
-                combined = messages[:index] + new_messages + messages[index:]
-            self.result.status = "success"
-            self.result.messages = combined
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = str(e)
+        if index is None:
+            combined = messages + new_messages
+        else:
+            combined = messages[:index] + new_messages + messages[index:]
+        self.result.status = "success"
+        self.result.messages = combined
         return self.result
 
+    @message_error_handler("Error dumping message")
     def dump_messages(self, messages: List[ChatMessage]) -> BaseMessageManager.Result:
         """
         Serialize a list of ChatMessages into dictionaries suitable for storage or transmission.
@@ -152,15 +148,12 @@ class SharedLogicMessageManager:
         :param messages: List of ChatMessage objects to serialize.
         :return: Result object with the serialized output stored in `data`.
         """
-        try:
-            serialized = [msg.to_dict() for msg in messages]
-            self.result.status = "success"
-            self.result.messages = [serialized]
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = str(e)
+        serialized = [msg.to_dict() for msg in messages]
+        self.result.status = "success"
+        self.result.messages = [serialized]
         return self.result
 
+    @message_error_handler("Error loading message")
     def load_messages(self, data: List[Dict[str, Any]]) -> BaseMessageManager.Result:
         """
         Deserialize a list of message dictionaries back into ChatMessage objects.
@@ -168,19 +161,15 @@ class SharedLogicMessageManager:
         :param data: List of dicts representing serialized ChatMessages.
         :return: Result object with reconstructed ChatMessages in `messages`.
         """
-        try:
-            messages = [
-                ChatMessage(
-                    id=msg.get("id"),
-                    timestamp=msg.get("timestamp"),
-                    role=MessageRole(msg["role"]),
-                    blocks=[TextBlock(**block) for block in msg.get("blocks", [])],
-                    metadata=msg.get("metadata", {})
-                ) for msg in data
-            ]
-            self.result.status = "success"
-            self.result.messages = messages
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = str(e)
+        messages = [
+            ChatMessage(
+                id=msg.get("id"),
+                timestamp=msg.get("timestamp"),
+                role=MessageRole(msg["role"]),
+                blocks=[TextBlock(**block) for block in msg.get("blocks", [])],
+                metadata=msg.get("metadata", {})
+            ) for msg in data
+        ]
+        self.result.status = "success"
+        self.result.messages = messages
         return self.result

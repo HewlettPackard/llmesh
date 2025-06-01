@@ -56,12 +56,12 @@ It acts as the orchestration layer that:
   Converts LAT-Mesh ChatMessage objects into a model-compatible list of messages.
 
 - **Responsibilities**
-  - Composes message list from prompt + memory + user input
-  - Adds messages to memory after receiving model responses
-  - Handles optional session management
-  - Supports stateless mode (no memory) or stateful mode (with memory)
-  - Accepts one or more user messages (multiple only when memory is disabled)
-  - Handles message formatting via framework-specific adapters\
+  - Composes the message list using the prompt, memory, and user input.
+  - Adds messages to memory after receiving model responses.
+  - Manages sessions optionally.
+  - Supports both stateless (no memory) and stateful (with memory) modes.
+  - Accepts a single user message in stateful mode or multiple in stateless mode.
+  - Formats messages using framework-specific adapters.
 
 - **Methods**
   - `create_message`

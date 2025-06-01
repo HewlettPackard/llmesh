@@ -8,12 +8,14 @@ This module allows to:
 - initialize and return the LangChain buffer memory
 """
 
+from __future__ import annotations
 from typing import Any, Dict, Optional
 from pydantic import Field
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import BaseMessage
 from src.lib.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory
+from src.lib.services.chat.memories.error_handler import memory_error_handler
 
 
 logger = Logger().get_logger()
@@ -55,7 +57,7 @@ class LangChainBufferMemory(BaseChatMemory):
             memory_key=self.config.memory_key
         )
 
-    def get_memory(self) -> 'LangChainBufferMemory.Result':
+    def get_memory(self) -> LangChainBufferMemory.Result:
         """
         Return the memory instance.
 
@@ -71,7 +73,7 @@ class LangChainBufferMemory(BaseChatMemory):
             logger.error(self.result.error_message)
         return self.result
 
-    def clear(self) -> 'LangChainBufferMemory.Result':
+    def clear(self) -> LangChainBufferMemory.Result:
         """
         Clear context memory.
 
@@ -87,42 +89,34 @@ class LangChainBufferMemory(BaseChatMemory):
             logger.error(self.result.error_message)
         return self.result
 
-    def save_message(self, message: Any) -> 'LangChainBufferMemory.Result':
+    @memory_error_handler("Error saving message")
+    def save_message(self, message: Any) -> LangChainBufferMemory.Result:
         """
         Save a new message to the memory.
 
         :param message: The message object to save.
         :return: Result object containing the status of the save operation.
         """
-        try:
-            self.result.status = "success"
-            if not isinstance(message, BaseMessage):
-                raise TypeError(
-                    f"Expected message of type BaseMessage, got {type(message).__name__}"
-                )
-            self.memory.chat_memory.add_message(message)  # pylint: disable=E1101
-            logger.debug("Message saved to buffer memory")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"Error saving message: {e}"
-            logger.error(self.result.error_message)
+        self.result.status = "success"
+        if not isinstance(message, BaseMessage):
+            raise TypeError(
+                f"Expected message of type BaseMessage, got {type(message).__name__}"
+            )
+        self.memory.chat_memory.add_message(message)  # pylint: disable=E1101
+        logger.debug("Message saved to buffer memory")
         return self.result
 
-    def get_messages(self, limit: Optional[int] = None) -> 'LangChainBufferMemory.Result':
+    @memory_error_handler("Error retrieving message")
+    def get_messages(self, limit: Optional[int] = None) -> LangChainBufferMemory.Result:
         """
         Retrieve messages from buffer memory.
         :param limit: Optional max number of messages to return.
         :return: Result object containing a list of messages.
         """
-        try:
-            self.result.status = "success"
-            messages = self.memory.chat_memory.messages  # pylint: disable=E1101
-            if limit is not None:
-                messages = messages[-limit:]
-            self.result.messages = messages
-            logger.debug(f"Retrieved {len(messages)} messages from buffer memory")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"Error retrieving messages: {e}"
-            logger.error(self.result.error_message)
+        self.result.status = "success"
+        messages = self.memory.chat_memory.messages  # pylint: disable=E1101
+        if limit is not None:
+            messages = messages[-limit:]
+        self.result.messages = messages
+        logger.debug(f"Retrieved {len(messages)} messages from buffer memory")
         return self.result

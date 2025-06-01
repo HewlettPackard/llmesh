@@ -1,8 +1,8 @@
 # 🌐 LAT-Mesh Chat Service: Your Smart Chat Assistant
 
-## 🤖 What Is LAT-Mesh?
+## 🤖 What Is LAT-Mesh Chat Service?
 
-LAT-Mesh is an intelligent chat assistant designed to help you interact seamlessly with advanced AI models. Whether you're seeking information, drafting content, or exploring ideas, LAT-Mesh simplifies the process by managing the complexities behind the scenes.
+LAT-Mesh Chat Service is an intelligent chat assistant designed to help you interact seamlessly with advanced AI models. Whether you're seeking information, drafting content, or exploring ideas, LAT-Mesh simplifies the process by managing the complexities behind the scenes.
 
 ## ✨ Key Features
 

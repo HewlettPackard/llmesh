@@ -10,6 +10,7 @@ This module allows to:
 - invoke a LLM to calculate the content of a prompt
 """
 
+from __future__ import annotations
 import os
 from typing import Optional, Dict, Any, Iterator, AsyncIterator
 import httpx
@@ -17,6 +18,7 @@ from pydantic import Field
 from langchain_openai import ChatOpenAI
 from src.lib.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
+from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 
 
 logger = Logger().get_logger()
@@ -100,7 +102,7 @@ class LangChainChatOpenAIModel(BaseChatModel):
             args["http_client"] = httpx.Client(verify=self.config.https_verify)
         return args
 
-    def get_model(self) -> 'LangChainChatOpenAIModel.Result':
+    def get_model(self) -> LangChainChatOpenAIModel.Result:
         """
         Return the LLM model instance.
 
@@ -115,25 +117,22 @@ class LangChainChatOpenAIModel(BaseChatModel):
             logger.error("No model present")
         return self.result
 
-    def invoke(self, messages: Any) -> 'LangChainChatOpenAIModel.Result':
+    @model_error_handler("An error occurred while invoking LLM")
+    def invoke(self, messages: Any) -> LangChainChatOpenAIModel.Result:
         """
         Call the LLM inference.
 
         :param messages: Messages to be processed by the model.
         :return: Result object containing the generated content.
         """
-        try:
-            self.result.status = "success"
-            response = self.model.invoke(messages)
-            self.result.content = response.content
-            self.result.metadata = response.response_metadata
-            logger.debug(f"Prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"An error occurred while invoking LLM: {e}"
-            logger.error(self.result.error_message)
+        self.result.status = "success"
+        response = self.model.invoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Prompt generated {self.result.content}")
         return self.result
 
+    @stream_error_handler("Streaming error")
     def stream(self, messages: Any) -> Iterator[str]:
         '''
         Synchronously stream the model response token by token.
@@ -141,32 +140,25 @@ class LangChainChatOpenAIModel(BaseChatModel):
         :param messages: Message list formatted for the model.
         :return: Iterator yielding response chunks.
         '''
-        try:
-            for chunk in self.model.stream(messages):
-                yield chunk.content
-        except Exception as e:  # pylint: disable=W0718
-            logger.error(f"Streaming error: {e}")
-            raise
+        for chunk in self.model.stream(messages):
+            yield chunk.content
 
-    async def ainvoke(self, messages: Any) -> 'LangChainChatOpenAIModel.Result':
+    @model_error_handler("An error occurred while async invoking LLM")
+    async def ainvoke(self, messages: Any) -> LangChainChatOpenAIModel.Result:
         '''
         Asynchronously invoke the model with a list of messages.
 
         :param messages: Message list formatted for the model.
         :return: Result object with content and metadata.
         '''
-        try:
-            self.result.status = "success"
-            response = await self.model.ainvoke(messages)
-            self.result.content = response.content
-            self.result.metadata = response.response_metadata
-            logger.debug(f"Async prompt generated {self.result.content}")
-        except Exception as e:  # pylint: disable=W0718
-            self.result.status = "failure"
-            self.result.error_message = f"Async error: {e}"
-            logger.error(self.result.error_message)
+        self.result.status = "success"
+        response = await self.model.ainvoke(messages)
+        self.result.content = response.content
+        self.result.metadata = response.response_metadata
+        logger.debug(f"Async prompt generated {self.result.content}")
         return self.result
 
+    @stream_error_handler("Async streaming error")
     async def astream(self, messages: Any) -> AsyncIterator[str]:
         '''
         Asynchronously stream the model response token by token.
@@ -174,9 +166,5 @@ class LangChainChatOpenAIModel(BaseChatModel):
         :param messages: Message list formatted for the model.
         :return: Async iterator yielding response chunks.
         '''
-        try:
-            async for chunk in self.model.astream(messages):
-                yield chunk.content
-        except Exception as e:  # pylint: disable=W0718
-            logger.error(f"Async streaming error: {e}")
-            raise
+        async for chunk in self.model.astream(messages):
+            yield chunk.content
