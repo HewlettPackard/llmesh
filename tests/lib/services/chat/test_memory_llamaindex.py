@@ -13,6 +13,7 @@ and functionality.
 import os
 from unittest.mock import patch
 import pytest
+from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.memory import ChatMemoryBuffer
 from src.lib.services.chat.memory import ChatMemory
 from src.lib.services.chat.memories.llamaindex.buffer import (
@@ -87,6 +88,63 @@ def test_llamaindex_buffer_memory_get_memory(llamaindex_buffer_memory_config):  
     assert result.status == "success"
     assert result.memory is not None
     assert isinstance(result.memory, ChatMemoryBuffer)
+
+
+def test_llamaindex_buffer_memory_save_valid_message(llamaindex_buffer_memory_config):  # pylint: disable=W0621
+    """
+    Test saving a valid ChatMessage to LlamaIndexBufferMemory.
+    """
+    memory = ChatMemory.create(llamaindex_buffer_memory_config)
+    message = ChatMessage(role=MessageRole.USER, content="Hello!")
+    result = memory.save_message(message)
+    assert result.status == "success"
+    assert memory.memory.get()[-1].content == "Hello!"
+
+
+def test_llamaindex_buffer_memory_save_invalid_message_type(llamaindex_buffer_memory_config):  # pylint: disable=W0621
+    """
+    Test saving an invalid message type to LlamaIndexBufferMemory.
+    """
+    memory = ChatMemory.create(llamaindex_buffer_memory_config)
+    invalid_message = {"role": "user", "content": "This won't work"}
+    result = memory.save_message(invalid_message)
+    assert result.status == "failure"
+    assert "ChatMessage" in result.error_message
+
+
+def test_llamaindex_buffer_memory_get_messages(llamaindex_buffer_memory_config):  # pylint: disable=W0621
+    """
+    Test retrieving messages from LlamaIndexBufferMemory.
+    """
+    memory = ChatMemory.create(llamaindex_buffer_memory_config)
+    user_msg = ChatMessage(role=MessageRole.USER, content="What's the weather?")
+    bot_msg = ChatMessage(role=MessageRole.ASSISTANT, content="Sunny and clear.")
+    memory.save_message(user_msg)
+    memory.memory.put(bot_msg)  # directly using memory to simulate turn
+    result = memory.get_messages()
+    assert result.status == "success"
+    assert isinstance(result.messages, list)
+    assert len(result.messages) == 2
+    assert result.messages[0].role == MessageRole.USER
+    assert result.messages[1].role == MessageRole.ASSISTANT
+
+
+def test_llamaindex_buffer_memory_get_messages_with_limit(llamaindex_buffer_memory_config):  # pylint: disable=W0621
+    """
+    Test retrieving a limited number of messages from LlamaIndexBufferMemory.
+    """
+    memory = ChatMemory.create(llamaindex_buffer_memory_config)
+    messages = [
+        ChatMessage(role=MessageRole.USER, content="Msg 1"),
+        ChatMessage(role=MessageRole.ASSISTANT, content="Msg 2"),
+        ChatMessage(role=MessageRole.USER, content="Msg 3")
+    ]
+    for msg in messages:
+        memory.memory.put(msg)
+    result = memory.get_messages(limit=2)
+    assert result.status == "success"
+    assert len(result.messages) == 2
+    assert result.messages[-1].content == "Msg 3"
 
 
 if __name__ == "__main__":

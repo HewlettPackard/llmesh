@@ -42,13 +42,13 @@ class BaseChatMemory(abc.ABC):
             default=None,
             description="Detailed error message if the operation failed."
         )
-        context: Optional[Any] = Field(
-            default=None,
-            description="Memory context."
-        )
         memory: Optional[Any] = Field(
             default=None,
             description="Instance of the Chat memory."
+        )
+        messages: Optional[list] = Field(
+            default=None,
+            description="List of retrieved chat messages."
         )
 
     @abc.abstractmethod
@@ -65,4 +65,20 @@ class BaseChatMemory(abc.ABC):
         Clear context memory.
 
         :return: Result object containing the status of the clear operation.
+        """
+
+    @abc.abstractmethod
+    def save_message(self, message: Any) -> 'BaseChatMemory.Result':
+        """
+        Save a new chat message to memory.
+        :param message: The message object to save.
+        :return: Result object indicating success or error.
+        """
+
+    @abc.abstractmethod
+    def get_messages(self, limit: Optional[int] = None) -> 'BaseChatMemory.Result':
+        """
+        Retrieve messages from memory.
+        :param limit: Optional max number of messages to return (default: all or as configured).
+        :return: Result object containing a list of messages.
         """

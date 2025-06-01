@@ -2,7 +2,7 @@
 
 # List of tools directories
 tools_directories=(
-    "src/platform/tool_copywriter"      #5002
+    "src/platform/chat"                 #5002
     "src/platform/tool_api"             #5003
     "src/platform/tool_analyzer"        #5004
     "src/platform/tool_agents"          #5005
@@ -37,7 +37,7 @@ done
 
 # List of ports
 ports=(
-    5002    # Basic Copywriter
+    5002    # Chat Service
     5003    # Temperature Finder    
     5004    # Temperature Analyzer
     5005    # OpenAPI Manager

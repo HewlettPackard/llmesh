@@ -73,9 +73,9 @@ class PromptTool(ToolManager):
         return None
 
     def _validate_prompt_tool_function_data(self, index, tool_settings):
-        function_data = tool_settings.get('function')
+        function_data = tool_settings.get('service')
         if not function_data:
-            return f"Missing 'function' for tool {self.tool_entry.get('name')} at idx {index}."
+            return f"Missing 'service' for tool {self.tool_entry.get('name')} at idx {index}."
         system_prompt = function_data.get('system_prompt')
         if not isinstance(system_prompt, str):
             return f"Invalid 'system_prompt' type at index {index}. Expected a string."
@@ -123,10 +123,10 @@ class PromptTool(ToolManager):
         if default_flag:
             default_system_prompt = self._get_default_system_prompt()
             default_settings = self._get_default_settings()
-            new_tool_info['settings']['function']['system_prompt'] = (
+            new_tool_info['settings']['service']['system_prompt'] = (
                 default_system_prompt)
-            new_tool_info['settings']['function']['llm'] = (
-                default_settings['function']['llm'])
+            new_tool_info['settings']['service']['llm'] = (
+                default_settings['service']['llm'])
             new_tool_info['settings']['tool']['interface'] = (
                 default_settings['tool']['interface'])
         return new_tool_info
@@ -195,8 +195,8 @@ class PromptTool(ToolManager):
         """
         config = {
             "tool/interface/fields": tool_settings["fields"],
-            "function/system_prompt": tool_settings["system_prompt"],
-            "function/llm": self._get_llm_option(tool_settings["llm"])
+            "service/system_prompt": tool_settings["system_prompt"],
+            "service/llm": self._get_llm_option(tool_settings["llm"])
         }
         base_url = self.tool_info.get('base_url')
         tool_discovery = ToolDiscovery(CONFIG["function"]["discovery"])

@@ -1,0 +1,1 @@
+Use the 'query' field to enter your message or question. This is the main input the assistant will respond to.
