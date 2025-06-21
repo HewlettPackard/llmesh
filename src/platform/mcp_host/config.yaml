@@ -1,0 +1,135 @@
+# MCP Host Platform Service Configuration
+# This service manages MCP server registry and provides MCP integration
+# for the LLM Agentic Tool Mesh platform
+
+webapp:
+  ip: 0.0.0.0
+  port: 5020
+  ssh_cert: adhoc
+
+# MCP Registry Configuration
+mcp:
+  registry:
+    registry_file: "src/platform/mcp_host/mcp_registry.json"
+    cache_ttl: 300  # 5 minutes
+    auto_discovery: true
+    discovery_timeout: 30
+
+  # Built-in MCP Servers
+  servers:
+    # Platform Agent Tools Server (expose existing agent tools via MCP)
+    - name: "platform_agents"
+      transport: "stdio"
+      enabled: true
+      description: "Platform agent tools and reasoning engines via MCP"
+      command: "python"
+      args: ["src/platform/mcp_host/servers/agents_server.py"]
+      cwd: "."
+      env:
+        OPENAI_API_KEY: $ENV{OPENAI_API_KEY}
+      tags: ["internal", "agents", "tools", "reasoning"]
+
+    # Platform RAG Server (expose RAG capabilities via MCP)
+    - name: "platform_rag"
+      transport: "stdio"
+      enabled: true
+      description: "Platform RAG services via MCP"
+      command: "python"
+      args: ["src/platform/mcp_host/servers/rag_server.py"]
+      cwd: "."
+      env:
+        OPENAI_API_KEY: $ENV{OPENAI_API_KEY}
+      tags: ["internal", "rag", "documents", "search"]
+
+    # Platform Chat Server (expose chat models via MCP)
+    - name: "platform_chat"
+      transport: "stdio"
+      enabled: true
+      description: "Platform chat models via MCP"
+      command: "python"
+      args: ["src/platform/mcp_host/servers/chat_server.py"]
+      cwd: "."
+      env:
+        OPENAI_API_KEY: $ENV{OPENAI_API_KEY}
+      tags: ["internal", "chat", "llm", "models"]
+
+    # External Tool Integration Examples
+    - name: "github_mcp"
+      transport: "sse"
+      enabled: false
+      description: "GitHub integration via community MCP server"
+      url: "http://localhost:8100/github/sse"
+      tags: ["external", "github", "repository"]
+
+    - name: "filesystem_mcp"
+      transport: "stdio"
+      enabled: false
+      description: "File system access via MCP"
+      command: "uvx"
+      args: ["mcp-server-filesystem", "/path/to/allowed/directory"]
+      tags: ["external", "filesystem", "files"]
+
+# Tool Repository Integration
+# This configures how MCP tools integrate with existing agent tool repositories
+tool_integration:
+  # Enable automatic discovery of MCP tools for agent use
+  auto_discover_mcp_tools: true
+
+  # MCP servers to include in agent tool repositories
+  agent_tool_servers: ["platform_agents", "platform_rag", "platform_chat"]
+
+  # Tool filtering for agent integration
+  tool_filters:
+    - server: "platform_agents"
+      include_tags: ["reasoning", "task_force", "tool_repository"]
+      exclude_tools: []
+    - server: "platform_rag"
+      include_tags: ["search", "retrieval", "documents"]
+      exclude_tools: []
+
+# Reasoning Engine Integration
+reasoning_integration:
+  # Enable MCP tool integration with reasoning engines
+  enabled: true
+
+  # Default MCP servers for reasoning engines
+  default_servers: ["platform_agents", "platform_rag"]
+
+  # Reasoning engine specific configurations
+  langchain:
+    # Enable automatic MCP tool to LangChain tool conversion
+    auto_convert_tools: true
+    tool_timeout: 30
+
+  llamaindex:
+    # Enable MCP tool integration with LlamaIndex
+    auto_convert_tools: true
+    tool_timeout: 30
+
+# Server Management API
+api:
+  # Enable REST API for MCP server management (for future UI)
+  enabled: true
+  endpoints:
+    - path: "/mcp/servers"
+      methods: ["GET", "POST", "PUT", "DELETE"]
+      description: "Manage MCP server configurations"
+    - path: "/mcp/capabilities"
+      methods: ["GET"]
+      description: "Discover and cache server capabilities"
+    - path: "/mcp/tools/search"
+      methods: ["GET"]
+      description: "Search tools across all servers"
+
+prompts:
+  type: JinjaTemplate
+  environment: src/platform/mcp_host/prompts
+  templates:
+    mcp_server_description: mcp_server_description.txt
+    tool_integration_guide: tool_integration_guide.txt
+    capability_summary: capability_summary.txt
+
+logger:
+  name: MCP_HOST
+  log_file: src/platform/mcp_host/logs/mcp_host.log
+  level: INFO

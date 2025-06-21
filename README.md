@@ -31,11 +31,15 @@ We have created a series of tools and examples to demonstrate what you can do wi
 
 The project is organized into the following directories:
 
+* **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
+  * **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+  * **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
+
 * **src**: Sourve code
   * **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
+    * **Agent Services**
     * **Chat Services**
     * **RAG (Retrieval-Augmented Generation) Services**
-    * **Agent Services**
     * **System Platform Services**
   * **platform**: Includes the **`agentic tool mesh`** with examples of Gen AI applications that demonstrate various capabilities:
     * **Tool Examples**: Demonstrates how to call an API, improve text, generate code, retrieve information from documents using RAG, and use a multi-agent system to solve complex tasks.
@@ -43,9 +47,7 @@ The project is organized into the following directories:
       * A chatbot that orchestrates all these tools.
       * An agentic memory for sharing chat messages among different users.
       * A back panel that allows configuring a tool via a user interface.
-  * **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
-    * **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
-    * **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
+
 * **policies**: Contains a set of governance policies and standards to ensure consistency, ethical adherence, and quality across all tools.
 
 ### Prerequisites

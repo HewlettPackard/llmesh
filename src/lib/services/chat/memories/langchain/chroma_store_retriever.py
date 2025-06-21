@@ -15,7 +15,7 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStoreRetriever
 from langchain_community.vectorstores import Chroma
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_community.embeddings import OpenAIEmbeddings
 from langchain.memory import VectorStoreRetrieverMemory
 from src.lib.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory

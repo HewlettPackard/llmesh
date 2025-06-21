@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-This script is designed as part of the HPE Athonet LLM Platform project 
+This script is designed as part of the HPE Athonet LLM Platform project
 and focuses on gathering information related to Athonet API specification.
-It use Athonet  OpenAPIs to get the information and ChatGPT to 
+It use Athonet  OpenAPIs to get the information and ChatGPT to
 synthetis them from JSON results.
 """
 
@@ -33,7 +33,7 @@ logger = Logger().configure(config['logger']).get_logger()
 def openapi_manager(query):
     """
     Retrieves information from Athonet OpenAPIs based on a given question.
-    This function call a Tool actions, summarize the results in a string 
+    This function call a Tool actions, summarize the results in a string
     """
     task_force = TaskForce.create(config['function']['multi_agents'])
     result = task_force.run(query)
@@ -44,7 +44,7 @@ def main(local=True):
     """
     Main function that serves as the entry point for the application.
     It either prints the manifest or launches the web application
-    based on the input parameter `local` : 
+    based on the input parameter `local` :
     - If True, the tool's manifest is printed.
     - If False, the web application is launched.
     """
