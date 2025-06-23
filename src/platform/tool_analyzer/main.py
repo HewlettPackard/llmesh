@@ -9,6 +9,7 @@ image. The image is then encoded as text for transmission.
 It utilizes the AthonTool decorator for configuration and logging setup.
 """
 
+import re
 import io
 import base64
 import json
@@ -90,7 +91,11 @@ def _invoke_llm(messages):
 
 def _clean_generated_code(code):
     # Remove the first line and the last line
-    code_lines = code.split('\n')[1:-1]
+    code_lines = code.split('\n')
+    pattern = r"```(?:\w+)?\n(.*?)\n```"
+    match = re.search(pattern, code, re.DOTALL)
+    if match:
+        code_lines = match.group(1).split('\n')
     return "\n".join(code_lines)
 
 def _create_plot_by_code(code_str):
