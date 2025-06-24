@@ -2,54 +2,68 @@
 # -*- coding: utf-8 -*-
 
 """
-Function to search info about 3GPP Standards for HPE Athonet LLM Platform. 
-It uses advanced natural language processing techniques and integrates with OpenAI's 
-models for document indexing, querying, and information retrieval. 
+This module initializes an agentic tool of the platform rag service.
+It utilizes the AthonTool decorator for configuration and logging setup.
 """
 
+import os
 import json
 from sentence_transformers import CrossEncoder
 from langchain.schema import HumanMessage, SystemMessage
-from src.lib.package.athon.chat import ChatModel, PromptRender
-from src.lib.package.athon.rag import (
+from athon.chat import (
+    ChatModel,
+    PromptRender
+)
+from athon.rag import (
     DataExtractor,
     DataTransformer,
     DataStorage,
     DataLoader,
-    DataRetriever)
-from src.lib.package.athon.system import AthonTool, Config, Logger
+    DataRetriever
+)
+from athon.system import (
+    AthonTool,
+    Config,
+    Logger
+)
 
 
-config = Config('src/platform/tool_rag/config.yaml').get_settings()
-logger = Logger().configure(config['logger']).get_logger()
-
-LOAD = config["function"]["debug"]["load_files"]
-
-EXTRACTOR_CONFIG = config["function"]["rag"]["extractor"]
-TRANSFORMER_CONFIG = config["function"]["rag"]["transformer"]
-ACTIONS_CONFIG = config["function"]["rag"]["actions"]
-STORAGE_CONFIG = config["function"]["rag"]["storage"]
-LOADER_CONFIG = config["function"]["rag"]["loader"]
-RETRIEVER_CONFIG = config["function"]["rag"]["retriever"]
-LLM_CONFIG = config["function"]["rag"]["llm_model"]
-RERANK_MODEL = config["function"]["rag"]["rerank_model"]
-SUMMARY_CHUNKS = config["function"]["rag"]["summary_chunks"]
-PROMPT_CONFIG = config["prompts"]
+# Load configuration
+PATH = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(PATH, 'config.yaml')
+config = Config(config_path).get_settings()
+# Config settings
 PATH = config["data"]["path"]
 FILES = config["data"]["files"]
+PROMPT_CONFIG = config["prompts"]
+QUERY_EXPANTION_PROMPT = config["service"]["query_espantion"]
+QUERY_HYDE_PROMPT = config["service"]["query_hyde"]
+LLM_CONFIG = config["service"]["llm"]
+STORAGE_CONFIG = config["service"]["storage"]
+EXTRACTOR_CONFIG = config["service"]["extractor"]
+TRANSFORMER_CONFIG = config["service"]["transformer"]
+ACTIONS_CONFIG = config["service"]["actions"]
+LOADER_CONFIG = config["service"]["loader"]
+RERANK_MODEL = config["service"]["rerank"]["model"]
+SUMMARY_CHUNKS = config["service"]["rerank"]["summary_chunks"]
+RETRIEVER_CONFIG = config["service"]["retriever"]
+    LOAD = config["service"]["debug"]["load_files"]
+
+# Create global objects
+logger = Logger().configure(config['logger']).get_logger()
 
 
 @AthonTool(config, logger)
-def telco_expert(query: str) -> str:
+def retrieve(query: str, augemntation: str="espantion") -> str:
     """
-    This function reads the telco standards, builds or use an vector store 
+    This function reads the documentations, builds or use an vector store 
     from them, and then uses a query engine to find and return relevant 
     information to the input question.
     """
     collection = _get_collection()
     if LOAD:
         _load_files_into_db(collection)
-    augment_query = _augment_query_generated(query)
+    augment_query = _augment_query_generated(query, augemntation)
     rag_results = _retrieve_from_collection(collection,augment_query)
     ordered_rag_results = _rerank_answers(augment_query, rag_results)
     summary_answer = _summary_answer(augment_query, ordered_rag_results)
@@ -86,9 +100,13 @@ def _load_elements(collection, elements):
     result = data_loader.insert(collection, elements)
     logger.debug(result.status)
 
-def _augment_query_generated(query):
+def _augment_query_generated(query, augemntation):
+    if augemntation == "hyde":
+        system_prompt = QUERY_HYDE_PROMPT
+    else:
+        system_prompt = QUERY_EXPANTION_PROMPT
     prompts = [
-        SystemMessage(content = config["function"]["query_espantion"]),
+        SystemMessage(content = system_prompt),
         HumanMessage(content = query)
     ]
     content = _invoke_llm(prompts)
@@ -121,7 +139,7 @@ def _rerank_answers(query, elements, max_chunks=SUMMARY_CHUNKS):
         "scores": []
     }
     ordered_indices = [
-        index for index, score in sorted(
+        index for index, _ in sorted(
             enumerate(scores), key=lambda x: x[1], reverse=True
         )
     ]
@@ -168,8 +186,8 @@ def main(local=True):
     - If False, the web application is launched.
     """
     if local:
-        return telco_expert.get_manifest()
-    telco_expert.run_app()
+        return retrieve.get_manifest()
+    retrieve.run_app()
     return None
 
 

@@ -1,0 +1,6 @@
+RAG Service is an efficient and user-friendly tool designed to streamline 
+the process of information retrieval from documentations. 
+Leveraging the latest advancements in natural language processing and machine learning, 
+this tool allows users to input queries and receive accurate, context-rich responses. 
+RAG Service is ideal for engineers and profesionist, researchers, 
+students, and anyone seeking in-depth knowledge from technical documentations.
