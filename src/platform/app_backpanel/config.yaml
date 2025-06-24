@@ -52,9 +52,9 @@ tools:
         config: config.yaml
       prompts:
         system_prompt: default_prompt.txt
-  - name: TelcoExpert
+  - name: RagService
     type: RagTool
-    base_url: https://127.0.0.1:5006/
+    base_url: https://127.0.0.1:5003/
     version: 
       min_version: "1.0.0"  # Versions >= 1.0.0 are supported
       max_version: "2.0.0"  # Versions < 2.0.0 are supported
@@ -74,12 +74,12 @@ tools:
     - label: Chroma - Local Instance
       settings:  
         type: ChromaCollection
-        path: src/platform/tool_rag/data
+        path: src/platform/rag/data
         collection: Telco3GPP5GStandards
     - label: Milvus - Local Instance
       settings:  
         type: MilvusCollection
-        path: src/platform/tool_rag/data/milvus.db
+        path: src/platform/rag/data/milvus.db
         collection: Telco3GPP5GStandards
     files:
     - 23501-i60.docx
@@ -106,7 +106,7 @@ tools:
           api_key: $ENV{ANTHROPIC_API_KEY}
           temperature: 0
     default:
-      path: src/platform/app_backpanel/tools/tool_rag/
+      path: src/platform/app_backpanel/tools/rag/
       files: 
         config: config.yaml
       prompts:

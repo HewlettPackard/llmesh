@@ -15,10 +15,7 @@ from athon.chat import (
     PromptRender
 )
 from athon.rag import (
-    DataExtractor,
-    DataTransformer,
     DataStorage,
-    DataLoader,
     DataRetriever
 )
 from athon.system import (
@@ -47,7 +44,6 @@ LOADER_CONFIG = config["service"]["loader"]
 RERANK_MODEL = config["service"]["rerank"]["model"]
 SUMMARY_CHUNKS = config["service"]["rerank"]["summary_chunks"]
 RETRIEVER_CONFIG = config["service"]["retriever"]
-    LOAD = config["service"]["debug"]["load_files"]
 
 # Create global objects
 logger = Logger().configure(config['logger']).get_logger()
@@ -61,8 +57,6 @@ def retrieve(query: str, augemntation: str="espantion") -> str:
     information to the input question.
     """
     collection = _get_collection()
-    if LOAD:
-        _load_files_into_db(collection)
     augment_query = _augment_query_generated(query, augemntation)
     rag_results = _retrieve_from_collection(collection,augment_query)
     ordered_rag_results = _rerank_answers(augment_query, rag_results)
@@ -74,31 +68,6 @@ def _get_collection():
     data_storage= DataStorage.create(STORAGE_CONFIG)
     result = data_storage.get_collection()
     return result.collection
-
-def _load_files_into_db(collection):
-    for file in FILES:
-        logger.info(f"Load file {file['source']}")
-        file_name = file["source"]
-        file_path = PATH + file_name
-        elements = _extract_file(file_path)
-        transformed_elements = _transform_elements(elements)
-        _load_elements(collection, transformed_elements)
-
-def _extract_file(file_path):
-    data_extractor = DataExtractor.create(EXTRACTOR_CONFIG)
-    result = data_extractor.parse(file_path)
-    return result.elements
-
-def _transform_elements(elements):
-    data_transformer = DataTransformer.create(TRANSFORMER_CONFIG)
-    actions = ACTIONS_CONFIG
-    result = data_transformer.process(actions, elements)
-    return result.elements
-
-def _load_elements(collection, elements):
-    data_loader = DataLoader.create(LOADER_CONFIG)
-    result = data_loader.insert(collection, elements)
-    logger.debug(result.status)
 
 def _augment_query_generated(query, augemntation):
     if augemntation == "hyde":

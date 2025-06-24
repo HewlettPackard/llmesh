@@ -37,7 +37,7 @@ projects:
       memory_key: chat_history
       return_messages: true
     tools:
-      # - "src/platform/chat"    # ChatService as local tool
+      # - "src/platform/chat"         # ChatService as local tool
       - "https://127.0.0.1:5002/"     # ChatService
   - name: "Project 5G Network"
     memory:
@@ -49,14 +49,14 @@ projects:
       cert_verify: false
     tools:
       - "https://127.0.0.1:5005/"     # OpenAPIManager
-      - "https://127.0.0.1:5006/"     # TelcoExpert
+      - "https://127.0.0.1:5003/"     # RagService
   - name: "Project Meteo"
     memory:
       type: LangChainBuffer
       memory_key: chat_history
       return_messages: true
     tools:
-      - "https://127.0.0.1:5003/"     # TemperatureFinder
+      - "https://127.0.0.1:5006/"     # TemperatureFinder
       - "https://127.0.0.1:5004/"     # TemperatureAnalyzer
 
 prompts:

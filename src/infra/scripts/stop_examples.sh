@@ -4,10 +4,10 @@
 ports=(
     5001    # Orchestrator
     5002    # Chat Service
-    5003    # Temperature Finder    
+    5003    # RAG Service    
     5004    # Temperature Analyzer
     5005    # OpenAPI Manager
-    5006    # Telco Expert
+    5006    # Temperature Finder 
     5010    # Memory App
     5011    # Backpanel
 )
