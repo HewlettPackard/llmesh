@@ -85,6 +85,9 @@ tools:
     - 23501-i60.docx
     - 23502-i60.docx
     - 23503-i60.docx
+    - 23501-j30.docx
+    - 23502-j30.docx
+    - 23503-j30.docx
     llms:
       - label: ChatGPT-4o
         settings:

@@ -75,7 +75,7 @@ done
 # List of app directories
 apps_directories=(
     "src/platform/app_memory"           #5010
-    "src/platform/app_backpanel"        #5011
+    # "src/platform/app_backpanel"        #5011
     "src/platform/orchestrator"         #5001
 )
 

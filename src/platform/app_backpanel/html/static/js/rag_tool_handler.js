@@ -47,12 +47,12 @@ function generateInjectionToolConfigurationForm(tool) {
     //settingsForm += generateButtons() 
     settingsForm += '</div></fieldset>'
     document.getElementById('toolConfiguration').innerHTML = settingsForm;
-    let functionSettings = tool.settings.function
+    let functionSettings = tool.settings.service
     let fileSettings = tool.settings.data
     let options = tool.options
-    populateExtractorOptions(options.extractors, functionSettings.rag.extractor);
-    populateActionsCheckboxes(options.trasformations, functionSettings.rag.actions);
-    populateStorageOptions(options.storages, functionSettings.rag.storage);
+    populateExtractorOptions(options.extractors, functionSettings.extractor);
+    populateActionsCheckboxes(options.trasformations, functionSettings.actions);
+    populateStorageOptions(options.storages, functionSettings.storage);
     populateFilesCheckboxes(options.files, fileSettings.files);
     //bindLoadResetEvents();
 }
@@ -201,11 +201,11 @@ function generateRetrievalToolConfigurationForm(tool) {
     settingsForm += generateChunksForm();
     settingsForm += '</div></fieldset>'
     document.getElementById('toolConfiguration').innerHTML += settingsForm;
-    let functionSettings = tool.settings.function
+    let functionSettings = tool.settings.service
     let options = tool.options
-    populateLLMOptions(options.llms, functionSettings.rag.llm_model);
+    populateLLMOptions(options.llms, functionSettings.llm);
     populateSystemPrompt(functionSettings.query_espantion);
-    populateChunks(functionSettings.rag.retriever.n_results, functionSettings.rag.summary_chunks)
+    populateChunks(functionSettings.retriever.n_results, functionSettings.rerank.summary_chunks)
 }
 
 /**
