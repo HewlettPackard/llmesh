@@ -1,0 +1,49 @@
+webapp:
+  ip: 0.0.0.0
+  port: 5006
+  ssh_cert: adhoc
+
+tool:
+  name: TemperatureFinder
+  function: $FUNCTION{temperature_finder}
+  arguments:
+    - name: latitude
+      type: float
+      description: $PROMPT{field_latitude_description}
+      default : null
+      fields:
+        - ge: -90.0  # Greater than or equal to -90
+        - le: 90.0  # Less than or equal to 90      
+    - name: longitude
+      type: float
+      description: $PROMPT{field_longitude_description}
+      default : null
+      fields:
+        - ge: -180.0  # Greater than or equal to -180
+        - le: 180.0  # Less than or equal to 180
+  description: $PROMPT{tool_description}
+  return_direct: true
+  interface:
+    fields:
+      - name: latitude
+        label: "Insert Latitude"
+        type: number
+      - name: longitude
+        label: "Insert Longitude"
+        type: number
+
+function:
+  meteo_api: https://api.open-meteo.com/v1/forecast
+
+prompts:
+  type: JinjaTemplate
+  environment: src/examples/tool_api/prompts
+  templates:
+    tool_description: tool_description.txt
+    field_latitude_description: field_latitude_description.txt
+    field_longitude_description: field_longitude_description.txt
+
+logger:
+  name: TEMPERATURE_FINDER
+  log_file: src/examples/tool_api/logs/temperature_finder.log
+  level: DEBUG

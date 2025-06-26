@@ -1,0 +1,148 @@
+webapp:
+  ip: 0.0.0.0
+  port: 5001
+  brand: hpe
+  ssh_cert: adhoc
+
+games:
+  - type: WhoAmI
+    name: "Who am I?"
+    chat:
+      type: LangChainAgentExecutor
+      system_prompt: $PROMPT{whoami_prompt}
+      rules_prompt: $PROMPT{whoami_rules}
+      secret_identity_prompt: $PROMPT{whoami_secret_identity}
+      model: 
+        type: LangChainChatOpenAI
+        model_name: gpt-4o
+        api_key: $ENV{OPENAI_API_KEY}
+        temperature: 0
+        seed: 42
+      memory:
+        type: LangChainBufferWindow
+        memory_key: chat_history
+        window: 10
+        return_messages: true
+      tools:
+        type: LangChainStructured
+      verbose: true
+  - type: FantasiaGenesis
+    name: "Fantasia Genesis"
+    chat:
+      rules_prompt: $PROMPT{fantasia_rules}
+      situation_prompt: $PROMPT{fantasia_situation}
+      memory:
+        type: LangChainBufferWindow
+        memory_key: chat_history
+        window: 10
+        return_messages: true
+      world_db:
+        type: ChromaCollection
+        path: src/examples/app_games/data
+        collection: FantasiaWorld
+      hero_db:
+        type: ChromaCollection
+        path: src/examples/app_games/data
+        collection: FantasiaWorld
+      loader:
+        type: ChromaForSentences
+      retriever:  
+        type: ChromaForSentences
+        expansion_type: None
+        n_results: 3
+      setup:
+        type: CrewAIMultiAgent
+        plan_type: Sequential
+        memory: false
+        tasks:
+          - description: $PROMPT{task_build_realm}
+            expected_output: $PROMPT{task_realm_output}
+            agent: 
+              role: "Realm Builder"
+              goal: $PROMPT{agent_realm_builder_goal}
+              backstory: $PROMPT{agent_realm_builder_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{SaveWorld}
+              - $TOOL{GetWorld}
+          - description: $PROMPT{task_forge_hero}
+            expected_output: $PROMPT{task_hero_output}
+            agent: 
+              role: "Hero Forger"
+              goal: $PROMPT{agent_hero_forger_goal}
+              backstory: $PROMPT{agent_hero_forger_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{SaveHero}
+              - $TOOL{GetHero}
+              - $TOOL{GetWorld}
+        llm:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o-mini
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0.7  
+      play:
+        type: CrewAIMultiAgent
+        plan_type: Sequential
+        memory: false
+        tasks:
+          - description: $PROMPT{task_load_context}
+            expected_output: $PROMPT{task_load_output}
+            agent: 
+              role: "Context Loader"
+              goal: $PROMPT{agent_context_loader_goal}
+              backstory: $PROMPT{agent_context_loader_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{GetRules}
+              - $TOOL{GetHero}
+              - $TOOL{GetWorld}
+              - $TOOL{SaveHero}
+              - $TOOL{SaveWorld}
+          - description: $PROMPT{task_play_game}
+            expected_output: $PROMPT{task_play_output}
+            agent: 
+              role: "Action Handler"
+              goal: $PROMPT{agent_action_handler_goal}
+              backstory: $PROMPT{agent_action_handler_backstory}
+              allow_delegation: false
+              tools:
+              - $TOOL{PlayLottery}
+        llm:
+          type: LangChainChatOpenAI
+          model_name: gpt-4o-mini
+          api_key: $ENV{OPENAI_API_KEY}
+          temperature: 0
+
+
+prompts:
+  type: JinjaTemplate
+  environment: src/examples/app_games/prompts/
+  templates:
+    chat_error_message: chat_error_message.txt
+    whoami_prompt: whoami_prompt.txt
+    whoami_rules: whoami_rules.txt
+    whoami_secret_identity: whoami_secret_identity.txt
+    fantasia_rules: fantasia_rules.txt
+    fantasia_situation: fantasia_situation.txt
+    task_build_realm: task_build_realm.txt
+    task_realm_output: task_realm_output.txt
+    agent_realm_builder_goal: agent_realm_builder_goal.txt
+    agent_realm_builder_backstory: agent_realm_builder_backstory.txt
+    task_forge_hero: task_forge_hero.txt
+    task_hero_output: task_hero_output.txt
+    agent_hero_forger_goal: agent_hero_forger_goal.txt
+    agent_hero_forger_backstory: agent_hero_forger_backstory.txt
+    task_load_context: task_load_context.txt
+    task_load_output: task_load_output.txt
+    agent_context_loader_goal: agent_context_loader_goal.txt
+    agent_context_loader_backstory: agent_context_loader_backstory.txt
+    task_play_game: task_play_game.txt
+    task_play_output: task_play_output.txt
+    agent_action_handler_goal: agent_action_handler_goal.txt
+    agent_action_handler_backstory: agent_action_handler_backstory.txt
+
+logger:
+  name: ATHON
+  log_file: src/examples/app_games/logs/athon.log
+  level: DEBUG

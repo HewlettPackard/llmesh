@@ -5,7 +5,7 @@ source .venv/bin/activate
 
 # List of app directories
 apps_directories=(
-    "src/platform/app_games"          #5001
+    "src/examples/app_games"          #5001
 )
 
 # Activate and launch apps

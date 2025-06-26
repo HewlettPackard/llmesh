@@ -41,12 +41,9 @@ projects:
       - "https://127.0.0.1:5002/"     # ChatService
   - name: "Project 5G Network"
     memory:
-      type: LangChainRemote
+      type: LangChainBuffer
       memory_key: chat_history
       return_messages: true
-      base_url: "https://127.0.0.1:5010/"
-      timeout: 100
-      cert_verify: false
     tools:
       - "https://127.0.0.1:5005/"     # OpenAPIManager
       - "https://127.0.0.1:5006/"     # TelcoExpert

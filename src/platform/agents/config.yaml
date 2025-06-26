@@ -1,0 +1,70 @@
+version: "1.0.0"
+
+webapp:
+  ip: 0.0.0.0
+  port: 5005
+  ssh_cert: adhoc
+
+tool:
+  name: OpenAPIManager
+  function: $FUNCTION{openapi_manager}
+  arguments:
+    - name: query
+      type: str
+      description: $PROMPT{field_query_description}
+      default : null    
+  description: $PROMPT{tool_description}
+  return_direct: true
+
+function:
+  specifications:
+    path: src/platform/agents/data/5GC_APIs-Rel-18/
+  multi_agents:
+    type: CrewAIMultiAgent
+    plan_type: Sequential
+    memory: false
+    tasks:
+      - description: $PROMPT{task_plan_description}
+        expected_output: $PROMPT{task_plan_output}
+        agent: 
+          role: "OpenAPI Planner"
+          goal: $PROMPT{agent_planner_goal}
+          backstory: $PROMPT{agent_planner_backstory}
+          allow_delegation: false
+      - description: $PROMPT{task_report_description}
+        expected_output: $PROMPT{task_report_output}
+        agent: 
+          role: "OpenAPI Reported"
+          goal: $PROMPT{agent_reporter_goal}
+          backstory: $PROMPT{agent_reporter_backstory}
+          tools:
+          - $TOOL{OpenApiManagerTool}
+    llm:
+      type: LangChainChatOpenAI
+      model_name: gpt-4o-mini
+      api_key: $ENV{OPENAI_API_KEY}
+      temperature: 0  
+      seed: 42
+
+prompts:
+  type: JinjaTemplate
+  environment: src/platform/agents/prompts/
+  templates:
+    tool_description: tool_description.txt
+    field_query_description: field_query_description.txt
+    task_plan_description: task_plan_description.txt
+    task_plan_output: task_plan_output.txt
+    agent_planner_goal: agent_planner_goal.txt
+    agent_planner_backstory: agent_planner_backstory.txt
+    task_report_description: task_report_description.txt
+    task_report_output: task_report_output.txt
+    agent_reporter_goal: agent_reporter_goal.txt
+    agent_reporter_backstory: agent_reporter_backstory.txt    
+    tool_open_api: tool_open_api.txt
+    field_open_api_action: field_open_api_action.txt
+    field_open_api_value: field_open_api_value.txt
+
+logger:
+  name: OPENAPI_MANAGER
+  log_file: src/platform/agents/logs/openapi_manager.log
+  level: DEBUG
