@@ -17,11 +17,15 @@ tool:
     type: str
     description: $PROMPT{field_augemntation_description}
     default : espantion 
+  - name: rerank
+    type: bool
+    description: $PROMPT{field_rerank_description}
+    default : true  
   description: $PROMPT{tool_description}
   return_direct: true
 
 service:
-  query_espantion: $PROMPT{query_espantion}
+  query_expantion: $PROMPT{query_expantion}
   query_hyde: $PROMPT{query_hyde}
   llm:
     type: LangChainChatOpenAI
@@ -71,7 +75,8 @@ prompts:
     tool_description: tool_description.txt
     field_query_description: field_query_description.txt
     field_augemntation_description: field_augemntation_description.txt
-    query_espantion: query_espantion.txt
+    field_rerank_description: field_rerank_description.txt
+    query_expantion: query_expantion.txt
     query_hyde: query_hyde.txt
     answer_summary: answer_summary.txt
 

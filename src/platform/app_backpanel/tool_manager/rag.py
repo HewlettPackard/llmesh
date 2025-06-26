@@ -127,7 +127,7 @@ class RagTool(ToolManager):
             default_settings = self._get_default_settings()
             new_tool_info['settings']['service'] = (
                 default_settings['service'])
-            new_tool_info['settings']['service']['query_espantion'] = (
+            new_tool_info['settings']['service']['query_expantion'] = (
                 default_system_prompt)
             new_tool_info['settings']['data']['files'] = (
                 default_settings['data']['files'])
@@ -138,7 +138,7 @@ class RagTool(ToolManager):
         prompt_config['environment'] = self.tool_info['options']['default']['path']
         prompt_config['templates'] = self.tool_info['options']['default']['prompts']
         prompt = PromptRender.create(prompt_config)
-        result = prompt.load('query_espantion')
+        result = prompt.load('query_expantion')
         return result.content
 
     def _get_default_settings(self):
@@ -196,7 +196,7 @@ class RagTool(ToolManager):
             String: Result of operation
         """
         config = {
-            "service/query_espantion": tool_settings["query_espantion"],
+            "service/query_expantion": tool_settings["query_expantion"],
             "service/extractor": self._get_options("extractors", tool_settings["extractor"]),
             "service/actions": tool_settings["actions"],
             "service/retriever/n_results": tool_settings["n_results"],

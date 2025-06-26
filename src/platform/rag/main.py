@@ -33,7 +33,7 @@ config = Config(config_path).get_settings()
 PATH = config["data"]["path"]
 FILES = config["data"]["files"]
 PROMPT_CONFIG = config["prompts"]
-QUERY_EXPANTION_PROMPT = config["service"]["query_espantion"]
+QUERY_EXPANTION_PROMPT = config["service"]["query_expantion"]
 QUERY_HYDE_PROMPT = config["service"]["query_hyde"]
 LLM_CONFIG = config["service"]["llm"]
 STORAGE_CONFIG = config["service"]["storage"]
@@ -50,100 +50,157 @@ logger = Logger().configure(config['logger']).get_logger()
 
 
 @AthonTool(config, logger)
-def retrieve(query: str, augemntation: str="espantion") -> str:
+def retrieve(query: str, augmentation: str = "expansion", rerank: bool = True) -> str:
     """
-    This function reads the documentations, builds or use an vector store 
+    This function reads the documentations, builds or uses a vector store 
     from them, and then uses a query engine to find and return relevant 
     information to the input question.
     """
-    collection = _get_collection()
-    augment_query = _augment_query_generated(query, augemntation)
-    rag_results = _retrieve_from_collection(collection,augment_query)
-    ordered_rag_results = _rerank_answers(augment_query, rag_results)
-    summary_answer = _summary_answer(augment_query, ordered_rag_results)
-    chunk_answer = _create_chunk_string(ordered_rag_results)
-    return summary_answer + "\n\n" + chunk_answer
+    try:
+        collection = _get_collection()
+        augment_query = _augment_query_generated(query, augmentation)
+        rag_results = _retrieve_from_collection(collection, augment_query)
+        ordered_rag_results = _rerank_answers(augment_query, rag_results, rerank)
+        summary_answer = _summary_answer(augment_query, ordered_rag_results)
+        chunk_answer = _create_chunk_string(ordered_rag_results)
+        return summary_answer + "\n\n" + chunk_answer
+    except Exception as e:  # pylint: disable=W0718
+        logger.exception(f"Unexpected error in retrieve(): {e}")
+        return "An error occurred during processing."
 
 def _get_collection():
-    data_storage= DataStorage.create(STORAGE_CONFIG)
-    result = data_storage.get_collection()
-    return result.collection
+    try:
+        data_storage = DataStorage.create(STORAGE_CONFIG)
+        result = data_storage.get_collection()
+        return result.collection
+    except Exception as e:  # pylint: disable=W0718
+        logger.exception(f"Error initializing collection: {e}")
+        return None
 
-def _augment_query_generated(query, augemntation):
-    if augemntation == "hyde":
-        system_prompt = QUERY_HYDE_PROMPT
-    else:
-        system_prompt = QUERY_EXPANTION_PROMPT
+def _augment_query_generated(query, augmentation):
+    prompts_map = {
+        "hyde": QUERY_HYDE_PROMPT,
+        "expansion": QUERY_EXPANTION_PROMPT
+    }
+    system_prompt = prompts_map.get(augmentation)
+    if not system_prompt:
+        return query
     prompts = [
-        SystemMessage(content = system_prompt),
-        HumanMessage(content = query)
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=query)
     ]
-    content = _invoke_llm(prompts)
-    logger.info(f"AUGMENTED QUESTION:\n{content}")
-    return content
+    try:
+        content = _invoke_llm(prompts)
+        logger.info(f"AUGMENTED QUESTION:\n{content}")
+        return content
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error during query augmentation: {e}")
+        return query
 
 def _get_prompt(template):
-    prompt = PromptRender.create(PROMPT_CONFIG)
-    result = prompt.load(template)
-    return result.content
+    try:
+        prompt = PromptRender.create(PROMPT_CONFIG)
+        result = prompt.load(template)
+        return result.content
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error loading prompt template '{template}': {e}")
+        return ""
 
 def _invoke_llm(messages):
-    chat = ChatModel.create(LLM_CONFIG)
-    result = chat.invoke(messages)
-    return result.content
+    try:
+        chat = ChatModel.create(LLM_CONFIG)
+        result = chat.invoke(messages)
+        return result.content
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error invoking LLM: {e}")
+        return ""
+
 
 def _retrieve_from_collection(collection, augment_query):
-    data_retriever = DataRetriever.create(RETRIEVER_CONFIG)
-    result = data_retriever.select(collection, augment_query)
-    return result.elements
+    try:
+        data_retriever = DataRetriever.create(RETRIEVER_CONFIG)
+        result = data_retriever.select(collection, augment_query)
+        return result.elements or []
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error retrieving from collection: {e}")
+        return []
 
-def _rerank_answers(query, elements, max_chunks=SUMMARY_CHUNKS):
-    logger.debug("Rerank chunks")
-    cross_encoder = CrossEncoder(RERANK_MODEL)
-    pairs = [[query, doc["text"]] for doc in elements]
-    scores = cross_encoder.predict(pairs)
+def _rerank_answers(query, elements, rerank, max_chunks=SUMMARY_CHUNKS):
     ordered_results = {
         "documents": [],
         "metadatas": [],
         "scores": []
     }
-    ordered_indices = [
-        index for index, _ in sorted(
-            enumerate(scores), key=lambda x: x[1], reverse=True
+    if not elements:
+        logger.warning("No elements provided for reranking.")
+        return ordered_results
+    if rerank:
+        logger.debug("Reranking chunks...")
+        cross_encoder = CrossEncoder(RERANK_MODEL)
+        pairs = [[query, doc["text"]] for doc in elements]
+        try:
+            scores = cross_encoder.predict(pairs)
+        except Exception as e:  # pylint: disable=W0718
+            logger.error(f"Error during reranking: {e}")
+            return ordered_results
+        ordered_indices = sorted(
+            range(len(scores)), key=lambda i: scores[i], reverse=True
         )
-    ]
-    for o in ordered_indices[:max_chunks]:
-        ordered_results['documents'].append(elements[o]["text"])
-        ordered_results['metadatas'].append(elements[o]["metadata"])
-        ordered_results['scores'].append(scores[o])
+        for idx in ordered_indices[:max_chunks]:
+            ordered_results["documents"].append(elements[idx]["text"])
+            ordered_results["metadatas"].append(elements[idx]["metadata"])
+            ordered_results["scores"].append(scores[idx])
+    else:
+        logger.debug("Skipping reranking, returning top elements as-is.")
+        for element in elements[:max_chunks]:
+            ordered_results["documents"].append(element["text"])
+            ordered_results["metadatas"].append(element["metadata"])
+            ordered_results["scores"].append(None)  # No score available
     return ordered_results
 
 def _summary_answer(query, results):
     logger.debug("Summarize answer")
-    information = "\n\n".join(results['documents'])
-    prompts = [
-        SystemMessage(content = _get_prompt("answer_summary")),
-        HumanMessage(content = f"Question: {query}.\n Information: {information}")
-    ]
-    content = _invoke_llm(prompts)
-    return content
+    try:
+        information = "\n\n".join(results.get("documents", []))
+        prompts = [
+            SystemMessage(content=_get_prompt("answer_summary")),
+            HumanMessage(content=f"Question: {query}.\nInformation: {information}")
+        ]
+        return _invoke_llm(prompts)
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error summarizing answer: {e}")
+        return "Summary generation failed."
 
 def _create_chunk_string(results):
     result_list = []
     num_chunks = min(len(results['documents']), SUMMARY_CHUNKS)
     for i in range(num_chunks):
-        result_dict = {
-            "score": f"{results['scores'][i]:.2f}",
-            "source": results['metadatas'][i]['filename'],
-            "header": results['metadatas'][i]['header'],
-            "chunk": results['documents'][i]
-        }
+        result_dict = _build_result_dict(results, i)
         result_list.append(result_dict)
-    # Convert the list of dictionaries to a JSON string
-    json_string = json.dumps(result_list, indent=2)
-    # To include the JSON string within <code> tags as shown in your example
-    formatted_json_string = f"<code>{json_string}</code>"
-    return formatted_json_string
+    try:
+        json_string = json.dumps(result_list, indent=2)
+        return f"```json\n{json_string}\n```"
+    except Exception as e:  # pylint: disable=W0718
+        logger.error(f"Error formatting JSON chunk string: {e}")
+        return "Error creating chunk summary."
+
+def _build_result_dict(results, i):
+    """Safely builds a result dictionary from ranked results."""
+    try:
+        score = results.get('scores', [None])[i]
+        score_str = f"{score:.2f}" if score is not None else "N/A"
+    except (IndexError, TypeError, ValueError):
+        score_str = "N/A"
+    metadatas = results.get('metadatas', [])
+    documents = results.get('documents', [])
+    metadata = metadatas[i] if i < len(metadatas) else {}
+    document = documents[i] if i < len(documents) else ""
+    return {
+        "score": score_str,
+        "source": metadata.get('filename', 'Unknown'),
+        "header": metadata.get('header', 'No header'),
+        "chunk": document or "No content"
+    }
 
 
 def main(local=True):

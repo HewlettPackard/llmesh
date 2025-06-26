@@ -204,7 +204,7 @@ function generateRetrievalToolConfigurationForm(tool) {
     let functionSettings = tool.settings.service
     let options = tool.options
     populateLLMOptions(options.llms, functionSettings.llm);
-    populateSystemPrompt(functionSettings.query_espantion);
+    populateSystemPrompt(functionSettings.query_expantion);
     populateChunks(functionSettings.retriever.n_results, functionSettings.rerank.summary_chunks)
 }
 
@@ -302,7 +302,7 @@ function collectRagToolSettings() {
     settings['files'] = Array.from(files_checkboxes).map(checkbox => checkbox.value);
     // Retrieval
     settings['llm'] = document.getElementById('llm_select').value;
-    settings['query_espantion'] = document.getElementById('system_prompt_textarea').value;
+    settings['query_expantion'] = document.getElementById('system_prompt_textarea').value;
     settings['n_results'] = document.getElementById('chunk_number').value;
     settings['summary_chunks'] = document.getElementById('rerank_number').value;
     return settings;

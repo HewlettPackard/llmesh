@@ -21,7 +21,7 @@ tool:
   return_direct: true
 
 service:
-  query_espantion: $PROMPT{query_espantion}
+  query_expantion: $PROMPT{query_expantion}
   query_hyde: $PROMPT{query_hyde}
   llm:
     type: LangChainChatOpenAI
@@ -71,7 +71,7 @@ prompts:
     tool_description: tool_description.txt
     field_query_description: field_query_description.txt
     field_augemntation_description: field_augemntation_description.txt
-    query_espantion: query_espantion.txt
+    query_expantion: query_expantion.txt
     query_hyde: query_hyde.txt
     answer_summary: answer_summary.txt
 
