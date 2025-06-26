@@ -23,8 +23,8 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(PATH, 'config.yaml')
 config = Config(config_path).get_settings()
 # Config settings
-PATH = config["data"]["path"]
-FILES = config["data"]["files"]
+DATA_PATH = config["data"]["path"]
+DATA_FILES = config["data"]["files"]
 STORAGE_CONFIG = config["service"]["storage"]
 EXTRACTOR_CONFIG = config["service"]["extractor"]
 TRANSFORMER_CONFIG = config["service"]["transformer"]
@@ -36,13 +36,15 @@ RETRIEVER_CONFIG = config["service"]["retriever"]
 logger = Logger().configure(config['logger']).get_logger()
 
 
-def load_files(reset=None):
+def load_files(reset=None, data_path=None, data_files=None):
     """
     Function to load files into the tool
     """
+    data_path = data_path or DATA_PATH
+    data_files = data_files or DATA_FILES
     try:
         collection = _get_collection(reset)
-        _load_files_into_db(collection)
+        _load_files_into_db(collection, data_path, data_files)
         logger.info("File loading process completed.")
     except Exception as e:  # pylint: disable=W0718
         logger.exception(f"Failed to load files: {e}")
@@ -59,16 +61,16 @@ def _get_collection(reset=None):
         logger.exception(f"Error getting collection from storage: {e}")
         raise
 
-def _load_files_into_db(collection):
-    if not FILES:
+def _load_files_into_db(collection, data_path, data_files):
+    if not data_files:
         logger.warning("No files specified in configuration.")
         return
-    for file in FILES:
+    for file in data_files:
         file_name = file.get("source")
         if not file_name:
             logger.warning("Missing 'source' key in file config.")
             continue
-        file_path = os.path.join(PATH, file_name)
+        file_path = os.path.join(data_path, file_name)
         logger.info(f"Loading file: {file_path}")
         if not os.path.exists(file_path):
             logger.error(f"File not found: {file_path}")
