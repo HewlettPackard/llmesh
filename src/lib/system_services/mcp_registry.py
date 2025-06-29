@@ -2,14 +2,37 @@
 # -*- coding: utf-8 -*-
 
 """
-MCP Registry
+MCP Registry module for centralized Model Context Protocol management within LATMesh.
 
-Central registry for managing MCP servers in the platform.
-Handles both locally-hosted and remote MCP servers with configurable accessibility.
+This module provides the MCPRegistry class, which serves as the central hub for
+managing MCP servers and clients in the platform. It handles registration, discovery, and
+interaction with both locally-hosted and remote MCP servers based on configurable
+accessibility and hosting properties.
+
+Example:
+    Basic registry usage:
+
+    .. code-block:: python
+
+        from src.lib.system_services.mcp_registry import MCPRegistry
+
+        # Create registry
+        registry = MCPRegistry()
+
+        # Register a server
+        await registry.register_server(
+            name="filesystem",
+            accessibility="internal",
+            hosting="local",
+            config={"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem"]}
+        )
+
+        # Discover and invoke tools
+        tools = await registry.discover_tools()
+        result = await registry.invoke_tool("filesystem", "read_file", {"path": "/config.json"})
 """
 import asyncio
 from typing import Dict, List, Optional, Any, Literal
-from pathlib import Path
 
 from src.lib.core.log import Logger
 from src.lib.core.config import Config
@@ -20,7 +43,22 @@ logger = Logger().get_logger()
 
 
 class ServerEntry:
-    """Registry entry for an MCP server."""
+    """
+    Registry entry representing an MCP server configuration and state.
+
+    This class encapsulates all information about a registered MCP server,
+    including its configuration, accessibility rules, hosting type, and
+    runtime state such as active client connections and server instances.
+
+    Attributes:
+        name (str): Unique server identifier.
+        accessibility (str): Server accessibility level ("internal", "external", "both").
+        hosting (str): Hosting type ("local", "remote").
+        config (dict): Server-specific configuration parameters.
+        client (MCPClient): Active client connection to the server, if any.
+        server (MCPServer): Server instance for locally-hosted internal servers.
+        process: Process handle for locally-hosted external servers.
+    """
 
     def __init__(
         self,
@@ -40,12 +78,39 @@ class ServerEntry:
 
 class MCPRegistry:
     """
-    Registry for MCP servers based on two properties:
-    - Accessibility: who can access it (internal/external/both)
-    - Hosting: where it runs (local/remote)
+    Central registry for managing Model Context Protocol (MCP) servers.
+
+    This class provides a unified interface for registering, discovering, and
+    interacting with MCP servers. It manages servers based on two key properties:
+    accessibility (who can access the server) and hosting (where the server runs).
+
+    The registry supports:
+    - Internal servers: Platform-specific tools accessible only to internal services
+    - External servers: Third-party MCP servers accessible to external clients
+    - Both: Servers accessible to both internal and external clients
+    - Local hosting: Servers running on the same machine as the platform
+    - Remote hosting: Servers running on external infrastructure
+
+    Attributes:
+        servers (dict): Dictionary mapping server names to ServerEntry instances.
+        logger: Logger instance for debugging and error reporting.
+        config (dict): Registry configuration loaded from optional config file.
     """
 
     def __init__(self, config_file: Optional[str] = None):
+        """
+        Initialize the MCP registry with optional configuration file.
+
+        :param config_file: Path to configuration file containing server definitions.
+        :type config_file: str, optional
+
+        Example:
+            Create registry with configuration file:
+
+            .. code-block:: python
+
+                registry = MCPRegistry("/config/mcp_servers.yaml")
+        """
         self.servers: Dict[str, ServerEntry] = {}
         self.logger = logger
         self.config = {}
@@ -55,7 +120,13 @@ class MCPRegistry:
                 asyncio.run(self.register_servers_from_config())
 
     async def register_servers_from_config(self):
-        """Register all servers defined in the configuration file."""
+        """
+        Register all servers defined in the configuration file.
+
+        This method processes the configuration file and registers each server
+        defined in the 'mcp_servers' section. It handles missing keys gracefully
+        and logs any registration failures.
+        """
         servers = self.config.get('mcp_servers', [])
         for server_config in servers:
             try:
@@ -78,18 +149,45 @@ class MCPRegistry:
         config: Dict[str, Any]
     ) -> bool:
         """
-        Register an MCP server.
+        Register an MCP server with the registry.
 
-        Args:
-            name: Unique server identifier
-            accessibility: Who can access the server
-            hosting: Where the server runs
-            config: Server configuration
-                For local: command, args, env, transport (optional)
-                For remote: url, transport, headers (optional)
+        This method creates a new server entry with the specified properties and
+        configuration. It supports both local and remote servers with different
+        accessibility levels.
 
-        Returns:
-            True if registration successful
+        :param name: Unique server identifier within the registry.
+        :type name: str
+        :param accessibility: Server accessibility level determining who can access it.
+            - "internal": Only platform services can access
+            - "external": Only external clients can access
+            - "both": Both platform services and external clients can access
+        :type accessibility: Literal["internal", "external", "both"]
+        :param hosting: Server hosting type determining where it runs.
+            - "local": Server runs on the same machine as the platform
+            - "remote": Server runs on external infrastructure
+        :type hosting: Literal["local", "remote"]
+        :param config: Server-specific configuration parameters.
+            For local servers: command, args, env, transport (optional)
+            For remote servers: url, transport, headers (optional)
+            For internal servers: use_internal_server, setup_callback (optional)
+        :type config: dict[str, Any]
+        :return: True if registration was successful, False otherwise.
+        :rtype: bool
+
+        Example:
+            Register a local filesystem server:
+
+            .. code-block:: python
+
+                success = await registry.register_server(
+                    name="filesystem",
+                    accessibility="both",
+                    hosting="local",
+                    config={
+                        "command": "npx",
+                        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/data"]
+                    }
+                )
         """
         try:
             if name in self.servers:
@@ -107,13 +205,22 @@ class MCPRegistry:
 
     async def start_server(self, name: str) -> bool:
         """
-        Start a locally-hosted server.
+        Start a locally-hosted MCP server.
 
-        Args:
-            name: Server name
+        This method starts servers that are configured for local hosting. For
+        internal servers (use_internal_server=True), it creates an MCPServer
+        instance and calls the setup callback if provided. For external servers,
+        it prepares them for stdio-based communication.
 
-        Returns:
-            True if started successfully
+        :param name: Name of the registered server to start.
+        :type name: str
+        :return: True if server started successfully, False otherwise.
+        :rtype: bool
+
+        Example:
+            .. code-block:: python
+
+                success = await registry.start_server("platform_internal")
         """
         if name not in self.servers:
             self.logger.error(f"Server '{name}' not found")
@@ -151,13 +258,23 @@ class MCPRegistry:
 
     async def get_client(self, name: str) -> Optional[MCPClient]:
         """
-        Get a client connection to a server.
+        Get a client connection to a registered MCP server.
 
-        Args:
-            name: Server name
+        This method creates and returns a connected MCPClient instance for the
+        specified server. It handles different transport types and connection
+        parameters based on the server's configuration.
 
-        Returns:
-            Connected MCPClient instance
+        :param name: Name of the registered server to connect to.
+        :type name: str
+        :return: Connected MCPClient instance, or None if connection failed.
+        :rtype: MCPClient or None
+
+        Example:
+            .. code-block:: python
+
+                client = await registry.get_client("filesystem")
+                if client:
+                    tools = await client.list_tools()
         """
         if name not in self.servers:
             self.logger.error(f"Server '{name}' not found")
@@ -212,13 +329,26 @@ class MCPRegistry:
         accessibility_filter: Optional[str] = None
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Discover tools from registered servers.
+        Discover available tools from registered MCP servers.
 
-        Args:
-            accessibility_filter: Filter by accessibility (internal/external/both)
+        This method connects to registered servers and retrieves their available
+        tools, optionally filtering by accessibility level. It returns a mapping
+        of server names to their tool lists.
 
-        Returns:
-            Dictionary mapping server names to their tools
+        :param accessibility_filter: Filter servers by accessibility level.
+            Valid values: "internal", "external", "both", or None for all servers.
+        :type accessibility_filter: str, optional
+        :return: Dictionary mapping server names to lists of their available tools.
+        :rtype: dict[str, list[dict[str, Any]]]
+
+        Example:
+            .. code-block:: python
+
+                # Discover all tools
+                all_tools = await registry.discover_tools()
+
+                # Discover only internal tools
+                internal_tools = await registry.discover_tools("internal")
         """
         results = {}
 
@@ -248,15 +378,31 @@ class MCPRegistry:
         arguments: Optional[Dict[str, Any]] = None
     ) -> Any:
         """
-        Invoke a tool on a specific server.
+        Invoke a specific tool on a registered MCP server.
 
-        Args:
-            server_name: Server containing the tool
-            tool_name: Tool to invoke
-            arguments: Tool arguments
+        This method connects to the specified server and executes the named tool
+        with the provided arguments. It handles connection establishment and
+        error reporting.
 
-        Returns:
-            Tool execution result
+        :param server_name: Name of the registered server containing the tool.
+        :type server_name: str
+        :param tool_name: Name of the tool to invoke on the server.
+        :type tool_name: str
+        :param arguments: Arguments to pass to the tool, if any.
+        :type arguments: dict[str, Any], optional
+        :return: The result returned by the tool execution.
+        :rtype: Any
+
+        :raises ValueError: If the server cannot be found or connected to.
+
+        Example:
+            .. code-block:: python
+
+                result = await registry.invoke_tool(
+                    "filesystem",
+                    "read_file",
+                    {"path": "/config/settings.json"}
+                )
         """
         client = await self.get_client(server_name)
         if not client:
@@ -272,12 +418,25 @@ class MCPRegistry:
         """
         List registered servers with optional filtering.
 
-        Args:
-            accessibility_filter: Filter by accessibility
-            hosting_filter: Filter by hosting type
+        This method returns a list of registered servers, optionally filtered by
+        accessibility level and hosting type. Each server entry includes basic
+        information about its configuration and connection status.
 
-        Returns:
-            List of server information
+        :param accessibility_filter: Filter by accessibility level ("internal", "external", "both").
+        :type accessibility_filter: str, optional
+        :param hosting_filter: Filter by hosting type ("local", "remote").
+        :type hosting_filter: str, optional
+        :return: List of dictionaries containing server information.
+        :rtype: list[dict[str, Any]]
+
+        Example:
+            .. code-block:: python
+
+                # List all servers
+                all_servers = registry.list_servers()
+
+                # List only local servers
+                local_servers = registry.list_servers(hosting_filter="local")
         """
         results = []
 
@@ -297,7 +456,19 @@ class MCPRegistry:
         return results
 
     async def cleanup(self):
-        """Clean up all connections and resources."""
+        """
+        Clean up all connections and resources managed by the registry.
+
+        This method gracefully shuts down all active client connections and
+        stops all locally-hosted servers. It should be called during application
+        shutdown to ensure proper resource cleanup.
+
+        Example:
+            .. code-block:: python
+
+                # During application shutdown
+                await registry.cleanup()
+        """
         for entry in self.servers.values():
             if entry.client:
                 await entry.client.disconnect()
