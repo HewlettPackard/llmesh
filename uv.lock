@@ -43,8 +43,11 @@ agents = [
     { name = "vllm" },
 ]
 all = [
+    { name = "aiohttp" },
+    { name = "anyio" },
     { name = "chromadb" },
     { name = "crewai", extra = ["tools"] },
+    { name = "fastapi" },
     { name = "langchain-anthropic" },
     { name = "langchain-community" },
     { name = "langchain-google-genai" },
@@ -56,16 +59,19 @@ all = [
     { name = "llama-index-llms-openai" },
     { name = "markitdown" },
     { name = "matplotlib" },
+    { name = "mcp" },
     { name = "openpyxl" },
     { name = "pymilvus", extra = ["model"] },
     { name = "pymupdf" },
     { name = "qdrant-client" },
     { name = "sentence-transformers" },
+    { name = "starlette" },
     { name = "torch" },
     { name = "transformers" },
     { name = "umap" },
     { name = "umap-learn" },
     { name = "unstructured", extra = ["docx", "pdf", "pptx", "xlsx"] },
+    { name = "uvicorn" },
     { name = "vllm" },
 ]
 chat = [
@@ -78,6 +84,14 @@ chat = [
     { name = "llama-index" },
     { name = "llama-index-llms-openai" },
     { name = "vllm" },
+]
+mcp = [
+    { name = "aiohttp" },
+    { name = "anyio" },
+    { name = "fastapi" },
+    { name = "mcp" },
+    { name = "starlette" },
+    { name = "uvicorn" },
 ]
 rag = [
     { name = "chromadb" },
@@ -107,14 +121,21 @@ test = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-optional-tests" },
+    { name = "pytest-timeout" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", marker = "extra == 'all'", specifier = ">=3.9.0,<4" },
+    { name = "aiohttp", marker = "extra == 'mcp'", specifier = ">=3.9.0,<4" },
+    { name = "anyio", marker = "extra == 'all'", specifier = ">=4.0.0,<5" },
+    { name = "anyio", marker = "extra == 'mcp'", specifier = ">=4.0.0,<5" },
     { name = "chromadb", marker = "extra == 'all'", specifier = ">0.4.24,<0.6.0" },
     { name = "chromadb", marker = "extra == 'rag'", specifier = ">0.4.24,<0.6.0" },
     { name = "crewai", extras = ["tools"], marker = "extra == 'agents'", specifier = ">0.80.0,<0.90.0" },
     { name = "crewai", extras = ["tools"], marker = "extra == 'all'", specifier = ">0.80.0,<0.90.0" },
+    { name = "fastapi", marker = "extra == 'all'", specifier = ">=0.115.0,<1" },
+    { name = "fastapi", marker = "extra == 'mcp'", specifier = ">=0.115.0,<1" },
     { name = "flask", specifier = ">=3.0.3,<4" },
     { name = "jinja2", specifier = ">=3.1.4,<4" },
     { name = "langchain", specifier = ">=0.3.4,<0.4" },
@@ -156,6 +177,8 @@ requires-dist = [
     { name = "markitdown", marker = "extra == 'rag'", specifier = ">=0.0.1a3,<0.1.0" },
     { name = "matplotlib", marker = "extra == 'all'", specifier = ">=3.9.2,<4" },
     { name = "matplotlib", marker = "extra == 'rag'", specifier = ">=3.9.2,<4" },
+    { name = "mcp", marker = "extra == 'all'", specifier = ">=1.8.0,<2" },
+    { name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.8.0,<2" },
     { name = "openpyxl", marker = "extra == 'all'", specifier = ">=3.1.5,<4" },
     { name = "openpyxl", marker = "extra == 'rag'", specifier = ">=3.1.5,<4" },
     { name = "pydantic", specifier = ">=2.9.2,<3" },
@@ -165,8 +188,9 @@ requires-dist = [
     { name = "pymupdf", marker = "extra == 'rag'", specifier = ">=1.24.11,<2" },
     { name = "pyopenssl", specifier = ">=24.2.1,<25" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.3.3,<9" },
-    { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.23,<1" },
-    { name = "pytest-optional-tests", marker = "extra == 'test'", specifier = ">=0.1.1,<0.1.2" },
+    { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.21.0,<0.25" },
+    { name = "pytest-optional-tests", marker = "extra == 'test'", specifier = ">=0.1.1,<0.2" },
+    { name = "pytest-timeout", marker = "extra == 'test'" },
     { name = "python-certifi-win32", marker = "sys_platform == 'win32'", specifier = ">=1.6.1,<2" },
     { name = "python-multipart", specifier = ">=0.0.18,<0.0.21" },
     { name = "pyyaml", specifier = ">=6.0.2,<7" },
@@ -174,6 +198,8 @@ requires-dist = [
     { name = "qdrant-client", marker = "extra == 'rag'", specifier = ">1.12.0,<1.13.0" },
     { name = "sentence-transformers", marker = "extra == 'all'", specifier = ">3.2.0,<3.4.0" },
     { name = "sentence-transformers", marker = "extra == 'rag'", specifier = ">3.2.0,<3.4.0" },
+    { name = "starlette", marker = "extra == 'all'", specifier = ">=0.35.0,<1" },
+    { name = "starlette", marker = "extra == 'mcp'", specifier = ">=0.35.0,<1" },
     { name = "torch", marker = "extra == 'all'", specifier = ">=2.6.0,<2.7.0" },
     { name = "torch", marker = "extra == 'rag'", specifier = ">=2.6.0,<2.7.0" },
     { name = "transformers", marker = "extra == 'all'", specifier = ">=4.48.0" },
@@ -184,12 +210,14 @@ requires-dist = [
     { name = "umap-learn", marker = "extra == 'rag'", specifier = ">=0.5.7,<0.6" },
     { name = "unstructured", extras = ["docx", "pptx", "xlsx", "pdf"], marker = "extra == 'all'", specifier = ">=0.16.0,<0.17" },
     { name = "unstructured", extras = ["docx", "pptx", "xlsx", "pdf"], marker = "extra == 'rag'", specifier = ">=0.16.0,<0.17" },
+    { name = "uvicorn", marker = "extra == 'all'", specifier = ">=0.27.0,<1" },
+    { name = "uvicorn", marker = "extra == 'mcp'", specifier = ">=0.27.0,<1" },
     { name = "vllm", marker = "extra == 'agents'", specifier = ">=0.8" },
     { name = "vllm", marker = "extra == 'all'", specifier = ">=0.8" },
     { name = "vllm", marker = "extra == 'chat'", specifier = ">=0.8" },
     { name = "vllm", marker = "extra == 'rag'", specifier = ">=0.8" },
 ]
-provides-extras = ["chat", "agents", "rag", "test", "all"]
+provides-extras = ["chat", "agents", "rag", "test", "mcp", "all"]
 
 [[package]]
 name = "aiofiles"
@@ -4868,19 +4896,19 @@ dependencies = [
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/05/35/30e0d83068951d90a01852cb1cef56e5d8a09d20c7f511634cc2f7e0372a/pytest-8.3.4.tar.gz", hash = "sha256:965370d062bce11e73868e0335abac31b4d3de0e82f4007408d242b4f8610761", size = 1445919, upload_time = "2024-12-01T12:54:25.98Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083, upload-time = "2024-12-01T12:54:19.735Z" },
+    { url = "https://files.pythonhosted.org/packages/11/92/76a1c94d3afee238333bc0a42b82935dd8f9cf8ce9e336ff87ee14d9e1cf/pytest-8.3.4-py3-none-any.whl", hash = "sha256:50e16d954148559c9a74109af1eaf0c945ba2d8f30f0a3d3335edde19788b6f6", size = 343083, upload_time = "2024-12-01T12:54:19.735Z" },
 ]
 
 [[package]]
 name = "pytest-asyncio"
-version = "0.26.0"
+version = "0.24.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pytest" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8e/c4/453c52c659521066969523e87d85d54139bbd17b78f09532fb8eb8cdb58e/pytest_asyncio-0.26.0.tar.gz", hash = "sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f", size = 54156, upload-time = "2025-03-25T06:22:28.883Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/6d/c6cf50ce320cf8611df7a1254d86233b3df7cc07f9b5f5cbcb82e08aa534/pytest_asyncio-0.24.0.tar.gz", hash = "sha256:d081d828e576d85f875399194281e92bf8a68d60d72d1a2faf2feddb6c46b276", size = 49855, upload_time = "2024-08-22T08:03:18.145Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/7f/338843f449ace853647ace35870874f69a764d251872ed1b4de9f234822c/pytest_asyncio-0.26.0-py3-none-any.whl", hash = "sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0", size = 19694, upload-time = "2025-03-25T06:22:27.807Z" },
+    { url = "https://files.pythonhosted.org/packages/96/31/6607dab48616902f76885dfcf62c08d929796fc3b2d2318faf9fd54dbed9/pytest_asyncio-0.24.0-py3-none-any.whl", hash = "sha256:a811296ed596b69bf0b6f3dc40f83bcaf341b155a269052d82efa2b25ac7037b", size = 18024, upload_time = "2024-08-22T08:03:15.536Z" },
 ]
 
 [[package]]

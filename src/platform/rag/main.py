@@ -33,7 +33,7 @@ config = Config(config_path).get_settings()
 PATH = config["data"]["path"]
 FILES = config["data"]["files"]
 PROMPT_CONFIG = config["prompts"]
-QUERY_EXPANTION_PROMPT = config["service"]["query_expantion"]
+QUERY_EXPANSION_PROMPT = config["service"]["query_expansion"]
 QUERY_HYDE_PROMPT = config["service"]["query_hyde"]
 LLM_CONFIG = config["service"]["llm"]
 STORAGE_CONFIG = config["service"]["storage"]
@@ -80,7 +80,7 @@ def _get_collection():
 def _augment_query_generated(query, augmentation):
     prompts_map = {
         "hyde": QUERY_HYDE_PROMPT,
-        "expansion": QUERY_EXPANTION_PROMPT
+        "expansion": QUERY_EXPANSION_PROMPT
     }
     system_prompt = prompts_map.get(augmentation)
     if not system_prompt:
