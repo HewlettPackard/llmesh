@@ -6,7 +6,7 @@ webapp:
   ssh_cert: adhoc
 
 tool:
-  name: OpenAPIManager
+  name: AgentsService
   function: $FUNCTION{openapi_manager}
   arguments:
     - name: query
@@ -66,5 +66,5 @@ prompts:
 
 logger:
   name: OPENAPI_MANAGER
-  log_file: src/platform/agents/logs/openapi_manager.log
+  log_file: src/platform/agents/logs/tool.log
   level: DEBUG

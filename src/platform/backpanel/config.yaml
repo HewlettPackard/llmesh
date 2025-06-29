@@ -114,9 +114,9 @@ tools:
         config: config.yaml
       prompts:
         query_expantion: query_expantion.txt
-  - name: OpenAPIManager
+  - name: AgentsService
     type: AgentTool
-    base_url: https://127.0.0.1:5005/
+    base_url: https://127.0.0.1:5004/
     version: 
       min_version: "1.0.0"  # Versions >= 1.0.0 are supported
       max_version: "2.0.0"  # Versions < 2.0.0 are supported
@@ -143,7 +143,7 @@ tools:
     tools:
       - OpenApiManagerTool
     default:
-      path: src/platform/backpanel/tools/tool_agents/
+      path: src/platform/backpanel/tools/agents/
       files: 
         config: config.yaml
 
@@ -166,5 +166,5 @@ prompts:
 
 logger:
   name: ATHON_BACKPANEL
-  log_file: src/platform/backpanel/logs/athon_backpanel.log
+  log_file: src/platform/backpanel/logs/backpanel.log
   level: DEBUG

@@ -2,10 +2,7 @@
 
 # List of tools directories
 tools_directories=(
-    "src/platform/chat"                 #5002
-    "src/platform/rag"                  #5003
-    "src/platform/tool_analyzer"        #5004
-    "src/platform/tool_agents"          #5005
+    "src/platform/tool_analyzer"        #5005
     "src/platform/tool_api"             #5006
 )
 
@@ -37,10 +34,7 @@ done
 
 # List of ports
 ports=(
-    5002    # Chat Service
-    5003    # RAG Service    
-    5004    # Temperature Analyzer
-    5005    # OpenAPI Manager
+    5005    # Temperature Analyzer
     5006    # Temperature Finder 
 )
 
@@ -75,8 +69,6 @@ done
 # List of app directories
 apps_directories=(
     "src/platform/app_memory"           #5010
-    "src/platform/app_backpanel"        #5011
-    "src/platform/orchestrator"         #5001
 )
 
 # Activate and launch apps
