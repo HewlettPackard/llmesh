@@ -18,11 +18,18 @@ import yaml
 from src.lib.core.template_engine import TemplateEngine
 from src.lib.core.log import Logger
 
-
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 logger = Logger().get_logger()
 
+# Load environment variables from a .env file in either the current directory or the project root
+dotenv_path = join(dirname(__file__), '.env')
+if not load_dotenv(dotenv_path):
+    dotenv_path = join(dirname(dirname(dirname(dirname(__file__)))), '.env')
+    if not load_dotenv(dotenv_path):
+        logger.warning("No .env file found in %s or %s.", dotenv_path, join(dirname(__file__), '.env'))
+    else:
+        logger.info("Environment variables loaded from: %s", dotenv_path)
+else:
+    logger.info("Environment variables loaded from: %s", dotenv_path)
 
 class Config:
     """

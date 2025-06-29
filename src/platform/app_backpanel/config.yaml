@@ -113,7 +113,7 @@ tools:
       files: 
         config: config.yaml
       prompts:
-        query_expantion: query_expantion.txt
+        query_expansion: query_expansion.txt
   - name: OpenAPIManager
     type: AgentTool
     base_url: https://127.0.0.1:5005/
