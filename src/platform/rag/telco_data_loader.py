@@ -35,8 +35,8 @@ def download_latest(series: str, version: str, destination: str):
 
 def main():
     "Entry point"
-    destination = "src/platform/tool_rag/data"
-    config_yaml = "src/platform/tool_rag/config.yaml"
+    destination = "src/platform/rag/data"
+    config_yaml = "src/platform/rag/config.yaml"
     files = []
     for version in ["501", "502"]:
         for filename in download_latest(series="23", version=version, destination=destination):

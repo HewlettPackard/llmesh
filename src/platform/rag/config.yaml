@@ -1,0 +1,86 @@
+version: "1.0.0"
+
+webapp:
+  ip: 0.0.0.0
+  port: 5003
+  ssh_cert: adhoc
+
+tool:
+  name: RagService
+  function: $FUNCTION{retrieve}
+  arguments:
+  - name: query
+    type: str
+    description: $PROMPT{field_query_description}
+    default: null
+  - name: augemntation
+    type: str
+    description: $PROMPT{field_augemntation_description}
+    default : espantion 
+  - name: rerank
+    type: bool
+    description: $PROMPT{field_rerank_description}
+    default : true  
+  description: $PROMPT{tool_description}
+  return_direct: true
+
+service:
+  query_expantion: $PROMPT{query_expantion}
+  query_hyde: $PROMPT{query_hyde}
+  llm:
+    type: LangChainChatOpenAI
+    model_name: gpt-4o
+    api_key: $ENV{OPENAI_API_KEY}
+    temperature: 0
+    seed: 42
+  storage:
+    type: ChromaCollection
+    path: src/platform/rag/data
+    collection: Telco3GPP5GStandards
+    reset: false
+  extractor:
+    type: UnstructuredForSections
+    document_type: Docx
+    extraction_type: SectionWithHeader
+  transformer:
+    type: CteActionRunner
+    clean: null
+    transform: null
+    enrich: null
+  actions:
+    - RemoveMultipleSpaces
+    - ReplaceTabsWithSpaces
+    - TransformInSectionByHeader
+    - RemoveTitleElementsOnly
+    - TransformInChunk
+  loader:
+    type: ChromaForSentences
+  retriever:
+    type: ChromaForSentences
+    n_results: 10
+  rerank: 
+    model: cross-encoder/ms-marco-MiniLM-L-6-v2
+    summary_chunks: 5
+
+data:
+  path: src/platform/rag/data/
+  files:
+  - source: 23501-j30.docx
+  - source: 23502-j30.docx
+
+prompts:
+  type: JinjaTemplate
+  environment: src/platform/rag/prompts/
+  templates:
+    tool_description: tool_description.txt
+    field_query_description: field_query_description.txt
+    field_augemntation_description: field_augemntation_description.txt
+    field_rerank_description: field_rerank_description.txt
+    query_expantion: query_expantion.txt
+    query_hyde: query_hyde.txt
+    answer_summary: answer_summary.txt
+
+logger:
+  name: RAG_SERVICE
+  log_file: src/platform/rag/logs/tool.log
+  level: DEBUG

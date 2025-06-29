@@ -1,0 +1,1 @@
+Set the 'rerank' field to true if you want to rerank retrieved chunks.

@@ -118,7 +118,7 @@ To use the complete setup, including examples and demo applications, follow thes
   uv pip install -e ".[all,test]"
   ```
 
-3. **Setup for Specific Tools**: Some tools, including **tool_rag**, **tool_agents**, and **tool_analyzer**, require additional setup (e.g., copying specific data files and initializing configurations). For detailed setup instructions, refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
+3. **Setup for Specific Tools**: Some tools, including **rag**, **tool_agents**, and **tool_analyzer**, require additional setup (e.g., copying specific data files and initializing configurations). For detailed setup instructions, refer to the [Installation Guide](https://github.com/HewlettPackard/llmesh/wiki/Installation).
 
 ### Running the UIs
 
