@@ -1,6 +1,6 @@
 webapp:
   ip: 0.0.0.0
-  port: 5003
+  port: 5006
   ssh_cert: adhoc
 
 tool:

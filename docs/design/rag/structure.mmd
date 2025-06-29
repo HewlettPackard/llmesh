@@ -1,0 +1,42 @@
+flowchart TD
+    A[RAG Service Interface] -->|retrieve| B[Query Augmentor]
+    B -->|prompt + query| C[[Augmented Query - data]]
+
+    C --> D[Retriever]
+    D -->|vector search| E[[Retrieved Chunks - data]]
+
+    E --> F{Rerank?}
+    F -->|Yes| G[Reranker]
+    F -->|No| H[Use Original Order]
+
+    G -->|score + sort| I[[Sorted Chunks - data]]
+    H --> I
+
+    I --> J[Summarizer]
+    J -->|prompt + chunks| K[[Summary Answer - data]]
+
+    I --> L[Chunk Formatter]
+    L --> M[[JSON Chunk List - data]]
+
+    K --> N[Final Response]
+    M --> N
+
+    N --> O[Return to User]
+
+    %% Styling for clarity
+    style A fill:#dff,stroke:#333,stroke-width:1px
+    style B fill:#ccf,stroke:#333,stroke-width:1px
+    style D fill:#ccf,stroke:#333,stroke-width:1px
+    style G fill:#cfc,stroke:#333,stroke-width:1px
+    style H fill:#eee,stroke:#333,stroke-width:1px
+    style J fill:#ffc,stroke:#333,stroke-width:1px
+    style L fill:#ffc,stroke:#333,stroke-width:1px
+    style N fill:#cce,stroke:#333,stroke-width:1px
+    style O fill:#dfd,stroke:#333,stroke-width:1px
+
+    %% Data nodes
+    style C fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style E fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style I fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style K fill:#fffacd,stroke:#999,stroke-dasharray: 5
+    style M fill:#fffacd,stroke:#999,stroke-dasharray: 5

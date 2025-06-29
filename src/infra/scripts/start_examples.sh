@@ -3,10 +3,10 @@
 # List of tools directories
 tools_directories=(
     "src/platform/chat"                 #5002
-    "src/platform/tool_api"             #5003
+    "src/platform/rag"                  #5003
     "src/platform/tool_analyzer"        #5004
     "src/platform/tool_agents"          #5005
-    "src/platform/tool_rag"             #5006
+    "src/platform/tool_api"             #5006
 )
 
 # Activate virtual environment 
@@ -22,7 +22,7 @@ done
 # Conditionally download example data files
 if [ "$WITH_DATA" = true ]; then
     echo "Downloading example data files..."
-    python src/platform/tool_rag/rag_data_loader.py
+    python src/platform/rag/telco_data_loader.py
 else
     echo "Skipping data download. Use --with-data to enable."
 fi
@@ -38,10 +38,10 @@ done
 # List of ports
 ports=(
     5002    # Chat Service
-    5003    # Temperature Finder    
+    5003    # RAG Service    
     5004    # Temperature Analyzer
     5005    # OpenAPI Manager
-    5006    # Telco Expert
+    5006    # Temperature Finder 
 )
 
 # Function to check if a port is in use
