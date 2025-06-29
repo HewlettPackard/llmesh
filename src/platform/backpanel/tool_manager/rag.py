@@ -78,12 +78,9 @@ class RagTool(ToolManager):
         return None
 
     def _validate_rag_tool_function_data(self, index, tool_settings):
-        function_data = tool_settings.get('function')
-        if not function_data:
-            return f"Missing 'function' for tool {self.tool_entry.get('name')} at idx {index}."
-        rag_data = function_data.get('rag')
-        if not isinstance(rag_data, dict):
-            return f"Invalid 'rag' type at index {index}. Expected a dictionary."
+        service_data = tool_settings.get('service')
+        if not isinstance(service_data, dict):
+            return f"Missing 'service' for tool {self.tool_entry.get('name')} at idx {index}."
         file_data = tool_settings.get('data')
         if not isinstance(file_data, dict):
             return f"Invalid 'data files' type at index {index}. Expected a dictionary."
@@ -128,9 +125,9 @@ class RagTool(ToolManager):
         if default_flag:
             default_system_prompt = self._get_default_system_prompt()
             default_settings = self._get_default_settings()
-            new_tool_info['settings']['function']['rag'] = (
-                default_settings['function']['rag'])
-            new_tool_info['settings']['function']['query_espantion'] = (
+            new_tool_info['settings']['service'] = (
+                default_settings['service'])
+            new_tool_info['settings']['service']['query_expantion'] = (
                 default_system_prompt)
             new_tool_info['settings']['data']['files'] = (
                 default_settings['data']['files'])
@@ -141,7 +138,7 @@ class RagTool(ToolManager):
         prompt_config['environment'] = self.tool_info['options']['default']['path']
         prompt_config['templates'] = self.tool_info['options']['default']['prompts']
         prompt = PromptRender.create(prompt_config)
-        result = prompt.load('query_espantion')
+        result = prompt.load('query_expantion')
         return result.content
 
     def _get_default_settings(self):
@@ -179,7 +176,7 @@ class RagTool(ToolManager):
         return result.content
 
     def _get_llm_config(self):
-        llm_config = CONFIG['function']['llm']
+        llm_config = CONFIG['service']['llm']
         api_key = llm_config['api_key']
         # Replace unresolved environment variable
         if api_key.startswith("$ENV{") and api_key.endswith("}"):
@@ -199,13 +196,13 @@ class RagTool(ToolManager):
             String: Result of operation
         """
         config = {
-            "function/query_espantion": tool_settings["query_espantion"],
-            "function/rag/extractor": self._get_options("extractors", tool_settings["extractor"]),
-            "function/rag/actions": tool_settings["actions"],
-            "function/rag/retriever/n_results": tool_settings["n_results"],
-            "function/rag/summary_chunks": tool_settings["summary_chunks"],
-            "function/rag/storage": self._get_options("storages", tool_settings["storage"]),
-            "function/rag/llm_model": self._get_options("llms", tool_settings["llm"]),
+            "service/query_expantion": tool_settings["query_expantion"],
+            "service/extractor": self._get_options("extractors", tool_settings["extractor"]),
+            "service/actions": tool_settings["actions"],
+            "service/retriever/n_results": tool_settings["n_results"],
+            "service/rerank/summary_chunks": tool_settings["summary_chunks"],
+            "service/storage": self._get_options("storages", tool_settings["storage"]),
+            "service/llm": self._get_options("llms", tool_settings["llm"]),
             "data/files": [{"source": file_name} for file_name in tool_settings["files"]],
         }
         base_url = self.tool_info.get('base_url')
@@ -232,23 +229,23 @@ class RagTool(ToolManager):
             self._load_elements(config, collection, transformed_elements)
 
     def _get_collection(self, config):
-        config["function"]["rag"]["storage"]["reset"] = True
-        data_storage= DataStorage.create(config["function"]["rag"]["storage"])
+        config["service"]["storage"]["reset"] = True
+        data_storage= DataStorage.create(config["service"]["storage"])
         result = data_storage.get_collection()
         return result.collection
 
     def _extract_file(self, config, file_path):
-        data_extractor = DataExtractor.create(config["function"]["rag"]["extractor"])
+        data_extractor = DataExtractor.create(config["service"]["extractor"])
         result = data_extractor.parse(file_path)
         return result.elements
 
     def _transform_elements(self, config, elements):
-        data_transformer = DataTransformer.create(config["function"]["rag"]["transformer"])
-        actions = config["function"]["rag"]["actions"]
+        data_transformer = DataTransformer.create(config["service"]["transformer"])
+        actions = config["service"]["actions"]
         result = data_transformer.process(actions, elements)
         return result.elements
 
     def _load_elements(self, config, collection, elements):
-        data_loader = DataLoader.create(config["function"]["rag"]["loader"])
+        data_loader = DataLoader.create(config["service"]["loader"])
         result = data_loader.insert(collection, elements)
         logger.debug(result.status)

@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant User
+    participant RAGService
+    participant QueryAugmentor
+    participant Retriever
+    participant Reranker
+    participant Summarizer
+    participant ChunkFormatter
+
+    User->>RAGService: retrieve(query, augmentation, rerank)
+    alt augmentation enabled
+        RAGService->>QueryAugmentor: augment(query)
+        QueryAugmentor-->>RAGService: augmented_query
+    else no augmentation
+        RAGService->>RAGService: use original query
+    end
+    RAGService->>Retriever: retrieve top chunks
+    Retriever-->>RAGService: retrieved_elements
+
+    alt rerank enabled
+        RAGService->>Reranker: rerank(query, retrieved_elements)
+        Reranker-->>RAGService: sorted_elements
+    else no rerank
+        RAGService->>RAGService: use original order
+    end
+
+    RAGService->>Summarizer: summarize(top_chunks)
+    Summarizer-->>RAGService: summary
+
+    RAGService->>ChunkFormatter: format chunks to JSON
+    ChunkFormatter-->>RAGService: json_block
+
+    RAGService-->>User: summary + json_block
