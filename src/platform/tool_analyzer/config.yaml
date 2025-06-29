@@ -10,7 +10,7 @@ tool:
     - name: query
       type: str
       description: $PROMPT{field_query_description}
-      default : null    
+      default : null
   description: $PROMPT{tool_description}
   return_direct: true
 
@@ -23,7 +23,7 @@ function:
     type: LangChainChatOpenAI
     model_name: gpt-4o
     api_key: $ENV{OPENAI_API_KEY}
-    temperature: 0  
+    temperature: 0
     seed: 42
 
 prompts:
@@ -34,7 +34,7 @@ prompts:
     field_query_description: field_query_description.txt
     system_prompt: system_prompt.txt
     analysis_request: analysis_request.txt
-     
+
 logger:
   name: TEMPERATURE_ANALYZER
   log_file: src/platform/tool_analyzer/logs/temperature_analyzer.log

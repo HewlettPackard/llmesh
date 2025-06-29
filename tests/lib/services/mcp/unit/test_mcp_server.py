@@ -4,219 +4,67 @@
 """
 Test MCP Server functionality
 
-Tests for MCP server factory, configuration, and manager functionality.
+Tests for MCP server wrapper functionality.
 These tests validate the MCP server implementation using the FastMCP SDK.
 """
 
 import pytest
 import asyncio
-import tempfile
 from unittest.mock import Mock, patch, AsyncMock
-from pathlib import Path
 
-from src.lib.services.mcp.server import MCPServer, MCPServerManager
-
-
-class TestMCPServerFactory:
-    """Test MCP server factory functionality."""
-
-    def test_create_from_dict_config(self):
-        """Test creating server manager from dictionary configuration."""
-        config = {
-            "name": "test_server",
-            "transport": "stdio",
-            "debug": True
-        }
-
-        manager = MCPServer.create(config)
-
-        assert isinstance(manager, MCPServerManager)
-        assert manager.name == "test_server"
-        assert manager.transport == "stdio"
-        assert manager.config.debug is True
-
-    def test_create_sse_server_config(self):
-        """Test creating SSE server configuration."""
-        config = {
-            "name": "sse_server",
-            "transport": "sse",
-            "host": "localhost",
-            "port": 8001,
-            "mount_path": "/test/mcp"
-        }
-
-        manager = MCPServer.create(config)
-
-        assert isinstance(manager, MCPServerManager)
-        assert manager.name == "sse_server"
-        assert manager.transport == "sse"
-        assert manager.config.host == "localhost"
-        assert manager.config.port == 8001
-        assert manager.config.mount_path == "/test/mcp"
-
-    def test_create_streamable_server_config(self):
-        """Test creating Streamable HTTP server configuration."""
-        config = {
-            "name": "streamable_server",
-            "transport": "streamable",
-            "host": "0.0.0.0",
-            "port": 8002,
-            "mount_path": "/api/mcp",
-            "stateless_http": True
-        }
-
-        manager = MCPServer.create(config)
-
-        assert isinstance(manager, MCPServerManager)
-        assert manager.name == "streamable_server"
-        assert manager.transport == "streamable"
-        assert manager.config.host == "0.0.0.0"
-        assert manager.config.port == 8002
-        assert manager.config.mount_path == "/api/mcp"
-        assert manager.config.stateless_http is True
-
-    def test_create_from_config_object(self):
-        """Test creating server manager from Config object."""
-        config = MCPServer.Config(
-            name="object_server",
-            transport="stdio",
-            auto_start=False
-        )
-
-        manager = MCPServer.create(config)
-
-        assert isinstance(manager, MCPServerManager)
-        assert manager.name == "object_server"
-        assert manager.config.auto_start is False
-
-    def test_create_from_file_config(self):
-        """Test creating server manager from YAML configuration file."""
-        config_content = """
-mcp:
-    name: file_test_server
-    transport: sse
-    host: 0.0.0.0
-    port: 8002
-    debug: true
-"""
-
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
-            f.write(config_content)
-            f.flush()
-
-            try:
-                manager = MCPServer.create(f.name)
-
-                assert isinstance(manager, MCPServerManager)
-                assert manager.name == "file_test_server"
-                assert manager.transport == "sse"
-                assert manager.config.port == 8002
-            finally:
-                Path(f.name).unlink()
-
-    def test_get_available_transports(self):
-        """Test getting available transport types."""
-        transports = MCPServer.get_available_transports()
-
-        assert isinstance(transports, dict)
-        assert "stdio" in transports
-        assert "sse" in transports
-        assert "streamable" in transports
-        assert len(transports) >= 3
-
-    def test_invalid_config_raises_error(self):
-        """Test that invalid configuration raises appropriate errors."""
-        with pytest.raises(ValueError):
-            MCPServer.create({})  # Missing required fields
-
-        with pytest.raises(ValueError):
-            MCPServer.create({"name": "test"})  # Missing transport
+from src.lib.system_services.mcp_server import MCPServer
 
 
-class TestMCPServerManager:
-    """Test MCP server manager functionality."""
+class TestMCPServer:
+    """Test MCP server functionality."""
+
+    def test_server_initialization(self):
+        """Test basic server initialization."""
+        server = MCPServer("test_server", "stdio")
+
+        assert server.name == "test_server"
+        assert server.transport == "stdio"
+        assert server.mcp is not None
+        assert server._running is False
+        assert server._app is None
+        assert server._server_task is None
+
+    def test_server_initialization_different_transports(self):
+        """Test server initialization with different transports."""
+        # Test stdio
+        stdio_server = MCPServer("stdio_server", "stdio")
+        assert stdio_server.transport == "stdio"
+
+        # Test sse
+        sse_server = MCPServer("sse_server", "sse")
+        assert sse_server.transport == "sse"
+
+        # Test streamable
+        streamable_server = MCPServer("streamable_server", "streamable")
+        assert streamable_server.transport == "streamable"
+
+
+class TestMCPServerDecorators:
+    """Test MCP server decorator functionality."""
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.stdio_config = MCPServer.Config(
-            name="test_stdio_server",
-            transport="stdio",
-            auto_start=False,
-            debug=True
-        )
+        self.server = MCPServer("test_server", "stdio")
 
-        self.sse_config = MCPServer.Config(
-            name="test_sse_server",
-            transport="sse",
-            host="localhost",
-            port=8003,
-            mount_path="/test",
-            debug=True
-        )
-
-        self.streamable_config = MCPServer.Config(
-            name="test_streamable_server",
-            transport="streamable",
-            host="localhost",
-            port=8004,
-            mount_path="/api",
-            stateless_http=True,
-            debug=True
-        )
-
-    def test_stdio_manager_initialization(self):
-        """Test STDIO server manager initialization."""
-        manager = MCPServerManager(self.stdio_config)
-
-        assert manager.name == "test_stdio_server"
-        assert manager.transport == "stdio"
-        assert manager.is_running is False
-        assert manager.mcp is not None  # FastMCP instance created
-        assert manager._app is None  # No Starlette app for STDIO
-
-    def test_sse_manager_initialization(self):
-        """Test SSE server manager initialization."""
-        manager = MCPServerManager(self.sse_config)
-
-        assert manager.name == "test_sse_server"
-        assert manager.transport == "sse"
-        assert manager.config.host == "localhost"
-        assert manager.config.port == 8003
-        assert manager.is_running is False
-        assert manager.mcp is not None
-
-    def test_streamable_manager_initialization(self):
-        """Test Streamable HTTP server manager initialization."""
-        manager = MCPServerManager(self.streamable_config)
-
-        assert manager.name == "test_streamable_server"
-        assert manager.transport == "streamable"
-        assert manager.config.host == "localhost"
-        assert manager.config.port == 8004
-        assert manager.config.stateless_http is True
-        assert manager.is_running is False
-        assert manager.mcp is not None
-
-    def test_tool_registration_decorator(self):
-        """Test tool registration decorator functionality."""
-        manager = MCPServerManager(self.stdio_config)
-
-        @manager.register_tool(description="Test tool for addition")
+    def test_tool_decorator(self):
+        """Test tool registration decorator."""
+        @self.server.tool(description="Test tool for addition")
         def add_numbers(a: int, b: int) -> int:
             """Add two numbers."""
             return a + b
 
-        # Verify the tool was registered with FastMCP
-        # Note: This tests the decorator application, actual FastMCP registration
-        # would require more complex mocking of the FastMCP internal state
+        # Verify the tool was registered
         assert callable(add_numbers)
         assert add_numbers(2, 3) == 5
 
-    def test_resource_registration_decorator(self):
-        """Test resource registration decorator functionality."""
-        manager = MCPServerManager(self.stdio_config)
-
-        @manager.register_resource("test://config/{key}")
+    def test_resource_decorator(self):
+        """Test resource registration decorator."""
+        @self.server.resource("test://config/{key}")
         def get_config(key: str) -> dict:
             """Get configuration value."""
             return {"key": key, "value": "test_value"}
@@ -226,11 +74,9 @@ class TestMCPServerManager:
         result = get_config("test_key")
         assert result["key"] == "test_key"
 
-    def test_prompt_registration_decorator(self):
-        """Test prompt registration decorator functionality."""
-        manager = MCPServerManager(self.stdio_config)
-
-        @manager.register_prompt("test_prompt")
+    def test_prompt_decorator(self):
+        """Test prompt registration decorator."""
+        @self.server.prompt("test_prompt")
         def test_prompt_template(context: str = "default") -> list:
             """Test prompt template."""
             return [f"System: Test prompt with context: {context}"]
@@ -240,206 +86,124 @@ class TestMCPServerManager:
         result = test_prompt_template("custom")
         assert "custom" in result[0]
 
-    def test_add_platform_tools(self):
-        """Test adding platform tools to server."""
-        manager = MCPServerManager(self.stdio_config)
+    def test_register_tool_programmatically(self):
+        """Test programmatic tool registration."""
+        def multiply_numbers(x: int, y: int) -> int:
+            """Multiply two numbers."""
+            return x * y
 
-        # This should register platform tools without error
-        manager.add_platform_tools()
+        wrapper = self.server.register_tool(
+            "multiply",
+            multiply_numbers,
+            "Multiply two numbers"
+        )
 
-        # Verify manager state is still valid
-        assert manager.name == "test_stdio_server"
-        assert manager.is_running is False
+        # Verify the tool was wrapped and works
+        assert callable(wrapper)
+        assert wrapper.__name__ == "multiply"
+        assert wrapper(x=3, y=4) == 12
 
-    def test_add_platform_resources(self):
-        """Test adding platform resources to server."""
-        manager = MCPServerManager(self.stdio_config)
+    @pytest.mark.asyncio
+    async def test_register_async_tool_programmatically(self):
+        """Test programmatic async tool registration."""
+        async def async_add(a: int, b: int) -> int:
+            """Add two numbers asynchronously."""
+            await asyncio.sleep(0.01)  # Simulate async work
+            return a + b
 
-        # This should register platform resources without error
-        manager.add_platform_resources()
+        wrapper = self.server.register_tool(
+            "async_add",
+            async_add,
+            "Add two numbers asynchronously"
+        )
 
-        # Verify manager state is still valid
-        assert manager.name == "test_stdio_server"
+        # Verify the async tool was wrapped and works
+        assert callable(wrapper)
+        assert wrapper.__name__ == "async_add"
+        result = await wrapper(a=5, b=7)
+        assert result == 12
 
-    def test_add_platform_prompts(self):
-        """Test adding platform prompts to server."""
-        manager = MCPServerManager(self.stdio_config)
+class TestMCPServerLifecycle:
+    """Test MCP server lifecycle functionality."""
 
-        # This should register platform prompts without error
-        manager.add_platform_prompts()
+    def setup_method(self):
+        """Set up test fixtures."""
+        self.stdio_server = MCPServer("test_stdio_server", "stdio")
+        self.sse_server = MCPServer("test_sse_server", "sse")
+        self.streamable_server = MCPServer("test_streamable_server", "streamable")
 
-        # Verify manager state is still valid
-        assert manager.name == "test_stdio_server"
+    def test_server_not_running_initially(self):
+        """Test that servers are not running initially."""
+        assert not self.stdio_server._running
+        assert not self.sse_server._running
+        assert not self.streamable_server._running
 
-    # @pytest.mark.asyncio
-    # async def test_start_stdio_server_auto_disabled(self):
-    #     """Test starting STDIO server with auto_start disabled."""
-    #     manager = MCPServerManager(self.stdio_config)
+    @pytest.mark.asyncio
+    async def test_start_server_already_running(self):
+        """Test starting server that's already running."""
+        self.stdio_server._running = True  # Simulate already running
 
-    #     result = await manager.start()
-    #     try:
-    #         assert result.status == "success"
-    #         assert result.data["server_name"] == "test_stdio_server"
-    #         assert result.data["transport"] == "stdio"
-    #         assert result.data["running"] is True
-    #         assert manager.is_running is True
-    #     finally:
-    #         # Ensure server is stopped after test
-    #         await manager.stop()
+        # Should not raise an exception, just log a warning
+        await self.stdio_server.start()
+        assert self.stdio_server._running is True
 
-    # @pytest.mark.asyncio
-    # async def test_start_server_already_running(self):
-    #     """Test starting server that's already running."""
-    #     manager = MCPServerManager(self.stdio_config)
-    #     manager.is_running = True  # Simulate already running
+    def test_start_unsupported_transport(self):
+        """Test starting server with unsupported transport."""
+        invalid_server = MCPServer("invalid_server", "websocket")  # Not implemented
 
-    #     result = await manager.start()
+        with pytest.raises(ValueError, match="Unknown transport: websocket"):
+            asyncio.run(invalid_server.start())
 
-    #     assert result.status == "error"
-    #     assert result.error_code == "ALREADY_RUNNING"
-    #     assert "already running" in result.error_message
+    @pytest.mark.asyncio
+    async def test_stop_server_not_running(self):
+        """Test stopping server that's not running."""
+        # Should not raise an exception
+        await self.stdio_server.stop()
+        assert not self.stdio_server._running
 
-    # @pytest.mark.asyncio
-    # async def test_start_unsupported_transport(self):
-    #     """Test starting server with unsupported transport."""
-    #     invalid_config = MCPServer.Config(
-    #         name="invalid_server",
-    #         transport="websocket"  # Not implemented
-    #     )
-    #     manager = MCPServerManager(invalid_config)
+    @pytest.mark.asyncio
+    async def test_stop_server_cleans_up_state(self):
+        """Test that stopping server cleans up internal state."""
+        # Simulate running server
+        self.sse_server._running = True
+        self.sse_server._app = Mock()
+        self.sse_server._server_task = Mock()
+        self.sse_server._server_task.cancel = Mock()
 
-    #     result = await manager.start()
+        # Mock the task to avoid actual cancellation
+        async def mock_task():
+            raise asyncio.CancelledError()
 
-    #     assert result.status == "error"
-    #     assert result.error_code == "START_FAILED"
-    #     assert "Unsupported transport type" in result.error_message
+        self.sse_server._server_task = asyncio.create_task(mock_task())
 
-    # @pytest.mark.asyncio
-    # @patch('asyncio.create_task')
-    # async def test_start_sse_server(self, mock_create_task):
-    #     """Test starting SSE server."""
-    #     mock_task = AsyncMock()
-    #     mock_create_task.return_value = mock_task
+        await self.sse_server.stop()
 
-    #     manager = MCPServerManager(self.sse_config)
+        assert not self.sse_server._running
+        assert self.sse_server._app is None
+        assert self.sse_server._server_task is None
 
-    #     result = await manager.start()
+    def test_server_repr(self):
+        """Test string representation of server."""
+        repr_str = repr(self.stdio_server)
 
-    #     try:
-    #         assert result.status == "success"
-    #         assert result.data["transport"] == "sse"
-    #         assert manager.is_running is True
-    #         assert manager._server_task == mock_task
-    #         mock_create_task.assert_called_once()
-    #     finally:
-    #         # Ensure server is stopped after test
-    #         await manager.stop()
+        assert "MCPServer" in repr_str
+        assert "test_stdio_server" in repr_str
+        assert "stdio" in repr_str
+        assert "running=False" in repr_str
 
-    # @pytest.mark.asyncio
-    # @patch('asyncio.create_task')
-    # async def test_start_streamable_server(self, mock_create_task):
-    #     """Test starting Streamable HTTP server."""
-    #     mock_task = AsyncMock()
-    #     mock_create_task.return_value = mock_task
+    def test_server_repr_running(self):
+        """Test string representation when server is running."""
+        self.sse_server._running = True
+        repr_str = repr(self.sse_server)
 
-    #     manager = MCPServerManager(self.streamable_config)
+        assert "running=True" in repr_str
 
-    #     result = await manager.start()
+    @patch('src.lib.system_services.mcp_server.FastMCP')
+    def test_mcp_instance_created(self, mock_fastmcp):
+        """Test that FastMCP instance is created properly."""
+        mock_fastmcp.return_value = Mock()
 
-    #     assert result.status == "success"
-    #     assert result.data["transport"] == "streamable"
-    #     assert manager.is_running is True
-    #     assert manager._server_task == mock_task
-    #     mock_create_task.assert_called_once()
+        server = MCPServer("test_server", "stdio")
 
-    # @pytest.mark.asyncio
-    # async def test_stop_server_not_running(self):
-    #     """Test stopping server that's not running."""
-    #     manager = MCPServerManager(self.stdio_config)
-
-    #     result = await manager.stop()
-
-    #     assert result.status == "error"
-    #     assert result.error_code == "NOT_RUNNING"
-    #     assert "not running" in result.error_message
-
-    # @pytest.mark.asyncio
-    # async def test_stop_server_success(self):
-    #     """Test successful server stop."""
-    #     manager = MCPServerManager(self.stdio_config)
-    #     manager.is_running = True
-
-    #     # Create a proper task mock using asyncio.create_task
-    #     async def dummy_coroutine():
-    #         """Dummy coroutine for the task."""
-    #         return "completed"
-
-    #     # Create a real asyncio task then mock its cancel method
-    #     real_task = asyncio.create_task(dummy_coroutine())
-
-    #     # Mock the cancel method but keep the task awaitable
-    #     with patch.object(real_task, 'cancel', Mock()) as mock_cancel:
-    #         manager._server_task = real_task
-
-    #         result = await manager.stop()
-
-    #         assert result.status == "success"
-    #         assert result.data["running"] is False
-    #         assert manager.is_running is False
-    #         mock_cancel.assert_called_once()
-
-    # @pytest.mark.asyncio
-    # async def test_stop_server_with_cancellation_error(self):
-    #     """Test server stop handling cancellation error."""
-    #     manager = MCPServerManager(self.stdio_config)
-    #     manager.is_running = True
-
-    #     # Create a task that will be cancelled
-    #     async def cancellable_coroutine():
-    #         """Coroutine that will be cancelled."""
-    #         await asyncio.sleep(1)  # This will be cancelled
-    #         return "completed"
-
-    #     # Create a real asyncio task
-    #     real_task = asyncio.create_task(cancellable_coroutine())
-    #     manager._server_task = real_task
-
-    #     result = await manager.stop()
-
-    #     assert result.status == "success"
-    #     assert manager.is_running is False
-    #     # Verify the task was actually cancelled
-    #     assert real_task.cancelled()
-
-    # def test_get_server_info(self):
-    #     """Test getting server information."""
-    #     manager = MCPServerManager(self.sse_config)
-
-    #     info = manager.get_server_info()
-
-    #     assert info["name"] == "test_sse_server"
-    #     assert info["transport"] == "sse"
-    #     assert info["running"] is False
-    #     assert info["config"]["host"] == "localhost"
-    #     assert info["config"]["port"] == 8003
-    #     assert info["config"]["mount_path"] == "/test"
-    #     assert info["config"]["debug"] is True
-
-    # def test_server_manager_repr(self):
-    #     """Test string representation of server manager."""
-    #     manager = MCPServerManager(self.stdio_config)
-    #     repr_str = repr(manager)
-
-    #     assert "MCPServerManager" in repr_str
-    #     assert "test_stdio_server" in repr_str
-    #     assert "stdio" in repr_str
-    #     assert "running=False" in repr_str
-
-    # def test_server_manager_repr_running(self):
-    #     """Test string representation when server is running."""
-    #     manager = MCPServerManager(self.stdio_config)
-    #     manager.is_running = True
-
-    #     repr_str = repr(manager)
-
-    #     assert "running=True" in repr_str
+        mock_fastmcp.assert_called_once_with(name="test_server")
+        assert server.mcp is not None

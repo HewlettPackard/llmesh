@@ -4,237 +4,115 @@
 """
 Test MCP Client functionality
 
-Tests for MCP client factory, configuration, and manager functionality.
-These tests validate the MCP client implementation against the official SDK.
+Tests for the simplified MCP client implementation.
+These tests validate the MCPClient wrapper around the MCP SDK.
 """
 
 import pytest
-import tempfile
 from unittest.mock import Mock, patch, AsyncMock
-from pathlib import Path
 
-from src.lib.services.mcp.client import MCPClient, MCPClientManager
+from src.lib.system_services.mcp_client import MCPClient
 
 
-class TestMCPClientFactory:
-    """Test MCP client factory functionality."""
+class TestMCPClientInitialization:
+    """Test MCP client initialization and configuration."""
 
-    def test_create_from_dict_config(self):
-        """Test creating client manager from dictionary configuration."""
-        config = {
-            "name": "test_client",
-            "transport": "stdio",
-            "command": "python",
-            "args": ["test_server.py"]
-        }
+    def test_stdio_client_initialization(self):
+        """Test STDIO client initialization."""
+        client = MCPClient(
+            name="test_stdio",
+            transport="stdio",
+            command="python",
+            args=["test_server.py"]
+        )
 
-        manager = MCPClient.create(config)
+        assert client.name == "test_stdio"
+        assert client.transport == "stdio"
+        assert client.connection_params["command"] == "python"
+        assert client.connection_params["args"] == ["test_server.py"]
+        assert client._session is None
 
-        assert isinstance(manager, MCPClientManager)
-        assert manager.name == "test_client"
-        assert manager.transport == "stdio"
-        assert manager.config.command == "python"
-        assert manager.config.args == ["test_server.py"]
-
-    def test_create_from_config_object(self):
-        """Test creating client manager from Config object."""
-        config = MCPClient.Config(
-            name="test_client",
+    def test_sse_client_initialization(self):
+        """Test SSE client initialization."""
+        client = MCPClient(
+            name="test_sse",
             transport="sse",
             url="http://localhost:8000/mcp/sse"
         )
 
-        manager = MCPClient.create(config)
+        assert client.name == "test_sse"
+        assert client.transport == "sse"
+        assert client.connection_params["url"] == "http://localhost:8000/mcp/sse"
+        assert client._session is None
 
-        assert isinstance(manager, MCPClientManager)
-        assert manager.name == "test_client"
-        assert manager.transport == "sse"
-        assert manager.config.url == "http://localhost:8000/mcp/sse"
+    def test_streamable_client_initialization(self):
+        """Test streamable HTTP client initialization."""
+        client = MCPClient(
+            name="test_streamable",
+            transport="streamable",
+            url="http://localhost:8000/mcp",
+            headers={"Authorization": "Bearer token"},
+            timeout=60
+        )
 
-    def test_create_from_file_config(self):
-        """Test creating client manager from YAML configuration file."""
-        config_content = """
-        mcp:
-          name: file_test_client
-          transport: stdio
-          command: python
-          args: ["server.py"]
-          debug: true
-        """
+        assert client.name == "test_streamable"
+        assert client.transport == "streamable"
+        assert client.connection_params["url"] == "http://localhost:8000/mcp"
+        assert client.connection_params["headers"] == {"Authorization": "Bearer token"}
+        assert client.connection_params["timeout"] == 60
+        assert client._session is None
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
-            f.write(config_content)
-            f.flush()
+    def test_invalid_transport_raises_error(self):
+        """Test that invalid transport raises appropriate error."""
+        client = MCPClient(
+            name="invalid_transport",
+            transport="websocket"  # Not supported
+        )
 
-            try:
-                manager = MCPClient.create(f.name)
-
-                assert isinstance(manager, MCPClientManager)
-                assert manager.name == "file_test_client"
-                assert manager.transport == "stdio"
-                assert manager.config.debug is True
-            finally:
-                Path(f.name).unlink()
-
-    def test_get_available_transports(self):
-        """Test getting available transport types."""
-        transports = MCPClient.get_available_transports()
-
-        assert isinstance(transports, dict)
-        assert "stdio" in transports
-        assert "sse" in transports
-        assert "streamable" in transports
-        assert len(transports) >= 3
-
-    def test_create_streamable_client_config(self):
-        """Test creating streamable HTTP client configuration."""
-        config = {
-            "name": "streamable_client",
-            "transport": "streamable",
-            "url": "http://localhost:8000/mcp",
-            "headers": {"Authorization": "Bearer test-token"},
-            "timeout": 60
-        }
-
-        manager = MCPClient.create(config)
-
-        assert isinstance(manager, MCPClientManager)
-        assert manager.name == "streamable_client"
-        assert manager.transport == "streamable"
-        assert manager.config.url == "http://localhost:8000/mcp"
-        assert manager.config.headers == {"Authorization": "Bearer test-token"}
-        assert manager.config.timeout == 60
-
-    def test_invalid_config_raises_error(self):
-        """Test that invalid configuration raises appropriate errors."""
-        with pytest.raises(ValueError):
-            MCPClient.create({})  # Missing required fields
-
-        with pytest.raises(ValueError):
-            MCPClient.create({"name": "test"})  # Missing transport
+        # Error should occur on connect, not initialization
+        assert client.transport == "websocket"
 
 
-class TestMCPClientManager:
-    """Test MCP client manager functionality."""
+class TestMCPClientConnection:
+    """Test MCP client connection functionality."""
 
     def setup_method(self):
         """Set up test fixtures."""
-        self.stdio_config = MCPClient.Config(
+        self.stdio_client = MCPClient(
             name="test_stdio",
             transport="stdio",
             command="python",
-            args=["test_server.py"],
-            debug=True
+            args=["test_server.py"]
         )
 
-        self.sse_config = MCPClient.Config(
+        self.sse_client = MCPClient(
             name="test_sse",
             transport="sse",
-            url="http://localhost:8000/mcp/sse",
-            debug=True
+            url="http://localhost:8000/mcp/sse"
         )
 
-        self.streamable_config = MCPClient.Config(
+        self.streamable_client = MCPClient(
             name="test_streamable",
             transport="streamable",
             url="http://localhost:8000/mcp",
             headers={"User-Agent": "test-client"},
-            timeout=45,
-            debug=True
+            timeout=45
         )
-
-    def test_stdio_manager_initialization(self):
-        """Test STDIO client manager initialization."""
-        manager = MCPClientManager(self.stdio_config)
-
-        assert manager.name == "test_stdio"
-        assert manager.transport == "stdio"
-        assert manager.config.command == "python"
-        assert manager.config.args == ["test_server.py"]
-        assert manager._session is None
-
-    def test_sse_manager_initialization(self):
-        """Test SSE client manager initialization."""
-        manager = MCPClientManager(self.sse_config)
-
-        assert manager.name == "test_sse"
-        assert manager.transport == "sse"
-        assert manager.config.url == "http://localhost:8000/mcp/sse"
-        assert manager._session is None
-
-    def test_streamable_manager_initialization(self):
-        """Test Streamable HTTP client manager initialization."""
-        manager = MCPClientManager(self.streamable_config)
-
-        assert manager.name == "test_streamable"
-        assert manager.transport == "streamable"
-        assert manager.config.url == "http://localhost:8000/mcp"
-        assert manager.config.headers == {"User-Agent": "test-client"}
-        assert manager.config.timeout == 45
-        assert manager._session is None
-
-    @pytest.mark.asyncio
-    async def test_stdio_connection_validation(self):
-        """Test STDIO connection parameter validation."""
-        invalid_config = MCPClient.Config(
-            name="invalid_stdio",
-            transport="stdio"
-            # Missing command
-        )
-
-        manager = MCPClientManager(invalid_config)
-
-        with pytest.raises(ValueError, match="STDIO transport requires 'command'"):
-            async with manager.connect():
-                pass
-
-    @pytest.mark.asyncio
-    async def test_sse_connection_validation(self):
-        """Test SSE connection parameter validation."""
-        invalid_config = MCPClient.Config(
-            name="invalid_sse",
-            transport="sse"
-            # Missing url
-        )
-
-        manager = MCPClientManager(invalid_config)
-
-        with pytest.raises(ValueError, match="SSE transport requires 'url'"):
-            async with manager.connect():
-                pass
-
-    @pytest.mark.asyncio
-    async def test_streamable_connection_validation(self):
-        """Test Streamable HTTP connection parameter validation."""
-        invalid_config = MCPClient.Config(
-            name="invalid_streamable",
-            transport="streamable"
-            # Missing url
-        )
-
-        manager = MCPClientManager(invalid_config)
-
-        with pytest.raises(ValueError, match="Streamable transport requires 'url'"):
-            async with manager.connect():
-                pass
 
     @pytest.mark.asyncio
     async def test_unsupported_transport_raises_error(self):
         """Test that unsupported transport raises appropriate error."""
-        invalid_config = MCPClient.Config(
+        client = MCPClient(
             name="invalid_transport",
-            transport="websocket"  # Not yet implemented
+            transport="websocket"  # Not supported
         )
 
-        manager = MCPClientManager(invalid_config)
-
-        with pytest.raises(ValueError, match="Unsupported transport type"):
-            async with manager.connect():
-                pass
+        with pytest.raises(ValueError, match="Unknown transport"):
+            await client.connect()
 
     @pytest.mark.asyncio
-    @patch('src.lib.services.mcp.client.stdio_client')
-    @patch('src.lib.services.mcp.client.ClientSession')
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
     async def test_stdio_connection_success(self, mock_session_class, mock_stdio_client):
         """Test successful STDIO connection."""
         # Mock the connection context managers
@@ -244,19 +122,20 @@ class TestMCPClientManager:
 
         mock_session_context = AsyncMock()
         mock_session_class.return_value = mock_session_context
-        mock_session = Mock()
+        mock_session = AsyncMock()
         mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
 
-        manager = MCPClientManager(self.stdio_config)
+        await self.stdio_client.connect()
 
-        async with manager.connect() as session:
-            assert session == mock_session
-            mock_stdio_client.assert_called_once()
-            mock_session_class.assert_called_once()
+        assert self.stdio_client._session == mock_session
+        mock_stdio_client.assert_called_once()
+        mock_session_class.assert_called_once()
+        mock_session.initialize.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('src.lib.services.mcp.client.sse_client')
-    @patch('src.lib.services.mcp.client.ClientSession')
+    @patch('src.lib.system_services.mcp_client.sse_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
     async def test_sse_connection_success(self, mock_session_class, mock_sse_client):
         """Test successful SSE connection."""
         # Mock the connection context managers
@@ -266,19 +145,20 @@ class TestMCPClientManager:
 
         mock_session_context = AsyncMock()
         mock_session_class.return_value = mock_session_context
-        mock_session = Mock()
+        mock_session = AsyncMock()
         mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
 
-        manager = MCPClientManager(self.sse_config)
+        await self.sse_client.connect()
 
-        async with manager.connect() as session:
-            assert session == mock_session
-            mock_sse_client.assert_called_once_with(url=self.sse_config.url)
-            mock_session_class.assert_called_once()
+        assert self.sse_client._session == mock_session
+        mock_sse_client.assert_called_once_with(url="http://localhost:8000/mcp/sse")
+        mock_session_class.assert_called_once()
+        mock_session.initialize.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('src.lib.services.mcp.client.stdio_client')
-    @patch('src.lib.services.mcp.client.ClientSession')
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
     async def test_connection_cleanup(self, mock_session_class, mock_stdio_client):
         """Test that connections are properly cleaned up."""
         # Mock the connection context managers
@@ -288,23 +168,22 @@ class TestMCPClientManager:
 
         mock_session_context = AsyncMock()
         mock_session_class.return_value = mock_session_context
-        mock_session = Mock()
+        mock_session = AsyncMock()
         mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
 
-        manager = MCPClientManager(self.stdio_config)
-
-        async with manager.connect() as session:
-            assert session == mock_session
+        async with self.stdio_client:
+            assert self.stdio_client._session == mock_session
 
         # Verify cleanup was called
         mock_session_context.__aexit__.assert_called_once()
         mock_stdio_context.__aexit__.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('src.lib.services.mcp.client.stdio_client')
-    @patch('src.lib.services.mcp.client.ClientSession')
-    async def test_test_connection_success(self, mock_session_class, mock_stdio_client):
-        """Test successful connection test."""
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
+    async def test_list_tools_success(self, mock_session_class, mock_stdio_client):
+        """Test successful tool listing."""
         # Mock successful connection and tool listing
         mock_stdio_context = AsyncMock()
         mock_stdio_client.return_value = mock_stdio_context
@@ -314,43 +193,30 @@ class TestMCPClientManager:
         mock_session_class.return_value = mock_session_context
         mock_session = AsyncMock()
         mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
 
         # Mock successful tool listing
+        mock_tool = Mock()
+        mock_tool.name = "test_tool"
+        mock_tool.description = "A test tool"
+        mock_tool.inputSchema = {"type": "object"}
+
         mock_tools_result = Mock()
-        mock_tools_result.tools = [Mock(name="test_tool")]
+        mock_tools_result.tools = [mock_tool]
         mock_session.list_tools.return_value = mock_tools_result
 
-        manager = MCPClientManager(self.stdio_config)
-        result = await manager.test_connection()
+        tools = await self.stdio_client.list_tools()
 
-        assert result.status == "success"
-        assert result.data["connected"] is True
-        assert result.data["tool_count"] == 1
-        assert result.data["transport"] == "stdio"
-        assert result.client_name == "test_stdio"
+        assert len(tools) == 1
+        assert tools[0]["name"] == "test_tool"
+        assert tools[0]["description"] == "A test tool"
+        assert tools[0]["inputSchema"] == {"type": "object"}
 
     @pytest.mark.asyncio
-    async def test_test_connection_failure(self):
-        """Test connection test failure handling."""
-        invalid_config = MCPClient.Config(
-            name="fail_test",
-            transport="stdio"
-            # Missing required command
-        )
-
-        manager = MCPClientManager(invalid_config)
-        result = await manager.test_connection()
-
-        assert result.status == "error"
-        assert "Connection test failed" in result.error_message
-        assert result.error_code == "CONNECTION_TEST_FAILED"
-        assert result.client_name == "fail_test"
-
-    @pytest.mark.asyncio
-    @patch('src.lib.services.mcp.client.stdio_client')
-    @patch('src.lib.services.mcp.client.ClientSession')
-    async def test_get_capabilities_success(self, mock_session_class, mock_stdio_client):
-        """Test successful capability discovery."""
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
+    async def test_invoke_tool_success(self, mock_session_class, mock_stdio_client):
+        """Test successful tool invocation."""
         # Mock successful connection
         mock_stdio_context = AsyncMock()
         mock_stdio_client.return_value = mock_stdio_context
@@ -360,45 +226,91 @@ class TestMCPClientManager:
         mock_session_class.return_value = mock_session_context
         mock_session = AsyncMock()
         mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
 
-        # Mock capability discovery
-        mock_tool = Mock()
-        mock_tool.name = "test_tool"
-        mock_tool.description = "A test tool"
-        mock_tool.inputSchema = {"type": "object", "properties": {}}
+        # Mock tool invocation
+        mock_result = Mock()
+        mock_result.content = ["Tool result"]
+        mock_session.call_tool.return_value = mock_result
 
+        result = await self.stdio_client.invoke_tool("test_tool", {"arg": "value"})
+
+        assert result == ["Tool result"]
+        mock_session.call_tool.assert_called_once_with("test_tool", {"arg": "value"})
+
+    @pytest.mark.asyncio
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
+    async def test_list_resources_success(self, mock_session_class, mock_stdio_client):
+        """Test successful resource listing."""
+        # Mock successful connection
+        mock_stdio_context = AsyncMock()
+        mock_stdio_client.return_value = mock_stdio_context
+        mock_stdio_context.__aenter__.return_value = (Mock(), Mock())
+
+        mock_session_context = AsyncMock()
+        mock_session_class.return_value = mock_session_context
+        mock_session = AsyncMock()
+        mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
+
+        # Mock resource listing
         mock_resource = Mock()
         mock_resource.uri = "test://resource"
         mock_resource.name = "Test Resource"
         mock_resource.description = "A test resource"
         mock_resource.mimeType = "text/plain"
 
+        mock_resources_result = Mock()
+        mock_resources_result.resources = [mock_resource]
+        mock_session.list_resources.return_value = mock_resources_result
+
+        resources = await self.stdio_client.list_resources()
+
+        assert len(resources) == 1
+        assert resources[0]["uri"] == "test://resource"
+        assert resources[0]["name"] == "Test Resource"
+        assert resources[0]["description"] == "A test resource"
+        assert resources[0]["mimeType"] == "text/plain"
+
+    @pytest.mark.asyncio
+    @patch('src.lib.system_services.mcp_client.stdio_client')
+    @patch('src.lib.system_services.mcp_client.ClientSession')
+    async def test_list_prompts_success(self, mock_session_class, mock_stdio_client):
+        """Test successful prompt listing."""
+        # Mock successful connection
+        mock_stdio_context = AsyncMock()
+        mock_stdio_client.return_value = mock_stdio_context
+        mock_stdio_context.__aenter__.return_value = (Mock(), Mock())
+
+        mock_session_context = AsyncMock()
+        mock_session_class.return_value = mock_session_context
+        mock_session = AsyncMock()
+        mock_session_context.__aenter__.return_value = mock_session
+        mock_session.initialize = AsyncMock()
+
+        # Mock prompt listing
         mock_prompt = Mock()
         mock_prompt.name = "test_prompt"
         mock_prompt.description = "A test prompt"
         mock_prompt.arguments = []
 
-        mock_session.list_tools.return_value = Mock(tools=[mock_tool])
-        mock_session.list_resources.return_value = Mock(resources=[mock_resource])
-        mock_session.list_prompts.return_value = Mock(prompts=[mock_prompt])
+        mock_prompts_result = Mock()
+        mock_prompts_result.prompts = [mock_prompt]
+        mock_session.list_prompts.return_value = mock_prompts_result
 
-        manager = MCPClientManager(self.stdio_config)
-        result = await manager.get_capabilities()
+        prompts = await self.stdio_client.list_prompts()
 
-        assert result.status == "success"
-        assert len(result.data["tools"]) == 1
-        assert len(result.data["resources"]) == 1
-        assert len(result.data["prompts"]) == 1
+        assert len(prompts) == 1
+        assert prompts[0]["name"] == "test_prompt"
+        assert prompts[0]["description"] == "A test prompt"
+        assert prompts[0]["arguments"] == []
 
-        assert result.data["tools"][0]["name"] == "test_tool"
-        assert result.data["resources"][0]["uri"] == "test://resource"
-        assert result.data["prompts"][0]["name"] == "test_prompt"
+    def test_client_repr(self):
+        """Test string representation of client."""
+        repr_str = repr(self.stdio_client)
 
-    def test_manager_repr(self):
-        """Test string representation of client manager."""
-        manager = MCPClientManager(self.stdio_config)
-        repr_str = repr(manager)
-
-        assert "MCPClientManager" in repr_str
+        assert "MCPClient" in repr_str
         assert "test_stdio" in repr_str
         assert "stdio" in repr_str
+        assert "connected=False" in repr_str

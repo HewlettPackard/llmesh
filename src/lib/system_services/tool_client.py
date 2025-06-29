@@ -118,9 +118,9 @@ class AthonTool:
         """
         Initialize the AthonTool instance with a configuration and logger.
 
-        :param config: A dictionary containing the tool's configuration, 
+        :param config: A dictionary containing the tool's configuration,
             or a path to a config file, or None for default.
-        :param logger: A logger instance for logging purposes, or None 
+        :param logger: A logger instance for logging purposes, or None
             to create/use a default logger.
         """
         self.config = self._init_config(config)
@@ -132,7 +132,7 @@ class AthonTool:
         """
         Initialize and validate the tool configuration.
 
-        :param config: A dictionary containing the tool's configuration, 
+        :param config: A dictionary containing the tool's configuration,
             or a path to a config file, or None for default.
         :return: The validated configuration dictionary.
         """
@@ -171,7 +171,7 @@ class AthonTool:
         """
         Initialize the tool logger.
 
-        :param logger: A logger instance for logging purposes, or None 
+        :param logger: A logger instance for logging purposes, or None
             to create/use a default logger.
         :return: The tool logger
         """
@@ -367,10 +367,10 @@ class AthonTool:
         """
         Recursively traverse the data and replace non-serializable objects
         with a placeholder string.
-        
+
         Args:
             data: The data structure to serialize (can be dict, list, etc.)
-        
+
         Returns:
             A serialized version of the data with non-serializable objects replaced.
         """
@@ -498,11 +498,11 @@ class AthonTool:
 
     def _update_existing_config(self, config, data):
         """
-        Update `config` with values from `data`, replacing the target directly 
-        when a path is fully traversed. Supports paths like 'tool/interface/fields' or 
+        Update `config` with values from `data`, replacing the target directly
+        when a path is fully traversed. Supports paths like 'tool/interface/fields' or
         'function/system_prompt', with the ability to replace the target
         with lists, dicts, or values.
-        
+
         :param config: The original configuration dictionary to be updated.
         :param data: The dictionary containing updated values.
         """
@@ -522,7 +522,7 @@ class AthonTool:
     def _resolve_nested_values(self, value):
         """
         Recursively resolve values in nested dictionaries or lists.
-        
+
         :param value: The original value.
         :return: The resolved value.
         """
@@ -537,8 +537,8 @@ class AthonTool:
 
     def _resolve_value(self, value):
         """
-        Resolve the value of config 
-        
+        Resolve the value of config
+
         :param value: The original value.
         :return: The resolved value.
         """

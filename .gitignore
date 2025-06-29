@@ -5,14 +5,14 @@ __pycache__/
 # C extensions
 *.so
 
-# Environment 
+# Environment
 .env/
 .env
-.venv/
+.venv*
 .vscode/
-.pytest_cache/
+.pytest_cache/`
 .streamlit/
-.DS_Store
+.DS_Store`
 
 # Distribution / packaging
 bin/
