@@ -37,8 +37,8 @@ projects:
       memory_key: chat_history
       return_messages: true
     tools:
-      # - "src/platform/chat"         # ChatService as local tool
-      - "https://127.0.0.1:5002/"     # ChatService
+      - "mcp://chat"                  # ChatService via MCP
+      # - "https://127.0.0.1:5002/"   # ChatService (URL discovery fallback)
   - name: "Project 5G Network"
     memory:
       type: LangChainRemote
@@ -48,16 +48,20 @@ projects:
       timeout: 100
       cert_verify: false
     tools:
-      - "https://127.0.0.1:5005/"     # OpenAPIManager
-      - "https://127.0.0.1:5003/"     # RagService
+      - "mcp://tool_agents"           # OpenAPIManager via MCP
+      - "mcp://rag"                   # RagService via MCP
+      # - "https://127.0.0.1:5005/"   # OpenAPIManager (URL discovery fallback)
+      # - "https://127.0.0.1:5003/"   # RagService (URL discovery fallback)
   - name: "Project Meteo"
     memory:
       type: LangChainBuffer
       memory_key: chat_history
       return_messages: true
     tools:
-      - "https://127.0.0.1:5006/"     # TemperatureFinder
-      - "https://127.0.0.1:5004/"     # TemperatureAnalyzer
+      - "mcp://tool_api"              # TemperatureFinder via MCP
+      - "mcp://tool_analyzer"         # TemperatureAnalyzer via MCP
+      # - "https://127.0.0.1:5006/"   # TemperatureFinder (URL discovery fallback)
+      # - "https://127.0.0.1:5004/"   # TemperatureAnalyzer (URL discovery fallback)
 
 prompts:
   type: JinjaTemplate

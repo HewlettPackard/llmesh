@@ -59,6 +59,24 @@ model_configs = [
     },
 ]
 
+def should_skip_test(config):
+    """
+    Determine if a test should be skipped due to missing API key.
+    """
+    # For Azure OpenAI, check for required Azure-specific credentials
+    if config["type"] == "LangChainAzureChatOpenAI":
+        required_keys = ["azure_deployment", "endpoint", "api_version"]
+        missing_keys = [key for key in required_keys if not config.get(key)]
+        if missing_keys:
+            return True
+        # Check if we have either JWT or subscription key authentication
+        has_jwt_auth = all(config.get(key) for key in ["azure_jwt_server", "azure_client_id", "azure_client_secret"])
+        has_subscription_key = bool(config.get("azure_subscription_key"))
+        return not (has_jwt_auth or has_subscription_key)
+
+    # For all other models, simply check if API key is None
+    return config.get("api_key") is None
+
 @pytest.mark.integration
 @pytest.mark.chat
 @pytest.mark.parametrize("config", model_configs)
@@ -67,6 +85,9 @@ def test_chat_model_invoke_pirate_language(config):
     Test invoking the ChatModel to convert a message into pirate language
     using various model flavors (OpenAI, Google GenAI, Anthropic, etc.).
     """
+    if should_skip_test(config):
+        pytest.skip(f"Skipping test for {config['type']} due to missing API key")
+
     # Initialize the Chat Model with the provided configuration
     chat = ChatModel.create(config)
     # Define the prompts for the chat model
@@ -90,6 +111,9 @@ def test_chat_model_stream_pirate_language(config):
     """
     Test streaming with ChatModel to convert message into pirate language.
     """
+    if should_skip_test(config):
+        pytest.skip(f"Skipping test for {config['type']} due to missing API key")
+
     chat = ChatModel.create(config)
     prompts = [
         SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),
@@ -111,6 +135,9 @@ async def test_chat_model_ainvoke_pirate_language(config):
     """
     Test async invoke with ChatModel for pirate language.
     """
+    if should_skip_test(config):
+        pytest.skip(f"Skipping test for {config['type']} due to missing API key")
+
     chat = ChatModel.create(config)
     prompts = [
         SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),
@@ -131,6 +158,9 @@ async def test_chat_model_astream_pirate_language(config):
     """
     Test async streaming with ChatModel for pirate language.
     """
+    if should_skip_test(config):
+        pytest.skip(f"Skipping test for {config['type']} due to missing API key")
+
     chat = ChatModel.create(config)
     prompts = [
         SystemMessage(content="Convert the message to pirate language using 'arr' as exclamation"),

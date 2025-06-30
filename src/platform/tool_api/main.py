@@ -4,20 +4,29 @@
 """
 This module interfaces with the Open-Meteo API to obtain current temperature information
 for a specified geographic location.
-It utilizes the AthonTool decorator for configuration and logging setup.
+It uses MCP for tool registration and exposure.
 """
 
 import datetime
+import asyncio
 import requests
 from requests.exceptions import HTTPError, Timeout, RequestException
-from src.lib.package.athon.system import AthonTool
+from src.lib.core.config import Config
+from src.lib.core.log import Logger
+from src.platform.mcp.main import platform_registry
+from src.lib.package.athon.chat import PromptRender
 
 
-@AthonTool()
-def temperature_finder(latitude: float, longitude: float) -> str:
+# Load configuration
+config = Config('src/platform/tool_api/config.yaml').get_settings()
+logger = Logger().configure(config['logger']).get_logger()
+PROMPT_CONFIG = config["prompts"]
+
+
+async def temperature_finder(latitude: float, longitude: float) -> str:
     """
     Fetches the current temperature for specified geographic coordinates.
-    Utilizes the Open-Meteo API to obtain hourly temperature data for the 
+    Utilizes the Open-Meteo API to obtain hourly temperature data for the
     provided latitude and longitude.
     """
     results = _get_weather_data(latitude, longitude)
@@ -25,9 +34,6 @@ def temperature_finder(latitude: float, longitude: float) -> str:
     return f'The current temperature is {current_temperature}°C'
 
 def _get_weather_data(latitude: float, longitude: float) -> dict:
-    tool = temperature_finder.athon_tool
-    config = tool.config
-    logger = tool.logger
     base_url = config["function"]["meteo_api"]
     params = {
         'latitude': latitude,
@@ -51,8 +57,6 @@ def _get_weather_data(latitude: float, longitude: float) -> dict:
         raise RuntimeError(f"Error during request: {req_err}") from req_err
 
 def _find_current_temperature(weather_data: dict) -> float:
-    tool = temperature_finder.athon_tool
-    logger = tool.logger
     logger.debug("Search Current Temperature")
     current_utc_time = datetime.datetime.utcnow()
     time_list = [
@@ -67,17 +71,73 @@ def _find_current_temperature(weather_data: dict) -> float:
     return temperature_list[closest_time_index]
 
 
+async def register():
+    """
+    Register this tool with the platform registry.
+    """
+    try:
+        # Get tool description from prompt
+        prompt = PromptRender.create(PROMPT_CONFIG)
+        result = prompt.load("tool_description")
+        description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+        # Register with platform
+        server = await platform_registry.register_platform_tool(
+            name="tool_api",
+            func=temperature_finder,
+            config=config["webapp"],
+            description=description
+        )
+        logger.info("Tool API service registered successfully")
+        return server
+
+    except Exception as e:
+        logger.error(f"Failed to register tool API service: {e}")
+        raise
+
+
+def get_manifest():
+    """
+    Get the tool's manifest.
+    """
+    # Get tool description from prompt
+    prompt = PromptRender.create(PROMPT_CONFIG)
+    result = prompt.load("tool_description")
+    description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+    manifest = {
+        "name": "tool_api",
+        "function": "temperature_finder",
+        "description": description,
+        "arguments": config["tool"]["arguments"],
+        "return_direct": config["tool"]["return_direct"]
+    }
+    return manifest
+
+
 def main(local=True):
     """
     Main function that serves as the entry point for the application.
     It either prints the manifest or launches the web application
-    based on the input parameter `local` : 
+    based on the input parameter `local` :
     - If True, the tool's manifest is printed.
     - If False, the web application is launched.
     """
     if local:
-        return temperature_finder.get_manifest()
-    temperature_finder.run_app()
+        return get_manifest()
+
+    # Run the server
+    async def run_server():
+        server = await register()
+        if server:
+            await server.start(
+                host=config["webapp"]["ip"],
+                port=config["webapp"]["port"]
+            )
+            logger.info(f"Tool API server running on {config['webapp']['ip']}:{config['webapp']['port']}")
+            await asyncio.Event().wait()
+
+    asyncio.run(run_server())
     return None
 
 

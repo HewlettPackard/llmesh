@@ -6,13 +6,14 @@ This module provides functionality to read temperature data from a CSV dataset,
 utilize a Large Language Model (LLM) to generate Python code for data analysis
 and visualization, execute the generated code, and save the resulting plot as an
 image. The image is then encoded as text for transmission.
-It utilizes the AthonTool decorator for configuration and logging setup.
+It uses MCP for tool registration and exposure.
 """
 
 import re
 import io
 import base64
 import json
+import asyncio
 from tqdm import tqdm
 import pandas as pd
 import matplotlib
@@ -20,7 +21,10 @@ matplotlib.use('Agg')  # Use the 'Agg' backend for non-GUI rendering
 import matplotlib.pyplot as plt  # pylint: disable=W0611,C0413
 from langchain.schema import HumanMessage, SystemMessage  # pylint: disable=C0413
 from src.lib.package.athon.chat import ChatModel, PromptRender  # pylint: disable=C0413
-from src.lib.package.athon.system import AthonTool, Config, Logger  # pylint: disable=C0413
+from src.lib.core.config import Config
+from src.lib.core.log import Logger
+from src.platform.mcp.main import platform_registry
+from src.lib.system_services.mcp_server import MCPServer
 
 
 # Parse command-line arguments and start the application
@@ -43,12 +47,11 @@ for chunk in tqdm(pd.read_csv(FILE_PATH, chunksize=CHUNKSIZE), desc="Processing 
     DATA_FRAME = pd.concat([DATA_FRAME, chunk])
 
 
-@AthonTool(config, logger)
-def temperature_analyzer(query: str) -> str:
+async def temperature_analyzer(query: str) -> str:
     """
-    Analyzes the temperature dataset and generates a plot using a 
+    Analyzes the temperature dataset and generates a plot using a
     Large Language Model (LLM) to generate Python code  based on the specified
-    analysis request. 
+    analysis request.
     """
     try:
         code = _create_analysis_code(query)
@@ -123,17 +126,73 @@ def _format_response(plot, code):
     return response_string
 
 
+async def register():
+    """
+    Register this tool with the platform registry.
+    """
+    try:
+        # Get tool description from prompt
+        prompt = PromptRender.create(PROMPT_CONFIG)
+        result = prompt.load("tool_description")
+        description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+        # Register with platform - pass webapp config directly
+        server = await platform_registry.register_platform_tool(
+            name="temperature_analyzer",
+            func=temperature_analyzer,
+            config=config["webapp"],
+            description=description
+        )
+        logger.info("Temperature analyzer tool registered successfully")
+        return server
+
+    except Exception as e:
+        logger.error(f"Failed to register temperature analyzer: {e}")
+        raise
+
+
+def get_manifest():
+    """
+    Get the tool's manifest.
+    """
+    # Get tool description from prompt
+    prompt = PromptRender.create(PROMPT_CONFIG)
+    result = prompt.load("tool_description")
+    description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+    manifest = {
+        "name": "temperature_analyzer",
+        "function": "temperature_analyzer",
+        "description": description,
+        "arguments": config["tool"]["arguments"],
+        "return_direct": config["tool"]["return_direct"]
+    }
+    return manifest
+
+
 def main(local=True):
     """
     Main function that serves as the entry point for the application.
     It either prints the manifest or launches the web application
-    based on the input parameter `local` : 
+    based on the input parameter `local` :
     - If True, the tool's manifest is printed.
     - If False, the web application is launched.
     """
     if local:
-        return temperature_analyzer.get_manifest()
-    temperature_analyzer.run_app()
+        return get_manifest()
+
+    # Run the server
+    async def run_server():
+        server = await register()
+        if server:
+            await server.start(
+                host=config["webapp"]["ip"],
+                port=config["webapp"]["port"]
+            )
+            logger.info(f"Temperature analyzer server running on {config['webapp']['ip']}:{config['webapp']['port']}")
+            await asyncio.Event().wait()
+
+    asyncio.run(run_server())
     return None
 
 

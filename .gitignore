@@ -5,10 +5,9 @@ __pycache__/
 # C extensions
 *.so
 
-# Environment 
-.env/
+# Environment
 .env
-.venv/
+.venv*
 .vscode/
 .pytest_cache/
 .streamlit/

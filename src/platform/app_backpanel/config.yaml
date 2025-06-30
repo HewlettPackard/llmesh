@@ -8,7 +8,7 @@ tools:
   - name: ChatService
     type: PromptTool
     base_url: https://127.0.0.1:5002/
-    version: 
+    version:
       min_version: "1.0.0"  # Versions >= 1.0.0 are supported
       max_version: "2.0.0"  # Versions < 2.0.0 are supported
     llms:
@@ -17,7 +17,7 @@ tools:
           type: LangChainChatOpenAI
           model_name: gpt-4o
           api_key: $ENV{OPENAI_API_KEY}
-          temperature: 0  
+          temperature: 0
           seed: 42
       - label: ChatHPE-3.5
         settings:
@@ -26,7 +26,7 @@ tools:
           api_version: "2023-10-01-preview"
           endpoint: $ENV{HPE_ENDPOINT}
           api_key: $ENV{HPE_API_KEY}
-          temperature: 0  
+          temperature: 0
           seed: 42
       - label: Gemini-1.5-Pro
         settings:
@@ -48,19 +48,19 @@ tools:
           temperature: 0
     default:
       path: src/platform/app_backpanel/tools/chat/
-      files: 
+      files:
         config: config.yaml
       prompts:
         system_prompt: default_prompt.txt
   - name: RagService
     type: RagTool
     base_url: https://127.0.0.1:5003/
-    version: 
+    version:
       min_version: "1.0.0"  # Versions >= 1.0.0 are supported
       max_version: "2.0.0"  # Versions < 2.0.0 are supported
     extractors:
     - label: Unstructured - Sections from Docx
-      settings:      
+      settings:
         type: UnstructuredForSections
         document_type: Docx
         extraction_type: SectionWithHeader
@@ -72,12 +72,12 @@ tools:
     - TransformInChunk
     storages:
     - label: Chroma - Local Instance
-      settings:  
+      settings:
         type: ChromaCollection
         path: src/platform/rag/data
         collection: Telco3GPP5GStandards
     - label: Milvus - Local Instance
-      settings:  
+      settings:
         type: MilvusCollection
         path: src/platform/rag/data/milvus.db
         collection: Telco3GPP5GStandards
@@ -94,7 +94,7 @@ tools:
           type: LangChainChatOpenAI
           model_name: gpt-4o
           api_key: $ENV{OPENAI_API_KEY}
-          temperature: 0  
+          temperature: 0
           seed: 42
       - label: Gemini-1.5-Pro
         settings:
@@ -110,14 +110,14 @@ tools:
           temperature: 0
     default:
       path: src/platform/app_backpanel/tools/rag/
-      files: 
+      files:
         config: config.yaml
       prompts:
         query_expansion: query_expansion.txt
   - name: OpenAPIManager
     type: AgentTool
     base_url: https://127.0.0.1:5005/
-    version: 
+    version:
       min_version: "1.0.0"  # Versions >= 1.0.0 are supported
       max_version: "2.0.0"  # Versions < 2.0.0 are supported
     llms:
@@ -126,7 +126,7 @@ tools:
           type: LangChainChatOpenAI
           model_name: gpt-4o-mini
           api_key: $ENV{OPENAI_API_KEY}
-          temperature: 0  
+          temperature: 0
           seed: 42
       - label: ChatHPE-3.5
         settings:
@@ -135,7 +135,7 @@ tools:
           api_version: "2023-10-01-preview"
           endpoint: $ENV{HPE_ENDPOINT}
           api_key: $ENV{HPE_API_KEY}
-          temperature: 0  
+          temperature: 0
           seed: 42
     plan_types:
       - Sequential
@@ -144,7 +144,7 @@ tools:
       - OpenApiManagerTool
     default:
       path: src/platform/app_backpanel/tools/tool_agents/
-      files: 
+      files:
         config: config.yaml
 
 function:
@@ -155,7 +155,7 @@ function:
     type: LangChainChatOpenAI
     model_name: gpt-4o
     api_key: $ENV{OPENAI_API_KEY} #This should be replaced
-    temperature: 0  
+    temperature: 0
     seed: 42
 
 prompts:

@@ -3,7 +3,7 @@
 
 """
 This module defines the Config class, which is responsible for handling the configuration
-settings of an application. 
+settings of an application.
 
 The Config class loads settings from a specified YAML file,
 provides a mechanism for placeholder variable substitution within these settings, and

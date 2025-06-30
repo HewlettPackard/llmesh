@@ -12,7 +12,7 @@ tool:
     - name: query
       type: str
       description: $PROMPT{field_query_description}
-      default : null    
+      default : null
   description: $PROMPT{tool_description}
   return_direct: true
 
@@ -26,14 +26,14 @@ function:
     tasks:
       - description: $PROMPT{task_plan_description}
         expected_output: $PROMPT{task_plan_output}
-        agent: 
+        agent:
           role: "OpenAPI Planner"
           goal: $PROMPT{agent_planner_goal}
           backstory: $PROMPT{agent_planner_backstory}
           allow_delegation: false
       - description: $PROMPT{task_report_description}
         expected_output: $PROMPT{task_report_output}
-        agent: 
+        agent:
           role: "OpenAPI Reported"
           goal: $PROMPT{agent_reporter_goal}
           backstory: $PROMPT{agent_reporter_backstory}
@@ -43,7 +43,7 @@ function:
       type: LangChainChatOpenAI
       model_name: gpt-4o-mini
       api_key: $ENV{OPENAI_API_KEY}
-      temperature: 0  
+      temperature: 0
       seed: 42
 
 prompts:
@@ -59,7 +59,7 @@ prompts:
     task_report_description: task_report_description.txt
     task_report_output: task_report_output.txt
     agent_reporter_goal: agent_reporter_goal.txt
-    agent_reporter_backstory: agent_reporter_backstory.txt    
+    agent_reporter_backstory: agent_reporter_backstory.txt
     tool_open_api: tool_open_api.txt
     field_open_api_action: field_open_api_action.txt
     field_open_api_value: field_open_api_value.txt
