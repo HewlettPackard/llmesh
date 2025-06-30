@@ -22,7 +22,6 @@ from athon.system import (
 )
 from src.platform.mcp.main import platform_registry
 
-
 # Load configuration
 PATH = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(PATH, 'config.yaml')
