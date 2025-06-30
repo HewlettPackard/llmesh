@@ -9,6 +9,7 @@ across the LLMesh platform. It centralizes the registration, discovery, and
 management of platform tools using the Model Context Protocol.
 """
 
+import os
 from typing import Dict, Any, Callable, Optional, List
 
 from src.lib.system_services.mcp_registry import MCPRegistry
@@ -19,7 +20,10 @@ from src.lib.core.config import Config
 
 
 # Load configuration
-config = Config('src/platform/mcp/config.yaml').get_settings()
+PATH = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(PATH, 'config.yaml')
+config = Config(config_path).get_settings()
+
 logger = Logger().configure(config['logger']).get_logger()
 
 
