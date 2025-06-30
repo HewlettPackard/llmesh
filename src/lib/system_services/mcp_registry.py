@@ -38,6 +38,7 @@ from src.lib.core.log import Logger
 from src.lib.core.config import Config
 from src.lib.system_services.mcp_client import MCPClient
 from src.lib.system_services.mcp_server import MCPServer
+from src.lib.system_services.mcp_auth import IntrospectionTokenVerifier, JWTTokenVerifier
 
 logger = Logger().get_logger()
 
@@ -55,6 +56,7 @@ class ServerEntry:
         accessibility (str): Server accessibility level ("internal", "external", "both").
         hosting (str): Hosting type ("local", "remote").
         config (dict): Server-specific configuration parameters.
+        auth_config (Optional[dict]): Optional authentication configuration for the server.
         client (MCPClient): Active client connection to the server, if any.
         server (MCPServer): Server instance for locally-hosted internal servers.
         process: Process handle for locally-hosted external servers.
@@ -65,15 +67,17 @@ class ServerEntry:
         name: str,
         accessibility: Literal["internal", "external", "both"],
         hosting: Literal["local", "remote"],
-        config: Dict[str, Any]
+        config: Dict[str, Any],
+        auth_config: Optional[Dict[str, Any]] = None
     ):
         self.name = name
         self.accessibility = accessibility
         self.hosting = hosting
         self.config = config
+        self.auth_config = auth_config
         self.client: Optional[MCPClient] = None
-        self.server: Optional[MCPServer] = None  # Only for local hosting
-        self.process = None  # For locally hosted external servers
+        self.server: Optional[MCPServer] = None
+        self.process = None
 
 
 class MCPRegistry:
@@ -134,7 +138,8 @@ class MCPRegistry:
                     name=server_config['name'],
                     accessibility=server_config['accessibility'],
                     hosting=server_config['hosting'],
-                    config=server_config.get('config', {})
+                    config=server_config.get('config', {}),
+                    auth_config=server_config.get('auth', None)
                 )
             except KeyError as e:
                 self.logger.error(f"Missing key in server config: {e}. Server '{server_config.get('name')}' not registered.")
@@ -146,7 +151,8 @@ class MCPRegistry:
         name: str,
         accessibility: Literal["internal", "external", "both"],
         hosting: Literal["local", "remote"],
-        config: Dict[str, Any]
+        config: Dict[str, Any],
+        auth_config: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Register an MCP server with the registry.
@@ -171,21 +177,38 @@ class MCPRegistry:
             For remote servers: url, transport, headers (optional)
             For internal servers: use_internal_server, setup_callback (optional)
         :type config: dict[str, Any]
-        :return: True if registration was successful, False otherwise.
-        :rtype: bool
+        :param auth_config: Optional authentication configuration
+            For servers (Resource Servers):
+                - token_verifier: Token verification strategy ("introspection" or "jwt")
+                - introspection_endpoint: For introspection verification
+                - jwks_uri: For JWT verification
+                - issuer_url: Authorization server URL
+                - required_scopes: List of required scopes
+            For clients:
+                - client_id: OAuth client ID
+                - client_secret: OAuth client secret
+                - scopes: Requested scopes
+        :type auth_config: dict[str, Any], optional
 
         Example:
-            Register a local filesystem server:
+            Register an authenticated server:
 
             .. code-block:: python
 
                 success = await registry.register_server(
-                    name="filesystem",
-                    accessibility="both",
+                    name="protected_api",
+                    accessibility="external",
                     hosting="local",
                     config={
-                        "command": "npx",
-                        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/data"]
+                        "transport": "streamable",
+                        "host": "localhost",
+                        "port": 8080
+                    },
+                    auth_config={
+                        "token_verifier": "introspection",
+                        "introspection_endpoint": "https://auth.example.com/introspect",
+                        "issuer_url": "https://auth.example.com",
+                        "required_scopes": ["mcp:read", "mcp:write"]
                     }
                 )
         """
@@ -193,15 +216,51 @@ class MCPRegistry:
             if name in self.servers:
                 self.logger.warning(f"Server '{name}' already registered, updating")
 
-            entry = ServerEntry(name, accessibility, hosting, config)
+            processed_config = self._process_webapp_config(config)
+            entry = ServerEntry(name, accessibility, hosting, processed_config, auth_config)
             self.servers[name] = entry
 
             self.logger.info(f"Registered {hosting} {accessibility} server: {name}")
+            if auth_config:
+                self.logger.info(f"Server '{name}' configured with authentication")
             return True
 
         except Exception as e:
             self.logger.error(f"Failed to register server '{name}': {e}")
             return False
+
+    def _process_webapp_config(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process webapp configuration for tools.
+
+        Converts legacy webapp configuration (ip, port, ssh_cert) to MCP-compatible
+        configuration including SSL certificate handling.
+
+        :param config: Original configuration dictionary
+        :return: Processed configuration with SSL parameters
+        """
+        processed = config.copy()
+
+        # Handle 'ip' to 'host' conversion
+        if "ip" in processed and "host" not in processed:
+            processed["host"] = processed.pop("ip")
+
+        # Handle SSL certificate configuration
+        if "ssh_cert" in processed:
+            ssh_cert = processed.pop("ssh_cert")
+            if ssh_cert == "adhoc":
+                # For adhoc certificates, uvicorn will generate them
+                processed["ssl_certfile"] = None
+                processed["ssl_keyfile"] = None
+                processed["ssl_context"] = "adhoc"
+            elif isinstance(ssh_cert, dict):
+                # For provided certificates
+                if "certfile" in ssh_cert:
+                    processed["ssl_certfile"] = ssh_cert["certfile"]
+                if "keyfile" in ssh_cert:
+                    processed["ssl_keyfile"] = ssh_cert["keyfile"]
+
+        return processed
 
     async def start_server(self, name: str) -> bool:
         """
@@ -236,16 +295,61 @@ class MCPRegistry:
             # For platform internal servers using our MCPServer wrapper
             if entry.config.get("use_internal_server", False):
                 transport = entry.config.get("transport", "stdio")
-                entry.server = MCPServer(name, transport)
+
+                # Create token verifier if auth is configured
+                token_verifier = None
+                auth_settings = None
+
+                if entry.auth_config and transport in ["sse", "streamable"]:
+                    # Create token verifier based on configuration
+                    verifier_type = entry.auth_config.get("token_verifier")
+
+                    if verifier_type == "introspection":
+                        token_verifier = IntrospectionTokenVerifier(
+                            introspection_endpoint=entry.auth_config["introspection_endpoint"],
+                            server_url=f"http://{entry.config.get('host', 'localhost')}:{entry.config.get('port', 8000)}",
+                            client_id=entry.auth_config.get("client_id"),
+                            client_secret=entry.auth_config.get("client_secret")
+                        )
+                    elif verifier_type == "jwt":
+                        token_verifier = JWTTokenVerifier(
+                            jwks_uri=entry.auth_config.get("jwks_uri"),
+                            issuer=entry.auth_config.get("issuer_url"),
+                            audience=entry.auth_config.get("audience"),
+                            algorithms=entry.auth_config.get("algorithms", ["RS256"])
+                        )
+
+                    # Create auth settings
+                    if entry.auth_config.get("issuer_url"):
+                        auth_settings = {
+                            "issuer_url": entry.auth_config["issuer_url"],
+                            "resource_server_url": f"http://{entry.config.get('host', 'localhost')}:{entry.config.get('port', 8000)}",
+                            "required_scopes": entry.auth_config.get("required_scopes", [])
+                        }
+
+                entry.server = MCPServer(
+                    name,
+                    transport,
+                    token_verifier=token_verifier,
+                    auth_settings=auth_settings
+                )
 
                 # Allow registration of tools before starting
                 if "setup_callback" in entry.config:
                     await entry.config["setup_callback"](entry.server)
 
-                await entry.server.start(
-                    host=entry.config.get("host", "localhost"),
-                    port=entry.config.get("port", 8000)
-                )
+                # Prepare start kwargs including SSL if configured
+                start_kwargs = {
+                    "host": entry.config.get("host", "localhost"),
+                    "port": entry.config.get("port", 8000)
+                }
+
+                # Add SSL configuration if present
+                for ssl_key in ["ssl_certfile", "ssl_keyfile", "ssl_context"]:
+                    if ssl_key in entry.config:
+                        start_kwargs[ssl_key] = entry.config[ssl_key]
+
+                await entry.server.start(**start_kwargs)
             else:
                 # For external MCP servers, just track that we expect stdio
                 self.logger.info(f"Server '{name}' configured for local hosting")
@@ -287,6 +391,17 @@ class MCPRegistry:
             return entry.client
 
         try:
+            # Prepare auth config for client if available
+            client_auth_config = None
+            if entry.auth_config:
+                # Extract client-side auth settings
+                client_auth_config = {
+                    "client_id": entry.auth_config.get("client_id"),
+                    "client_secret": entry.auth_config.get("client_secret"),
+                    "scopes": entry.auth_config.get("scopes", ["mcp:read"]),
+                    "discover_auth": entry.auth_config.get("discover_auth", True)
+                }
+
             # Create appropriate client based on hosting
             if entry.hosting == "local":
                 # Local servers use stdio
@@ -298,14 +413,16 @@ class MCPRegistry:
                         command=entry.config["command"],
                         args=entry.config.get("args", []),
                         env=entry.config.get("env"),
-                        cwd=entry.config.get("cwd")
+                        cwd=entry.config.get("cwd"),
+                        auth_config=client_auth_config
                     )
                 else:
                     # Local HTTP-based server
                     client = MCPClient(
                         name=name,
                         transport=transport,
-                        url=f"http://{entry.config.get('host', 'localhost')}:{entry.config.get('port', 8000)}/mcp"
+                        url=f"http://{entry.config.get('host', 'localhost')}:{entry.config.get('port', 8000)}/mcp",
+                        auth_config=client_auth_config
                     )
             else:
                 # Remote servers
@@ -313,7 +430,8 @@ class MCPRegistry:
                     name=name,
                     transport=entry.config["transport"],
                     url=entry.config["url"],
-                    headers=entry.config.get("headers")
+                    headers=entry.config.get("headers"),
+                    auth_config=client_auth_config
                 )
 
             await client.connect()

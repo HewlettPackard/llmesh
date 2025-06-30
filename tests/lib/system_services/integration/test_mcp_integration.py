@@ -771,7 +771,3 @@ class TestMCPConfigurationIntegration:
             # Clean up environment variables
             for key in test_env:
                 os.environ.pop(key, None)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v", "--tb=short"])

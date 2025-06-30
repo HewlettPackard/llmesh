@@ -6,13 +6,12 @@ __pycache__/
 *.so
 
 # Environment
-.env/
 .env
 .venv*
 .vscode/
-.pytest_cache/`
+.pytest_cache/
 .streamlit/
-.DS_Store`
+.DS_Store
 
 # Distribution / packaging
 bin/

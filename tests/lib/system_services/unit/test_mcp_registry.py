@@ -176,7 +176,12 @@ class TestMCPRegistryServerManagement:
         result = await self.registry.start_server("internal_server")
 
         assert result is True
-        mock_server_class.assert_called_once_with("internal_server", "stdio")
+        mock_server_class.assert_called_once_with(
+            "internal_server",
+            "stdio",
+            token_verifier=None,
+            auth_settings=None
+        )
         setup_callback.assert_called_once_with(mock_server)
         mock_server.start.assert_called_once_with(host="localhost", port=8080)
 
@@ -309,7 +314,8 @@ class TestMCPRegistryClientManagement:
             command="python",
             args=["server.py"],
             env={"TEST": "value"},
-            cwd="/test"
+            cwd="/test",
+            auth_config=None
         )
         mock_client.connect.assert_called_once()
 
@@ -337,7 +343,8 @@ class TestMCPRegistryClientManagement:
         mock_client_class.assert_called_once_with(
             name="http_server",
             transport="sse",
-            url="http://localhost:8080/mcp"
+            url="http://localhost:8080/mcp",
+            auth_config=None
         )
         mock_client.connect.assert_called_once()
 
@@ -366,7 +373,8 @@ class TestMCPRegistryClientManagement:
             name="remote_server",
             transport="streamable",
             url="https://api.example.com/mcp",
-            headers={"Authorization": "Bearer token"}
+            headers={"Authorization": "Bearer token"},
+            auth_config=None
         )
         mock_client.connect.assert_called_once()
 

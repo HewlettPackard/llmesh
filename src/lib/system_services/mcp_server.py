@@ -29,10 +29,12 @@ Example:
 """
 
 import asyncio
-from typing import Callable, Optional, Any
+from typing import Callable, Optional, Dict, Any
 
 from mcp.server.fastmcp import FastMCP
+
 from src.lib.core.log import Logger
+from src.lib.system_services.mcp_auth import TokenVerifier
 
 logger = Logger().get_logger()
 
@@ -53,7 +55,13 @@ class MCPServer:
         logger: Logger instance for debugging and error reporting.
     """
 
-    def __init__(self, name: str, transport: str = "stdio"):
+    def __init__(
+        self,
+        name: str,
+        transport: str = "stdio",
+        token_verifier: Optional[TokenVerifier] = None,
+        auth_settings: Optional[Dict[str, Any]] = None
+    ):
         """
         Initialize MCP server with transport-specific configuration.
 
@@ -62,21 +70,69 @@ class MCPServer:
         :param transport: Transport protocol for client communication.
             Valid options are "stdio", "sse", or "streamable".
         :type transport: str
+        :param token_verifier: Optional token verifier for authentication (HTTP transports only)
+        :type token_verifier: TokenVerifier, optional
+        :param auth_settings: Optional authentication settings dictionary
+        :type auth_settings: dict, optional
 
         Example:
-            Create a streamable HTTP server:
+            Create an authenticated streamable HTTP server:
 
             .. code-block:: python
 
-                server = MCPServer("api_server", "streamable")
+                from src.lib.system_services.mcp_auth import IntrospectionTokenVerifier
+
+                verifier = IntrospectionTokenVerifier(
+                    introspection_endpoint="https://auth.example.com/introspect",
+                    server_url="http://localhost:8080"
+                )
+
+                server = MCPServer(
+                    "api_server",
+                    "streamable",
+                    token_verifier=verifier,
+                    auth_settings={
+                        "issuer_url": "https://auth.example.com",
+                        "required_scopes": ["mcp:read"],
+                        "resource_server_url": "http://localhost:8080"
+                    }
+                )
         """
         self.name = name
         self.transport = transport
-        self.mcp = FastMCP(name=name)
         self.logger = logger
+        self.token_verifier = token_verifier
         self._app = None
         self._server_task = None
+        self._uvicorn_server = None
         self._running = False
+
+        # Create FastMCP with optional authentication
+        if transport in ["sse", "streamable"] and token_verifier:
+            # Import auth components
+            from mcp.server.auth.settings import AuthSettings as MCPAuthSettings
+
+            # Convert our auth settings to MCP format
+            auth_settings_obj = None
+            if auth_settings:
+                auth_settings_obj = MCPAuthSettings(
+                    issuer_url=auth_settings.get("issuer_url"),
+                    resource_server_url=auth_settings.get("resource_server_url"),
+                    required_scopes=auth_settings.get("required_scopes", [])
+                )
+
+            # Pass auth settings as direct keyword argument
+            self.mcp = FastMCP(
+                name=name,
+                auth_server_provider=token_verifier,  # Use token verifier directly
+                auth=auth_settings_obj  # Pass directly, not through **settings
+            )
+            self.logger.info(f"Created authenticated {transport} server '{name}'")
+        else:
+            # Standard FastMCP without auth
+            self.mcp = FastMCP(name=name)
+            if transport == "stdio" and token_verifier:
+                self.logger.warning("Authentication not supported for stdio transport, ignoring auth settings")
 
     # Delegation to FastMCP decorators
     def tool(self, description: str = None):
@@ -237,16 +293,30 @@ class MCPServer:
 
         self.logger.info(f"Stopping server '{self.name}'")
 
+        # Shutdown uvicorn server properly
+        if self._uvicorn_server:
+            self._uvicorn_server.should_exit = True
+
         if self._server_task:
-            self._server_task.cancel()
+            # Don't cancel, let uvicorn shutdown gracefully
             try:
-                await self._server_task
+                # Wait for uvicorn to shutdown with a timeout
+                await asyncio.wait_for(self._server_task, timeout=2.0)
+            except asyncio.TimeoutError:
+                # If it doesn't shutdown in time, cancel it
+                self._server_task.cancel()
+                try:
+                    await self._server_task
+                except asyncio.CancelledError:
+                    pass
             except asyncio.CancelledError:
+                # Server task was already cancelled
                 pass
 
         self._running = False
         self._app = None
         self._server_task = None
+        self._uvicorn_server = None
 
     async def _start_sse_server(self, host: str, port: int, **kwargs):
         """
@@ -266,8 +336,17 @@ class MCPServer:
         from starlette.routing import Mount
         import uvicorn
 
+        from starlette.responses import JSONResponse
+        from starlette.routing import Route
+
+        async def health_check(request):
+            return JSONResponse({"status": "healthy", "server": self.name, "transport": self.transport})
+
         self._app = Starlette(
-            routes=[Mount("/mcp", app=self.mcp.sse_app())]
+            routes=[
+                Mount("/mcp/", app=self.mcp.sse_app()),
+                Route("/health", health_check, methods=["GET"])
+            ]
         )
 
         config = uvicorn.Config(
@@ -277,8 +356,8 @@ class MCPServer:
             log_level="warning",
             **kwargs
         )
-        server = uvicorn.Server(config)
-        self._server_task = asyncio.create_task(server.serve())
+        self._uvicorn_server = uvicorn.Server(config)
+        self._server_task = asyncio.create_task(self._uvicorn_server.serve())
 
     async def _start_streamable_server(self, host: str, port: int, **kwargs):
         """
@@ -296,13 +375,67 @@ class MCPServer:
         :type kwargs: dict
         """
         from fastapi import FastAPI
+        from starlette.applications import Starlette
+        from contextlib import asynccontextmanager
         import uvicorn
 
-        self._app = FastAPI(
-            title=f"MCP Server: {self.name}",
-            docs_url="/docs"
-        )
-        self._app.mount("/mcp", self.mcp.streamable_http_app())
+        # Get the streamable app
+        streamable_app = self.mcp.streamable_http_app()
+
+        # For authenticated servers, we need lifecycle management
+        if self.token_verifier: # TODO: Need to revisit and create passing integration tests for this, manual testing works partially
+            # Access the session manager from the MCP instance
+            session_manager = getattr(self.mcp, 'session_manager', None)
+            if not session_manager:
+                self.logger.error("No session manager found in FastMCP instance")
+                raise RuntimeError("FastMCP with auth requires session_manager")
+
+            # Create lifespan context manager
+            @asynccontextmanager
+            async def lifespan(app: Starlette):
+                self.logger.info("Starting Authenticated MCP session manager lifecycle")
+                async with session_manager.run():
+                    yield
+                self.logger.info("Authenticated MCP session manager lifecycle ended")
+
+            # Create a new Starlette app with lifespan
+            # Copy routes from the auth app
+            routes = list(streamable_app.routes)  # Make a copy
+
+            self._app = Starlette(
+                routes=routes,
+                lifespan=lifespan,
+                debug=False
+            )
+
+            # Copy middleware from the auth app
+            for mw in streamable_app.user_middleware:
+                self._app.add_middleware(mw.cls, **mw.kwargs)
+
+            # Add health check route
+            from starlette.routing import Route
+            from starlette.responses import JSONResponse
+
+            async def health_check(request):
+                return JSONResponse({"status": "healthy", "server": self.name, "transport": self.transport})
+
+            health_route = Route("/health", health_check, methods=["GET"])
+            self._app.routes.append(health_route)
+
+        else:
+            # For non-authenticated servers, use FastAPI directly
+            self._app = FastAPI(
+                title=f"MCP Server: {self.name}",
+                docs_url="/docs"
+            )
+
+            @self._app.get("/health")
+            async def health_check():
+                return {"status": "healthy", "server": self.name, "transport": self.transport}
+
+            # Mount at /mcp/ for non-authenticated servers
+            self._app.mount("/mcp/", streamable_app)
+            self.logger.info("Mounted streamable app at /mcp/ for non-authenticated server")
 
         config = uvicorn.Config(
             app=self._app,
@@ -311,8 +444,8 @@ class MCPServer:
             log_level="warning",
             **kwargs
         )
-        server = uvicorn.Server(config)
-        self._server_task = asyncio.create_task(server.serve())
+        self._uvicorn_server = uvicorn.Server(config)
+        self._server_task = asyncio.create_task(self._uvicorn_server.serve())
 
     def __repr__(self):
         """

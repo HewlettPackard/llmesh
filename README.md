@@ -59,6 +59,7 @@ Before setting up the LLM Agentic Tool Mesh platform, please ensure the followin
 * **API Key**: Set your ChatGPT API key by assigning it to the `OPENAI_API_KEY` environment variable.
 
   * Can be set in a `.env` file within the project root directory or within `src/lib/core`.
+  * Example `.env` values available in `.env.example` file.
 
 * **Python 3.11**: Ensure Python 3.11 is installed on your machine.
 

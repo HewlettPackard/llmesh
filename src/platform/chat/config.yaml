@@ -7,20 +7,20 @@ webapp:
 
 tool:
   name: ChatService
-  function: $FUNCTION{ask}
+  function: $FUNCTION{chat}
   arguments:
     - name: query
       type: str
       description: $PROMPT{field_query_description}
-      default : null    
+      default : null
     - name: new
       type: bool
       description: $PROMPT{field_new_chat_description}
-      default : false   
+      default : false
     - name: personas
       type: str
       description: $PROMPT{field_personas_description}
-      default : assistant   
+      default : assistant
   description: $PROMPT{tool_description}
   return_direct: true
   interface:
@@ -41,13 +41,13 @@ service:
     type: LangChainChatOpenAI
     model_name: gpt-4o
     api_key: $ENV{OPENAI_API_KEY}
-    temperature: 0  
+    temperature: 0
     seed: 42
   memory:
     type: LangChainBuffer
     memory_key: chat_history
     return_messages: true
-  nessage_manager:
+  message_manager:
     type: LangChainChat
 
 prompts:

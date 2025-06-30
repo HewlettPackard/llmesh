@@ -28,7 +28,7 @@ Example:
             tools = await client.list_tools()
             result = await client.invoke_tool("my_tool", {"arg": "value"})
 """
-
+import datetime
 from typing import List, Dict, Any, Optional
 
 from mcp import ClientSession, StdioServerParameters
@@ -36,8 +36,8 @@ from mcp.client.streamable_http import streamablehttp_client
 from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client
 
-import datetime
 from src.lib.core.log import Logger
+from src.lib.system_services.mcp_auth import OAuthClient
 
 logger = Logger().get_logger()
 
@@ -58,7 +58,13 @@ class MCPClient:
         logger: Logger instance for debugging and error reporting.
     """
 
-    def __init__(self, name: str, transport: str, **connection_params):
+    def __init__(
+    self,
+    name: str,
+    transport: str,
+    auth_config: Optional[Dict[str, Any]] = None,
+    **connection_params
+):
         """
         Initialize MCP client with transport-specific configuration.
 
@@ -67,9 +73,6 @@ class MCPClient:
         :param transport: Transport protocol to use for server communication.
             Valid options are "stdio", "sse", or "streamable".
         :type transport: str
-        :param connection_params: Transport-specific connection parameters.
-        :type connection_params: dict
-
         **STDIO Transport Parameters:**
 
         :param command: Executable command to launch the MCP server.
@@ -89,30 +92,36 @@ class MCPClient:
         :type headers: dict[str, str], optional
         :param timeout: Connection timeout in seconds (streamable only).
         :type timeout: int, optional
+        :param auth_config: Optional OAuth configuration for authenticated servers
+        :type auth_config: dict, optional
+        :param connection_params: Transport-specific connection parameters.
+        :type connection_params: dict
+
+        **OAuth Configuration (auth_config)**:
+
+        :param client_id: OAuth client ID (optional for dynamic registration)
+        :type client_id: str, optional
+        :param client_secret: OAuth client secret
+        :type client_secret: str, optional
+        :param redirect_uri: OAuth redirect URI
+        :type redirect_uri: str, optional
+        :param discover_auth: Auto-discover auth requirements (default: True)
+        :type discover_auth: bool, optional
 
         Example:
-            STDIO client:
+            Authenticated streamable client:
 
             .. code-block:: python
 
                 client = MCPClient(
-                    name="filesystem",
-                    transport="stdio",
-                    command="npx",
-                    args=["-y", "@modelcontextprotocol/server-filesystem", "/data"],
-                    env={"NODE_ENV": "production"}
-                )
-
-            Streamable HTTP client:
-
-            .. code-block:: python
-
-                client = MCPClient(
-                    name="api_server",
+                    name="auth_client",
                     transport="streamable",
                     url="https://api.example.com/mcp",
-                    headers={"Authorization": "Bearer token"},
-                    timeout=30
+                    auth_config={
+                        "client_id": "my-client-id",
+                        "client_secret": "my-secret",
+                        "discover_auth": True
+                    }
                 )
         """
         self.name = name
@@ -122,6 +131,12 @@ class MCPClient:
         self._session: Optional[ClientSession] = None
         self._context = None
         self._session_context = None
+
+        # Authentication support
+        self.auth_config = auth_config
+        self._oauth_client: Optional[OAuthClient] = None
+        self._access_token: Optional[str] = None
+        self._auth_discovered = False
 
     async def connect(self):
         """
@@ -311,7 +326,17 @@ class MCPClient:
         Connects to an HTTP endpoint that provides MCP communication
         through server-sent events.
         """
-        self._context = sse_client(url=self.connection_params["url"])
+        # TODO: Client MCP authentication needs revisited, fails to connect after authentication
+        await self._ensure_authenticated()
+
+        headers = self.connection_params.get("headers", {})
+        auth_headers = await self._get_auth_headers()
+        headers.update(auth_headers)
+
+        self._context = sse_client(
+            url=self.connection_params["url"],
+            headers=headers
+        )
         reader, writer = await self._context.__aenter__()
 
         self._session_context = ClientSession(reader, writer)
@@ -325,20 +350,107 @@ class MCPClient:
         Connects to an HTTP endpoint that provides full bidirectional
         MCP communication through HTTP streaming.
         """
+        # TODO: Client MCP authentication needs revisited, fails to connect after authentication
+        # Skip OAuth flow if we already have auth headers (e.g., JWT bearer token)
+        headers = self.connection_params.get("headers", {})
+        if not headers.get("Authorization"):
+            await self._ensure_authenticated()
+            auth_headers = await self._get_auth_headers()
+            headers.update(auth_headers)
+
         timeout = datetime.timedelta(
             seconds=self.connection_params.get("timeout", 30)
         )
 
+
+        # Ensure proper Accept header for streamable transport
+        if "Accept" not in headers:
+            headers["Accept"] = "application/json, text/event-stream"
+
+        # Check if we have a bearer token in headers
+        auth = None
+        if headers.get("Authorization", "").startswith("Bearer "):
+            # Create a custom auth class for bearer tokens
+            from httpx import Auth
+
+            class BearerAuth(Auth):
+                def __init__(self, token):
+                    self.token = token
+
+                def auth_flow(self, request):
+                    request.headers["Authorization"] = f"Bearer {self.token}"
+                    yield request
+
+            token = headers["Authorization"].replace("Bearer ", "")
+            auth = BearerAuth(token)
+            # Remove from headers since we're using auth param
+            headers.pop("Authorization", None)
+
         self._context = streamablehttp_client(
             url=self.connection_params["url"],
-            headers=self.connection_params.get("headers", {}),
-            timeout=timeout
+            headers=headers,
+            timeout=timeout,
+            auth=auth
         )
-        reader, writer, _ = await self._context.__aenter__()
+
+        try:
+            reader, writer, _ = await self._context.__aenter__()
+            self.logger.debug("Streamable HTTP connection established")
+        except Exception as e:
+            self.logger.error(f"Failed to establish streamable connection: {e}")
+            raise
 
         self._session_context = ClientSession(reader, writer)
         self._session = await self._session_context.__aenter__()
-        await self._session.initialize()
+
+        try:
+            # TODO: Authentication with streamable transport times out during session initialization.
+            # Server-side auth works correctly (returns 401 for unauthorized, 200 OK with SSE for authorized),
+            # but the client session fails to initialize when connecting to authenticated servers.
+            # Need to investigate why the SSE response handling fails with authentication enabled.
+            await self._session.initialize()
+            self.logger.debug("MCP session initialized successfully")
+        except Exception as e:
+            self.logger.error(f"Failed to initialize MCP session: {e}")
+            raise
+
+    async def _ensure_authenticated(self):
+        """Ensure we have a valid access token for HTTP transports."""
+        if self.transport not in ["sse", "streamable"] or not self.auth_config:
+            return
+
+        if not self._oauth_client:
+            self._oauth_client = OAuthClient(
+                client_id=self.auth_config.get("client_id"),
+                client_secret=self.auth_config.get("client_secret"),
+                redirect_uri=self.auth_config.get("redirect_uri", "http://localhost:8080/callback")
+            )
+
+        # Auto-discover authentication if enabled
+        if self.auth_config.get("discover_auth", True) and not self._auth_discovered:
+            try:
+                server_url = self.connection_params.get("url")
+                if server_url:
+                    auth_info = await self._oauth_client.discover_authorization(server_url)
+                    self._auth_discovered = True
+
+                    if auth_info.get("protected"):
+                        self.logger.info(f"Server '{self.name}' requires authentication")
+                        # Get access token
+                        scopes = self.auth_config.get("scopes", ["mcp:read"])
+                        self._access_token = await self._oauth_client.get_access_token(
+                            server_url,
+                            scopes
+                        )
+            except Exception as e:
+                self.logger.warning(f"Auth discovery failed: {e}")
+                # Continue without auth - server might not require it
+
+    async def _get_auth_headers(self) -> Dict[str, str]:
+        """Get authorization headers if authenticated."""
+        if self._access_token:
+            return {"Authorization": f"Bearer {self._access_token}"}
+        return {}
 
     async def __aenter__(self):
         """

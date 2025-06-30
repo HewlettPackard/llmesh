@@ -3,10 +3,11 @@
 
 """
 This module initializes an agentic tool of the platform chat service.
-It utilizes the AthonTool decorator for configuration and logging setup.
+It uses MCP for tool registration and exposure.
 """
 
 import os
+import asyncio
 import traceback
 from athon.chat import (
     ChatModel,
@@ -16,10 +17,10 @@ from athon.chat import (
     MessageRole
 )
 from athon.system import (
-    AthonTool,
     Config,
     Logger
 )
+from src.platform.mcp.main import platform_registry
 
 
 # Load configuration
@@ -34,11 +35,10 @@ LOG_CONFIG = config['logger']
 # Create global objects
 logger = Logger().configure(LOG_CONFIG).get_logger()
 memory = ChatMemory.create(SERVICE_CONFIG["memory"])
-message_manager = MessageManager.create(SERVICE_CONFIG["nessage_manager"])
+message_manager = MessageManager.create(SERVICE_CONFIG["message_manager"])
 
 
-@AthonTool(config, logger)
-def chat(query: str, new: bool=False, personas: str="assistant") -> str:
+async def chat(query: str, new: bool=False, personas: str="assistant") -> str:
     """
     Answer chat discussion
     """
@@ -155,17 +155,73 @@ def _store_in_memory(messages, completion):
         logger.error(f"Failed to store messages in memory: {e}")
 
 
+async def register():
+    """
+    Register this tool with the platform registry.
+    """
+    try:
+        # Get tool description from prompt
+        prompt = PromptRender.create(PROMPT_CONFIG)
+        result = prompt.load("tool_description")
+        description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+        # Register with platform - pass webapp config directly
+        server = await platform_registry.register_platform_tool(
+            name="chat",
+            func=chat,
+            config=config["webapp"],
+            description=description
+        )
+        logger.info("Chat service registered successfully")
+        return server
+
+    except Exception as e:
+        logger.error(f"Failed to register chat service: {e}")
+        raise
+
+
+def get_manifest():
+    """
+    Get the tool's manifest.
+    """
+    # Get tool description from prompt
+    prompt = PromptRender.create(PROMPT_CONFIG)
+    result = prompt.load("tool_description")
+    description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+    manifest = {
+        "name": "chat",
+        "function": "chat",
+        "description": description,
+        "arguments": config["tool"]["arguments"],
+        "return_direct": config["tool"]["return_direct"]
+    }
+    return manifest
+
+
 def main(local=True):
     """
     Main function that serves as the entry point for the application.
     It either prints the manifest or launches the web application
-    based on the input parameter `local` : 
+    based on the input parameter `local` :
     - If True, the tool's manifest is printed.
     - If False, the web application is launched.
     """
     if local:
-        return chat.get_manifest()
-    chat.run_app()
+        return get_manifest()
+
+    # Run the server
+    async def run_server():
+        server = await register()
+        if server:
+            await server.start(
+                host=config["webapp"]["ip"],
+                port=config["webapp"]["port"]
+            )
+            logger.info(f"Chat server running on {config['webapp']['ip']}:{config['webapp']['port']}")
+            await asyncio.Event().wait()
+
+    asyncio.run(run_server())
     return None
 
 

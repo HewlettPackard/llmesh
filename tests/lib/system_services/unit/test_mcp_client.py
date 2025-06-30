@@ -152,7 +152,7 @@ class TestMCPClientConnection:
         await self.sse_client.connect()
 
         assert self.sse_client._session == mock_session
-        mock_sse_client.assert_called_once_with(url="http://localhost:8000/mcp/sse")
+        mock_sse_client.assert_called_once_with(url="http://localhost:8000/mcp/sse", headers={})
         mock_session_class.assert_called_once()
         mock_session.initialize.assert_called_once()
 
