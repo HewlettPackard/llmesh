@@ -113,7 +113,12 @@ class Logger(metaclass=LoggerSingleton):
         :param config: Dictionary with new configuration settings.
         :return: The reconfigured Logger instance.
         """
-        self.logger.handlers.clear()  # Clear existing handlers to avoid duplicates
+        # Clear existing handlers to avoid duplicates
+        # Must close file handlers first to avoid handlers being left open
+        for handler in self.logger.handlers[:]:
+            if isinstance(handler, logging.FileHandler):
+                handler.close()
+            self.logger.removeHandler(handler)
         self.config = Logger.Config(**config)
         self.logger.setLevel(self.config.level)
         self._setup_stdout_handler()

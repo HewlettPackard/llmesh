@@ -3,11 +3,12 @@
 
 """
 This module initializes an agentic tool of the platform rag service.
-It utilizes the AthonTool decorator for configuration and logging setup.
+It uses MCP for tool registration and exposure.
 """
 
 import os
 import json
+import asyncio
 from sentence_transformers import CrossEncoder
 from langchain.schema import HumanMessage, SystemMessage
 from athon.chat import (
@@ -18,11 +19,10 @@ from athon.rag import (
     DataStorage,
     DataRetriever
 )
-from athon.system import (
-    AthonTool,
-    Config,
-    Logger
-)
+from src.lib.core.config import Config
+from src.lib.core.log import Logger
+from src.platform.mcp.main import platform_registry
+from src.lib.system_services.mcp_server import MCPServer
 
 
 # Load configuration
@@ -33,7 +33,7 @@ config = Config(config_path).get_settings()
 PATH = config["data"]["path"]
 FILES = config["data"]["files"]
 PROMPT_CONFIG = config["prompts"]
-QUERY_EXPANTION_PROMPT = config["service"]["query_expantion"]
+QUERY_EXPANSION_PROMPT = config["service"]["query_expansion"]
 QUERY_HYDE_PROMPT = config["service"]["query_hyde"]
 LLM_CONFIG = config["service"]["llm"]
 STORAGE_CONFIG = config["service"]["storage"]
@@ -49,11 +49,10 @@ RETRIEVER_CONFIG = config["service"]["retriever"]
 logger = Logger().configure(config['logger']).get_logger()
 
 
-@AthonTool(config, logger)
-def retrieve(query: str, augmentation: str = "expansion", rerank: bool = True) -> str:
+async def retrieve(query: str, augmentation: str = "expansion", rerank: bool = True) -> str:
     """
-    This function reads the documentations, builds or uses a vector store 
-    from them, and then uses a query engine to find and return relevant 
+    This function reads the documentations, builds or uses a vector store
+    from them, and then uses a query engine to find and return relevant
     information to the input question.
     """
     try:
@@ -80,7 +79,7 @@ def _get_collection():
 def _augment_query_generated(query, augmentation):
     prompts_map = {
         "hyde": QUERY_HYDE_PROMPT,
-        "expansion": QUERY_EXPANTION_PROMPT
+        "expansion": QUERY_EXPANSION_PROMPT
     }
     system_prompt = prompts_map.get(augmentation)
     if not system_prompt:
@@ -203,17 +202,73 @@ def _build_result_dict(results, i):
     }
 
 
+async def register():
+    """
+    Register this tool with the platform registry.
+    """
+    try:
+        # Get tool description from prompt
+        prompt = PromptRender.create(PROMPT_CONFIG)
+        result = prompt.load("tool_description")
+        description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+        # Register with platform
+        server = await platform_registry.register_platform_tool(
+            name="rag_service",
+            func=retrieve,
+            config=config["webapp"],
+            description=description
+        )
+        logger.info("RAG service tool registered successfully")
+        return server
+
+    except Exception as e:
+        logger.error(f"Failed to register RAG service: {e}")
+        raise
+
+
+def get_manifest():
+    """
+    Get the tool's manifest.
+    """
+    # Get tool description from prompt
+    prompt = PromptRender.create(PROMPT_CONFIG)
+    result = prompt.load("tool_description")
+    description = result.content if hasattr(result, 'content') else config["tool"]["description"]
+
+    manifest = {
+        "name": "rag_service",
+        "function": "retrieve",
+        "description": description,
+        "arguments": config["tool"]["arguments"],
+        "return_direct": config["tool"]["return_direct"]
+    }
+    return manifest
+
+
 def main(local=True):
     """
     Main function that serves as the entry point for the application.
     It either prints the manifest or launches the web application
-    based on the input parameter `local` : 
+    based on the input parameter `local` :
     - If True, the tool's manifest is printed.
     - If False, the web application is launched.
     """
     if local:
-        return retrieve.get_manifest()
-    retrieve.run_app()
+        return get_manifest()
+
+    # Run the server
+    async def run_server():
+        server = await register()
+        if server:
+            await server.start(
+                host=config["webapp"]["ip"],
+                port=config["webapp"]["port"]
+            )
+            logger.info(f"RAG service server running on {config['webapp']['ip']}:{config['webapp']['port']}")
+            await asyncio.Event().wait()
+
+    asyncio.run(run_server())
     return None
 
 

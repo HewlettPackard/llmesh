@@ -13,15 +13,15 @@ tool:
     type: str
     description: $PROMPT{field_query_description}
     default: null
-  - name: augemntation
+  - name: augmentation
     type: str
-    description: $PROMPT{field_augemntation_description}
+    description: $PROMPT{field_augmentation_description}
     default : espantion 
   description: $PROMPT{tool_description}
   return_direct: true
 
 service:
-  query_expantion: $PROMPT{query_expantion}
+  query_expansion: $PROMPT{query_expansion}
   query_hyde: $PROMPT{query_hyde}
   llm:
     type: LangChainChatOpenAI
@@ -70,8 +70,8 @@ prompts:
   templates:
     tool_description: tool_description.txt
     field_query_description: field_query_description.txt
-    field_augemntation_description: field_augemntation_description.txt
-    query_expantion: query_expantion.txt
+    field_augmentation_description: field_augmentation_description.txt
+    query_expansion: query_expansion.txt
     query_hyde: query_hyde.txt
     answer_summary: answer_summary.txt
 

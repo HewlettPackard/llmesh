@@ -4,7 +4,7 @@
 """
 Class to handle template files
 
-This script is designed to generate a prompt from a file using 
+This script is designed to generate a prompt from a file using
 Jinja2 and some input parameters.
 """
 
@@ -22,7 +22,7 @@ class TemplateEngine:
 
     def render(self, template_string: str, **params: dict) -> str:
         """
-        Generates a tool prompt from a template etring passed as input,
+        Generates a tool prompt from a template string passed as input,
         utilizing additional parameters for customization.
 
         :param template: The template string.

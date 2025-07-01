@@ -3,7 +3,7 @@
 
 """
 This module re-exports key functionalities related to System handling
-within the src.lib. It simplifies the import for clients 
+within the src.lib. It simplifies the import for clients
 of the lib package.
 
 The package name 'athon' is a shorthand for 'agentic-python', reflecting
@@ -15,6 +15,7 @@ from src.lib.core.log import Logger
 from src.lib.core.chat_endpoint import ChatEndpoint
 from src.lib.system_services.tool_client import AthonTool
 from src.lib.system_services.tool_server import ToolDiscovery
+from src.lib.system_services.mcp_registry import MCPRegistry
 
 
 __all__ = [
@@ -22,5 +23,6 @@ __all__ = [
     'Logger',
     'ChatEndpoint',
     'AthonTool',
-    'ToolDiscovery'
+    'ToolDiscovery',
+    'MCPRegistry'
 ]
