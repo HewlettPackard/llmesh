@@ -1,0 +1,45 @@
+platform:
+  name: MCP_Platform_Registry
+  description: Centralized MCP registry for platform tools
+
+  # Registry configuration
+  registry:
+    auto_start: true
+    cleanup_on_exit: true
+
+  # Internal platform tools
+  tools:
+    - name: temperature_analyzer
+      module: src.platform.tool_analyzer
+      port: 5004
+
+    - name: chat_service
+      module: src.platform.chat
+      port: 5002
+
+    - name: rag_service
+      module: src.platform.rag
+      port: 5003
+
+    - name: tool_api
+      module: src.platform.tool_api
+      port: 5006
+
+    - name: tool_agents
+      module: src.platform.tool_agents
+      port: 5005
+
+  # External MCP servers (if any)
+  external_servers: []
+    # Example:
+    # - name: external_api
+    #   url: https://api.example.com/mcp
+    #   transport: sse
+    #   auth_config:
+    #     client_id: my-client
+    #     client_secret: $ENV{CLIENT_SECRET}
+
+logger:
+  name: MCP_REGISTRY
+  log_file: src/platform/mcp/logs/mcp_registry.log
+  level: DEBUG

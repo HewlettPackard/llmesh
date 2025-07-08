@@ -3,7 +3,7 @@
 
 """
 This module re-exports key functionalities related to Agents handling
-within the lib. It simplifies the import for clients 
+within the lib. It simplifies the import for clients
 of the lib package.
 
 The package name 'athon' is a shorthand for 'agentic-python', reflecting

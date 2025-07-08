@@ -8,6 +8,7 @@ LLM endpoint, while keeping project handling and reasoning engine integration.
 """
 
 import os
+import asyncio
 import uvicorn
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -15,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from athon.system import Config, Logger, ToolDiscovery, ChatEndpoint
 from athon.chat import ChatMemory
 from athon.agents import ToolRepository, ReasoningEngine
+from src.platform.mcp.main import platform_registry
 
 
 # Load configuration
@@ -113,8 +115,48 @@ def _discover_project_tools(projects_config, tools_config, discovery_config, upd
     tool_repository = ToolRepository.create(tools_config)
     tool_discovery = ToolDiscovery(discovery_config)
     tool_id_counter = 1
+
+    # First, discover tools from platform registry if available
+    if platform_registry and hasattr(platform_registry, '_registry') and platform_registry._registry:
+        logger.info("Discovering tools from platform registry")
+        try:
+            # Get all registered platform tools
+            registry_tools = asyncio.run(_get_platform_tools())
+            for tool_name, tool_info in registry_tools.items():
+                # Find which projects should have this tool
+                for project in projects_config:
+                    # Check if tool is listed for this project (by name or URL pattern)
+                    for tool_ref in project["tools"]:
+                        # Handle mcp:// prefixed references
+                        if tool_ref.startswith("mcp://"):
+                            mcp_tool_name = tool_ref.replace("mcp://", "")
+                            if tool_name == mcp_tool_name:
+                                tool_metadata = {
+                                    "id": tool_id_counter,
+                                    "project": project["name"],
+                                    "name": tool_info["name"],
+                                    "interface": tool_info.get("interface", {}).get("fields")
+                                }
+                                if update:
+                                    tool_repository.update_tool(tool_info["name"], tool_info["tool"], tool_metadata)
+                                else:
+                                    tool_repository.add_tool(tool_info["tool"], tool_metadata)
+                                tool_id_counter += 1
+                                logger.info(f"Added tool {tool_info['name']} from platform registry to project {project['name']}")
+                                break
+        except Exception as e:
+            logger.warning(f"Failed to discover tools from platform registry: {e}")
+
+    # Then discover tools from URLs (backward compatibility)
     for project in projects_config:
         for tool in project["tools"]:
+            # Skip if it's an MCP reference (already handled above)
+            if tool.startswith("mcp://"):
+                continue
+            # Skip if already discovered
+            result = tool_repository.get_tools()
+            if result.status == "success" and tool in [t["metadata"]["name"] for t in result.tools]:
+                continue
             tool_info = tool_discovery.discover_tool(tool)
             if tool_info:
                 tool_metadata = {
@@ -129,6 +171,22 @@ def _discover_project_tools(projects_config, tools_config, discovery_config, upd
                     tool_repository.add_tool(tool_info["tool"], tool_metadata)
                 tool_id_counter += 1
     return tool_repository
+
+
+async def _get_platform_tools():
+    """Get all tools from the platform registry."""
+    tools = {}
+    if platform_registry._registry:
+        for name, server_info in platform_registry._registry.servers.items():
+            if hasattr(server_info, 'server') and hasattr(server_info.server, 'tools'):
+                for tool_name, tool_func in server_info.server.tools.items():
+                    tools[tool_name] = {
+                        "name": tool_name,
+                        "tool": tool_func,
+                        "port": server_info.config.get("port"),
+                        "interface": {}
+                    }
+    return tools
 
 def _create_project_manager(projects_config, tool_repository):
     project_manager = []

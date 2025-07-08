@@ -21,6 +21,7 @@ from src.platform.chat.main import chat  # Update import if your file is named d
 
 @pytest.mark.integration
 @pytest.mark.chat
+@pytest.mark.asyncio
 @pytest.mark.parametrize("query,new,personas", [
     ("Tell me a pirate joke!", True, "pirate"),
     ("What is 5G?", True, "5g_expert"),
@@ -28,18 +29,19 @@ from src.platform.chat.main import chat  # Update import if your file is named d
     ("What's the capital of Germany?", True, "assistant"),
     ("How do I write better?", True, ""),  # empty = default
 ])
-def test_chat_personas_and_default(query, new, personas):
+async def test_chat_personas_and_default(query, new, personas):
     """Test different personas and the default assistant behavior."""
-    response = chat(query=query, new=new, personas=personas)
+    response = await chat(query=query, new=new, personas=personas)
     assert isinstance(response, str)
     assert len(response.strip()) > 0
 
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_fallback_on_invalid_persona():
+@pytest.mark.asyncio
+async def test_chat_fallback_on_invalid_persona():
     """Test fallback behavior when an unknown persona is used."""
-    response = chat(query="What time is it?", new=True, personas="nonexistent")
+    response = await chat(query="What time is it?", new=True, personas="nonexistent")
     assert isinstance(response, str)
     assert "error" not in response.lower()
     assert len(response.strip()) > 0
@@ -47,10 +49,11 @@ def test_chat_fallback_on_invalid_persona():
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_memory_persistence():
+@pytest.mark.asyncio
+async def test_chat_memory_persistence():
     """Test that the assistant remembers previous messages if new=False."""
-    first = chat(query="What is AI?", new=True, personas="assistant")
-    followup = chat(query="And how is it used today?", new=False, personas="assistant")
+    first = await chat(query="What is AI?", new=True, personas="assistant")
+    followup = await chat(query="And how is it used today?", new=False, personas="assistant")
     assert isinstance(first, str)
     assert isinstance(followup, str)
     assert len(followup.strip()) > 0
@@ -59,10 +62,11 @@ def test_chat_memory_persistence():
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_memory_reset_with_new_flag():
+@pytest.mark.asyncio
+async def test_chat_memory_reset_with_new_flag():
     """Test that setting new=True resets memory and context."""
-    _ = chat(query="Tell me about cats.", new=True, personas="assistant")
-    fresh = chat(query="What did I just say?", new=True, personas="assistant")
+    _ = await chat(query="Tell me about cats.", new=True, personas="assistant")
+    fresh = await chat(query="What did I just say?", new=True, personas="assistant")
     assert isinstance(fresh, str)
     assert len(fresh.strip()) > 0
     # No assert on content because behavior may vary by implementation
@@ -70,27 +74,30 @@ def test_chat_memory_reset_with_new_flag():
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_default_param_behavior():
+@pytest.mark.asyncio
+async def test_chat_default_param_behavior():
     """Test chat() with default parameters (no personas or new flag provided)."""
-    response = chat("What is the speed of light?")
+    response = await chat("What is the speed of light?")
     assert isinstance(response, str)
     assert len(response.strip()) > 0
 
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_empty_query():
+@pytest.mark.asyncio
+async def test_chat_empty_query():
     """Test chat() with an empty query string."""
-    response = chat(query="", new=True, personas="assistant")
+    response = await chat(query="", new=True, personas="assistant")
     assert isinstance(response, str)
     assert len(response.strip()) > 0 or "error" in response.lower()
 
 
 @pytest.mark.integration
 @pytest.mark.chat
-def test_chat_null_persona():
+@pytest.mark.asyncio
+async def test_chat_null_persona():
     """Test chat() with persona set to None."""
-    response = chat(query="How do I cook rice?", new=True, personas=None)
+    response = await chat(query="How do I cook rice?", new=True, personas=None)
     assert isinstance(response, str)
     assert len(response.strip()) > 0
 

@@ -13,19 +13,19 @@ tool:
     type: str
     description: $PROMPT{field_query_description}
     default: null
-  - name: augemntation
+  - name: augmentation
     type: str
-    description: $PROMPT{field_augemntation_description}
-    default : espantion 
+    description: $PROMPT{field_augmentation_description}
+    default : espantion
   - name: rerank
     type: bool
     description: $PROMPT{field_rerank_description}
-    default : true  
+    default : true
   description: $PROMPT{tool_description}
   return_direct: true
 
 service:
-  query_expantion: $PROMPT{query_expantion}
+  query_expansion: $PROMPT{query_expansion}
   query_hyde: $PROMPT{query_hyde}
   llm:
     type: LangChainChatOpenAI
@@ -58,7 +58,7 @@ service:
   retriever:
     type: ChromaForSentences
     n_results: 10
-  rerank: 
+  rerank:
     model: cross-encoder/ms-marco-MiniLM-L-6-v2
     summary_chunks: 5
 
@@ -74,9 +74,9 @@ prompts:
   templates:
     tool_description: tool_description.txt
     field_query_description: field_query_description.txt
-    field_augemntation_description: field_augemntation_description.txt
+    field_augmentation_description: field_augmentation_description.txt
     field_rerank_description: field_rerank_description.txt
-    query_expantion: query_expantion.txt
+    query_expansion: query_expansion.txt
     query_hyde: query_hyde.txt
     answer_summary: answer_summary.txt
 

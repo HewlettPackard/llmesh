@@ -4,7 +4,7 @@
 """
 This pytest script tests the ToolRepository factory and its repository flavor,
 LangChainStructuredToolRepository. The tests ensure that the factory method correctly
-initializes and returns instances of the appropriate repository types based on the 
+initializes and returns instances of the appropriate repository types based on the
 given configuration. It also tests the specific behavior of each repository's methods to ensure
 correct setup and functionality.
 """
