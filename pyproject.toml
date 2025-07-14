@@ -1,6 +1,6 @@
 [project]
 name = "agentic-python"
-version = "0.2.0"
+version = "0.3.0"
 description = "Athon is the agentic-python library to create the HPE Agentic Tool Mesh platform services. This is an innovative platform designed to streamline and enhance the use of AI in various applications. It serves as a central hub to orchestrate 'Intelligent Plugins,' optimizing AI interactions and processes."
 authors = [{ name = "Antonio Fin", email = "antonio.fin@hpe.com" }]
 requires-python = ">=3.11,<3.13"
@@ -26,6 +26,9 @@ dependencies = [
     "pyopenssl>=24.2.1,<25",
     "flask>=3.0.3,<4",
     "langchain>=0.3.4,<0.4",
+    "pillow>=11.3.0,<11.4.0",
+    "requests>=2.32.4,<2.33",
+    "urllib3>=2.5.0,<2.6",
     "python-certifi-win32>=1.6.1,<2 ; sys_platform == 'win32'",
 ]
 
@@ -37,9 +40,9 @@ chat = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.12.3,<0.13",
-    "llama-index-llms-openai>=0.3,<0.4",
-    "vllm>=0.8",
+    "llama-index>=0.12.41,<0.13",
+    "llama-index-llms-openai>=0.4,<0.5",
+    "vllm>=0.9",
 ]
 
 agents = [
@@ -50,9 +53,9 @@ agents = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.12.3,<0.13",
-    "llama-index-llms-openai>=0.3,<0.4",
-    "vllm>=0.8",
+    "llama-index>=0.12.41,<0.13",
+    "llama-index-llms-openai>=0.4,<0.5",
+    "vllm>=0.9",
     # Agents specific
     "crewai[tools]>0.80.0,<0.90.0",
     "langgraph>=0.2.39,<0.3",
@@ -65,12 +68,12 @@ rag = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.12.3,<0.13",
-    "llama-index-llms-openai>=0.3,<0.4",
-    "vllm>=0.8",
+    "llama-index>=0.12.41,<0.13",
+    "llama-index-llms-openai>=0.4,<0.5",
+    "vllm>=0.9",
     # RAG specific
     "chromadb>0.4.24, <0.6.00",
-    "torch>=2.6.0, <2.7.0",
+    "torch>=2.7.0, <2.9.0",
     "sentence-transformers>3.2.0, <3.4.0",
     "transformers>=4.48.0",
     "qdrant-client>1.12.0, <1.13.0",
@@ -96,15 +99,15 @@ all = [
     "langchain-anthropic>=0.2.3,<0.3",
     "langchain-mistralai>=0.2.0,<0.3",
     "langchain-nvidia-ai-endpoints>=0.3.0,<0.4",
-    "llama-index>=0.12.3,<0.13",
-    "llama-index-llms-openai>=0.3,<0.4",
+    "llama-index>=0.12.41,<0.13",
+    "llama-index-llms-openai>=0.4,<0.5",
     # Agents specific
     "crewai[tools]>0.80.0,<0.90.0",
     "langgraph>=0.2.39,<0.3",
-    "vllm>=0.8",
+    "vllm>=0.9",
     # RAG specific
     "chromadb>0.4.24, <0.6.00",
-    "torch>=2.6.0, <2.7.0",
+    "torch>=2.7.0, <2.9.0",
     "sentence-transformers>3.2.0, <3.4.0",
     "transformers>=4.48.0",
     "qdrant-client>1.12.0, <1.13.0",
