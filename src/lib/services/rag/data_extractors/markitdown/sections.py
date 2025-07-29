@@ -12,8 +12,8 @@ This module allows:
 import re
 from markitdown import MarkItDown
 from src.lib.services.rag.data_extractors.base import BaseDataExtractor
-from src.lib.core.file_cache import FileCache
-from src.lib.core.log import Logger
+from src.lib.services.core.file_cache import FileCache
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

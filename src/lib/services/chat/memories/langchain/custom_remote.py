@@ -18,7 +18,7 @@ from langchain_core.messages import (
     AIMessage, FunctionMessage, ToolMessage
 )
 from langchain.schema import BaseMemory
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory
 from src.lib.services.chat.memories.error_handler import memory_error_handler
 

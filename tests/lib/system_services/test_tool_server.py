@@ -13,7 +13,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from requests.exceptions import HTTPError
 from langchain.tools import StructuredTool
-from src.lib.system_services.tool_server import ToolDiscovery
+from src.lib.tool_api.tool_server import ToolDiscovery
 
 
 @pytest.fixture

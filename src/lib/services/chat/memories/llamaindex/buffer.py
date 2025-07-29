@@ -14,7 +14,7 @@ from pydantic import Field
 from llama_index.core.llms import ChatMessage
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.memory import ChatMemoryBuffer
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory
 from src.lib.services.chat.memories.error_handler import memory_error_handler
 

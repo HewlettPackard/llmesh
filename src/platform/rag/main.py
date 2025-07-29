@@ -19,10 +19,10 @@ from athon.rag import (
     DataStorage,
     DataRetriever
 )
-from src.lib.core.config import Config
-from src.lib.core.log import Logger
+from src.lib.services.core.config import Config
+from src.lib.services.core.log import Logger
 from src.platform.mcp.main import platform_registry
-from src.lib.system_services.mcp_server import MCPServer
+from src.lib.services.mcp.server_configuration import MCPServer
 
 
 # Load configuration
@@ -216,7 +216,7 @@ async def register():
         server = await platform_registry.register_platform_tool(
             name="rag_service",
             func=retrieve,
-            config=config["webapp"],
+            _config=config["webapp"],
             description=description
         )
         logger.info("RAG service tool registered successfully")

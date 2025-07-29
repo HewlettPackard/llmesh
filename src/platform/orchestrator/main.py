@@ -32,7 +32,7 @@ project_settings = {
     "engine": None
 }
 
-def main():
+async def main():
     """
     Main function that starts the FastAPI app using Uvicorn.
     Reads host, port, and optional SSL context from the configuration.
@@ -47,15 +47,15 @@ def main():
         cert_config = webapp_config['ssh_cert']
         app_run_args['ssl_certfile'] = cert_config.get('certfile')
         app_run_args['ssl_keyfile'] = cert_config.get('keyfile')
-    app = _create_llm_app(CONFIG)
+    app = await _create_llm_app(CONFIG)
     uvicorn.run(app, **app_run_args)
 
-def _create_llm_app(config):
+async def _create_llm_app(config):
     """
     Create the FastAPI application and configure its routes.
     """
     logger.debug("Creating FastAPI LLM App")
-    _init_project(config)
+    await _init_project(config)
     llm_endpoint_config = _prepare_llm_endpoint_config(config)
     chat_endpoint = ChatEndpoint(llm_endpoint_config)
     app = FastAPI()
@@ -101,8 +101,8 @@ def _create_llm_app(config):
 
     return app
 
-def _init_project(config):
-    project_settings["tool_repository"] = _discover_project_tools(
+async def _init_project(config):
+    project_settings["tool_repository"] = await _discover_project_tools(
         config["projects"],
         config["chat"]["tools"],
         config["chat"]["discovery"])
@@ -111,17 +111,17 @@ def _init_project(config):
         project_settings["tool_repository"])
     project_settings["engine"] = ReasoningEngine.create(config["chat"])
 
-def _discover_project_tools(projects_config, tools_config, discovery_config, update=False):
+async def _discover_project_tools(projects_config, tools_config, discovery_config, update=False):
     tool_repository = ToolRepository.create(tools_config)
     tool_discovery = ToolDiscovery(discovery_config)
     tool_id_counter = 1
 
     # First, discover tools from platform registry if available
-    if platform_registry and hasattr(platform_registry, '_registry') and platform_registry._registry:
+    if platform_registry and hasattr(platform_registry, 'registry') and platform_registry.registry:
         logger.info("Discovering tools from platform registry")
         try:
             # Get all registered platform tools
-            registry_tools = asyncio.run(_get_platform_tools())
+            registry_tools = await _get_platform_tools()
             for tool_name, tool_info in registry_tools.items():
                 # Find which projects should have this tool
                 for project in projects_config:
@@ -176,8 +176,8 @@ def _discover_project_tools(projects_config, tools_config, discovery_config, upd
 async def _get_platform_tools():
     """Get all tools from the platform registry."""
     tools = {}
-    if platform_registry._registry:
-        for name, server_info in platform_registry._registry.servers.items():
+    if platform_registry.registry:
+        for name, server_info in platform_registry.registry.servers.items():
             if hasattr(server_info, 'server') and hasattr(server_info.server, 'tools'):
                 for tool_name, tool_func in server_info.server.tools.items():
                     tools[tool_name] = {

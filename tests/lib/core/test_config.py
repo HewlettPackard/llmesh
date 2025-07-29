@@ -10,7 +10,7 @@ import os
 from unittest.mock import mock_open, patch
 import yaml
 import pytest
-from src.lib.core.config import Config
+from src.lib.services.core.config import Config
 
 
 # Example YAML content with various placeholders

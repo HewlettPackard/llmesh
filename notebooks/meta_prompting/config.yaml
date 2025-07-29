@@ -45,16 +45,16 @@ cache:
   cache_to_file: true
 
 files:
-  path: src/notebooks/meta_prompting/files/
+  path: src/notebooks/meta_prompting/
   names:
-    policy: input/ecommerce_customer_service.md
-    routine: output/ecommerce_agent_routine.md
-    test_cases: input/ecommerce_test_cases.csv
-    test_results: output/ecommerce_agent_results.csv
+    policy: files/input/ecommerce_customer_service.md
+    routine: files/output/ecommerce_agent_routine.md
+    test_cases: files/input/ecommerce_test_cases.csv
+    test_results: files/output/ecommerce_agent_results.csv
 
 prompts:
   type: JinjaTemplate
-  environment: src/notebooks/meta_prompting/prompts/
+  environment: prompts/
   templates:
     customer_persona: customer_persona.txt
     agent_persona: agent_persona.txt

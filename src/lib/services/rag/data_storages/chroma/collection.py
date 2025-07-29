@@ -14,7 +14,7 @@ from chromadb import PersistentClient
 from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import (
     SentenceTransformerEmbeddingFunction)
 from src.lib.services.rag.data_storages.base import BaseDataStorage
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

@@ -14,8 +14,8 @@ import yaml
 import jsonref
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
-from src.lib.package.athon.chat import PromptRender
-from src.lib.package.athon.system import Config, Logger
+from athon.chat import PromptRender
+from athon.system import Config, Logger
 
 
 config = Config('src/platform/tool_agents/config.yaml').get_settings()

@@ -11,8 +11,8 @@ import os
 from unittest.mock import patch, MagicMock
 import pytest
 from flask import jsonify
-from src.lib.core.template_engine import TemplateEngine
-from src.lib.system_services.tool_client import AthonTool
+from src.lib.services.core.template_engine import TemplateEngine
+from src.lib.tool_api.tool_client import AthonTool
 
 
 @pytest.fixture

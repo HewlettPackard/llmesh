@@ -20,11 +20,10 @@ import matplotlib
 matplotlib.use('Agg')  # Use the 'Agg' backend for non-GUI rendering
 import matplotlib.pyplot as plt  # pylint: disable=W0611,C0413
 from langchain.schema import HumanMessage, SystemMessage  # pylint: disable=C0413
-from src.lib.package.athon.chat import ChatModel, PromptRender  # pylint: disable=C0413
-from src.lib.core.config import Config
-from src.lib.core.log import Logger
+from athon.chat import ChatModel, PromptRender  # pylint: disable=C0413
+from src.lib.services.core.config import Config
+from src.lib.services.core.log import Logger
 from src.platform.mcp.main import platform_registry
-from src.lib.system_services.mcp_server import MCPServer
 
 
 # Parse command-line arguments and start the application
@@ -140,7 +139,7 @@ async def register():
         server = await platform_registry.register_platform_tool(
             name="temperature_analyzer",
             func=temperature_analyzer,
-            config=config["webapp"],
+            _config=config["webapp"],
             description=description
         )
         logger.info("Temperature analyzer tool registered successfully")

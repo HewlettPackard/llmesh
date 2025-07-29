@@ -17,7 +17,7 @@ import os
 import time
 import pytest
 from pymilvus import model
-from src.lib.package.athon.rag import DataStorage, DataLoader, DataRetriever
+from athon.rag import DataStorage, DataLoader, DataRetriever
 
 
 # --------------------------------

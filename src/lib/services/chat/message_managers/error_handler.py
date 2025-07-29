@@ -9,7 +9,7 @@ Decorator to log catch exception error
 
 from functools import wraps
 from typing import Callable
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

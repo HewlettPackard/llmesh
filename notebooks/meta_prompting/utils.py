@@ -4,16 +4,17 @@
 """
 Utils functions for Meta-Prompting notebooks
 """
-
+from dotenv import load_dotenv
+from pathlib import Path
 import os
 import re
 import json
 import pandas as pd
 import tiktoken
 from langchain_core.messages import HumanMessage, SystemMessage
-from src.lib.package.athon.chat import PromptRender, ChatModel
-from src.lib.package.athon.system import Config
-from src.lib.core.file_cache import FileCache
+from athon.chat import PromptRender, ChatModel
+from athon.system import Config
+from src.lib.services.core.file_cache import FileCache
 from notebooks.meta_prompting.tool_manager import load_tools
 from notebooks.meta_prompting.agent_simulator import PersonaAgent, simluate_conversation
 
@@ -23,26 +24,44 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(current_dir, 'config.yaml')
 config = Config(config_path).get_settings()
 # Save  config variables
-FILES_PATH = config['files']['path']
-POLICY_FILE = FILES_PATH + config['files']['names']['policy']
+POLICY_FILE = os.path.abspath(config['files']['names']['policy'])
 TOOL_PATH = re.sub(r"[\\/]", ".", config['tools']['path'])
 TOOL_CLOSE = config['tools']['close_function']
 TOOL_MODULES = config['tools']['modules']
 TOOLS_OBJECTS, TOOLS = load_tools(TOOL_PATH, TOOL_MODULES)
 PROMPT_CONFIG = config['prompts']
-ROUTINE_FILE = FILES_PATH + config['files']['names']['routine']
+ROUTINE_FILE = os.path.abspath(config['files']['names']['routine'])
 CACHE_CONFIG = config['cache']
 META_PROMPTING_LLM_CONFIG = config['llms']['meta_prompting']
-TEST_CASES_FILE = FILES_PATH + config['files']['names']['test_cases']
+TEST_CASES_FILE = os.path.abspath(config['files']['names']['test_cases'])
 MAX_EVALUATION_LOOP = config['evaluation']['max_evaluations']
 AGENT_LLM_CONFIG = config['llms']['agent_persona']
 CUSTOMER_LLM_CONFIG = config['llms']['customer_persona']
-TEST_RESULTS_FILE = FILES_PATH + config['files']['names']['test_results']
+TEST_RESULTS_FILE = os.path.abspath(config['files']['names']['test_results'])
 MAX_IMPROVMENT_LOOP = config['evaluation']['max_improvments']
 MAX_TOKENS = config['evaluation']['max_tokens']
 MIN_ACCURACY = config['evaluation']['min_accuracy']
 ENCODING = tiktoken.get_encoding("o200k_base")
 
+
+def load_environment():
+    """
+    Configure the environment by loading the .env file.
+    This function will look for a .env file in the current directory or the project root.
+    """
+    # Load environment variables from a .env file in either the current directory or the project root
+    notebook_dir = Path(os.getcwd()).parent
+    project_root = Path(os.getcwd()).parent.parent
+
+    dotenv_path = notebook_dir / '.env'
+    if not load_dotenv(dotenv_path):
+        dotenv_path = project_root / '.env'
+        if not load_dotenv(dotenv_path):
+            print("No .env file found in %s or %s.", project_root / '.env', notebook_dir / '.env')
+        else:
+            print("Environment variables loaded from: %s", dotenv_path)
+    else:
+        print("Environment variables loaded from: %s", dotenv_path)
 
 def read_policy():
     "Read original policy file"

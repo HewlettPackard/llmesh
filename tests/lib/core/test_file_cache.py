@@ -11,7 +11,7 @@ loading data from the cache, and the behavior when caching is disabled.
 import os
 import pickle
 import pytest
-from src.lib.core.file_cache import FileCache
+from src.lib.services.core.file_cache import FileCache
 
 
 @pytest.fixture

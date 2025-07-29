@@ -4,13 +4,13 @@
 """
 Chat Model Module
 
-This module defines the ChatModel class and associated classes for 
-managing different LLM chat models. 
-It utilizes the Factory Pattern to allow for flexible extraction methods 
+This module defines the ChatModel class and associated classes for
+managing different LLM chat models.
+It utilizes the Factory Pattern to allow for flexible extraction methods
 based on the document type.
 """
 
-from typing import Type, Dict, Any
+from typing import Type, Dict, Union
 from src.lib.services.chat.models.langchain.chat_openai import (
     LangChainChatOpenAIModel)
 from src.lib.services.chat.models.langchain.azure_chat_openai import (
@@ -47,7 +47,10 @@ class ChatModel:  # pylint: disable=R0903
     }
 
     @staticmethod
-    def create(config: dict) -> Any:
+    def create(config: dict) -> Union[LangChainChatOpenAIModel, LangChainAzureChatOpenAIModel,
+                                        LangChainChatGoogleGenAIModel, LangChainChatAnthropicModel,
+                                        LangChainChatMistralAIModel, LangChainChatNvidiaModel,
+                                        LangChainChatVLLMModel, LlamaIndexOpenAIModel]:
         """
         Return the appropriate Chat Model based on the provided configuration.
 

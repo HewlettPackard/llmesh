@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langgraph.graph import END, StateGraph, START
 from langgraph.prebuilt import create_react_agent
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.prompt_render import PromptRender
 from src.lib.services.chat.model import ChatModel
 from src.lib.services.agents.task_forces.base import BaseTaskForce

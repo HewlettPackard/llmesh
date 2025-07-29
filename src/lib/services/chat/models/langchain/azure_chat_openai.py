@@ -17,7 +17,7 @@ import httpx
 import requests
 from pydantic import Field
 from langchain_openai import AzureChatOpenAI
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
 from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 

@@ -10,9 +10,10 @@ Jinja2 and some input parameters.
 
 from __future__ import annotations
 from typing import Dict, Optional
+from os.path import abspath
 from pydantic import Field
 from jinja2 import Template, Environment, FileSystemLoader
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.prompt_renders.base import BasePromptRender
 from src.lib.services.chat.prompt_renders.error_handler import prompt_error_handler
 
@@ -73,7 +74,7 @@ class JinjaTemplatePromptRender(BasePromptRender):
         :param params: Additional parameters for rendering the template.
         :return: Result object containing the status and generated content.
         """
-        env_path = self.config.environment
+        env_path = abspath(self.config.environment)
         file_path = self.config.templates[prompt_name]
         environment = Environment(loader=FileSystemLoader(env_path))
         template = environment.get_template(file_path)

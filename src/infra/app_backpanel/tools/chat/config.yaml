@@ -1,0 +1,69 @@
+version: "1.0.0"
+
+webapp:
+  ip: 0.0.0.0
+  port: 5002
+  ssh_cert: adhoc
+
+tool:
+  name: ChatService
+  function: $FUNCTION{ask}
+  arguments:
+    - name: query
+      type: str
+      description: $PROMPT{field_query_description}
+      default : null
+    - name: new
+      type: bool
+      description: $PROMPT{field_new_chat_description}
+      default : false
+    - name: personas
+      type: str
+      description: $PROMPT{field_personas_description}
+      default : assistant
+  description: $PROMPT{tool_description}
+  return_direct: true
+  interface:
+    fields:
+      - name: text
+        label: "Insert the text here"
+        type: textarea
+        rows: 6
+
+service:
+  system_prompt: $PROMPT{default_prompt}
+  personas:
+    - assistant: default_prompt
+    - copywriter: copywriter_prompt
+    - pirate: pirate_prompt
+    - 5g_expert: 5g_expert_prompt
+  llm:
+    type: LangChainChatOpenAI
+    model_name: gpt-4o
+    api_key: $ENV{OPENAI_API_KEY}
+    temperature: 0
+    seed: 42
+  memory:
+    type: LangChainBuffer
+    memory_key: chat_history
+    return_messages: true
+  message_manager:
+    type: LangChainChat
+
+prompts:
+  type: JinjaTemplate
+  environment: src//chat/prompts/
+  templates:
+    tool_description: tool_description.txt
+    field_query_description: field_query_description.txt
+    field_new_chat_description: field_new_chat_description.txt
+    field_personas_description: field_personas_description.txt
+    default_prompt: default_prompt.txt
+    copywriter_prompt: copywriter_prompt.txt
+    pirate_prompt: pirate_prompt.txt
+    5g_expert_prompt: 5g_expert_prompt.txt
+
+logger:
+  name: CHAT_SERVICE
+  log_file: src//chat/logs/tool.log
+  level: DEBUG

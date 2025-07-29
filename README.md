@@ -32,11 +32,11 @@ We have created a series of tools and examples to demonstrate what you can do wi
 The project is organized into the following directories:
 
 * **notebooks**: Contains interactive Jupyter notebooks to explore LLM Agentic Tool Mesh functionalities:
-  * **Platform Seervices**: Notebooks to try Chat, RAG, and Agent services.
+  * **Platform Services**: Notebooks to try Chat, RAG, MCP, and Agent services.
   * **Meta-Prompting**: Notebooks for creating an eCustomer Support Service agent using meta-prompting.
 
-* **src**: Sourve code
-  * **lib**: Contains **`athon`** the agentic-python library with all self-serve platform services for creating tools and web applications. These services are grouped into:
+* **src**: Source code
+  * **lib**: Contains the platform library with all services for creating tools and web applications. These services are grouped into:
     * **Agent Services**
     * **Chat Services**
     * **RAG (Retrieval-Augmented Generation) Services**
@@ -138,4 +138,4 @@ For more details about installation, usage, and advanced configurations, please 
 
 ## Contact
 
-If you have any questions or need further assistance, feel free to contact me at <antonio.fin@hpe.com>.
+If you have any questions or need further assistance, feel free to contact me at <michael.kinsy@hpe.com>.

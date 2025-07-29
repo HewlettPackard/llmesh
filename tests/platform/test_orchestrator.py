@@ -77,7 +77,7 @@ def mock_config():
 
 
 @pytest.fixture
-def test_client(mock_config):  # pylint: disable=W0621
+async def test_client(mock_config):  # pylint: disable=W0621
     """
     Return a TestClient instance of the FastAPI app with patched internals.
     """
@@ -122,16 +122,29 @@ def test_client(mock_config):  # pylint: disable=W0621
                         }
                     }]
                 }
-                # ✅ Fix request mock
-                mock_request = MagicMock()
-                mock_request.model = "Test Project"
-                mock_request.messages = [MagicMock(role="user", content="What's the weather?")]
-                mock_request.stream = False
-                mock_chat_request.return_value = mock_request
+                def mock_chat_request_handler(**kwargs):
+                    mock_request = MagicMock()
+                    mock_request.model = kwargs.get("model", "Test Project")
+                    # Convert dict messages to objects with role and content attributes
+                    messages = kwargs.get("messages", [{"role": "user", "content": "What's the weather?"}])
+                    mock_messages = []
+                    for msg in messages:
+                        if isinstance(msg, dict):
+                            mock_msg = MagicMock()
+                            mock_msg.role = msg["role"]
+                            mock_msg.content = msg["content"]
+                            mock_messages.append(mock_msg)
+                        else:
+                            mock_messages.append(msg)
+                    mock_request.messages = mock_messages
+                    mock_request.stream = kwargs.get("stream", False)
+                    return mock_request
+
+                mock_chat_request.side_effect = mock_chat_request_handler
                 chat_endpoint_instance.build_stream_chunk.return_value.model_dump_json.return_value = (
                     '{"content": "streamed"}'
                 )
-                app = _create_llm_app(mock_config)
+                app = await _create_llm_app(mock_config)
                 yield TestClient(app)
     finally:
         # Reset global state to prevent test pollution, if not done causes future tests to potentially hang
@@ -139,18 +152,21 @@ def test_client(mock_config):  # pylint: disable=W0621
         project_settings.update(original_project_settings)
 
 @pytest.mark.timeout(15)
-def test_get_models_returns_model_list(test_client):  # pylint: disable=W0621
+@pytest.mark.asyncio
+async def test_get_models_returns_model_list(test_client):  # pylint: disable=W0621
     """
     Ensure the /v1/models endpoint returns a list of models.
     """
-    response = test_client.get("/v1/models")
-    assert response.status_code == status.HTTP_200_OK
-    data = response.json()
-    assert "data" in data
-    assert data["data"][0]["id"] == "Test Project"
+    async for client in test_client:
+        response = client.get("/v1/models")
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert "data" in data
+        assert data["data"][0]["id"] == "Test Project"
 
 @pytest.mark.timeout(timeout=15, method="signal")
-def test_chat_completion_stateful_success(test_client):  # pylint: disable=W0621
+@pytest.mark.asyncio
+async def test_chat_completion_stateful_success(test_client):  # pylint: disable=W0621
     """
     Ensure /v1/chat/completions returns a response when stateful engine is used.
     """
@@ -162,47 +178,44 @@ def test_chat_completion_stateful_success(test_client):  # pylint: disable=W0621
         ],
         "stream": False
     }
-    response = test_client.post("/v1/chat/completions", json=request_data)
-    assert response.status_code == 200
-    assert response.json()["choices"][0]["message"]["content"] == "This is a test completion."
+    async for client in test_client:
+        response = client.post("/v1/chat/completions", json=request_data)
+        assert response.status_code == 200
+        assert response.json()["choices"][0]["message"]["content"] == "This is a test completion."
 
 @pytest.mark.timeout(15)
-def test_chat_completion_model_not_found(test_client):  # pylint: disable=W0621
+@pytest.mark.asyncio
+async def test_chat_completion_model_not_found(test_client):  # pylint: disable=W0621
     """
     Ensure a 404 is returned when the model name is invalid.
     """
-    # Patch the ChatRequest mock specifically for this test
-    with patch("src.platform.orchestrator.main.ChatEndpoint.ChatRequest") as mock_chat_request:
-        # Mock the input with an invalid model name
-        mock_request = MagicMock()
-        mock_request.model = "InvalidModel"
-        mock_request.messages = [MagicMock(role="user", content="Hello")]
-        mock_request.stream = False
-        mock_chat_request.return_value = mock_request
-        request_data = {
-            "model": "InvalidModel",
-            "messages": [{"role": "user", "content": "Hello"}],
-            "stream": False
-        }
-        response = test_client.post("/v1/chat/completions", json=request_data)
+    request_data = {
+        "model": "InvalidModel",
+        "messages": [{"role": "user", "content": "Hello"}],
+        "stream": False
+    }
+    async for client in test_client:
+        response = client.post("/v1/chat/completions", json=request_data)
         # Now we correctly expect a 500 response
         assert response.status_code == 500
         assert "No project found for model" in response.text
 
 @pytest.mark.timeout(15)
-def test_chat_completion_internal_error(test_client):  # pylint: disable=W0621
+@pytest.mark.asyncio
+async def test_chat_completion_internal_error(test_client):  # pylint: disable=W0621
     """
     Ensure a 500 is returned when the engine.run raises an exception.
     """
-    project_settings["engine"].run.side_effect = Exception("Runtime crash")
-    request_data = {
-        "model": "Test Project",
-        "messages": [{"role": "user", "content": "Hi"}],
-        "stream": False
-    }
-    response = test_client.post("/v1/chat/completions", json=request_data)
-    assert response.status_code == 500
-    assert "Runtime crash" in response.text
+    async for client in test_client:
+        project_settings["engine"].run.side_effect = Exception("Runtime crash")
+        request_data = {
+            "model": "Test Project",
+            "messages": [{"role": "user", "content": "Hi"}],
+            "stream": False
+        }
+        response = client.post("/v1/chat/completions", json=request_data)
+        assert response.status_code == 500
+        assert "Runtime crash" in response.text
 
 
 @pytest.mark.parametrize("stateless", [True, False])

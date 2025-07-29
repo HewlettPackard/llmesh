@@ -13,7 +13,7 @@ from src.lib.services.chat.message_managers.base import (
     BaseMessageManager,
     SharedLogicMessageManager
 )
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.message_managers.message import (
     ChatMessage,
     MessageRole,

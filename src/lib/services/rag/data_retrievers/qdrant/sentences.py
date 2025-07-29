@@ -12,7 +12,7 @@ from typing import Optional, List, Dict, Any
 from qdrant_client.http.models import Filter, ScoredPoint
 from pydantic import Field
 from src.lib.services.rag.data_retrievers.base import BaseDataRetriever
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

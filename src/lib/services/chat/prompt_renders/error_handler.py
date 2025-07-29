@@ -9,7 +9,7 @@ Decorator to log catch exception error
 
 from functools import wraps
 from typing import Callable
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()
@@ -18,7 +18,7 @@ logger = Logger().get_logger()
 def prompt_error_handler(error_prefix: str):
     """
     Decorator to handle common error patterns in prompt operations.
-    
+
     :param error_prefix: Prefix for error messages (e.g., "Error saving message")
     """
     def decorator(func: Callable) -> Callable:

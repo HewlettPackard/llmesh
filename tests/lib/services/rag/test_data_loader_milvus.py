@@ -55,7 +55,7 @@ def milvus_for_sentences_config():
     }
 
 
-@patch('src.lib.core.log.Logger')
+@patch('src.lib.services.core.log.Logger')
 @patch('pymilvus.MilvusClient')
 def test_insert_success(mock_milvus_client, mock_logger, milvus_for_sentences_config):  # pylint: disable=W0621, W0613
     """
@@ -94,7 +94,7 @@ def test_insert_success(mock_milvus_client, mock_logger, milvus_for_sentences_co
     assert inserted_data[1]["text"] == "Document 2"
 
 
-@patch('src.lib.core.log.Logger')
+@patch('src.lib.services.core.log.Logger')
 @patch('pymilvus.MilvusClient')
 def test_insert_failure(mock_milvus_client, mock_logger, milvus_for_sentences_config):  # pylint: disable=W0621, W0613
     """
