@@ -13,7 +13,7 @@ from pydantic import Field
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from src.lib.services.rag.data_storages.base import BaseDataStorage
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

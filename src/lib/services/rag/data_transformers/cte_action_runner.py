@@ -17,7 +17,7 @@ from src.lib.services.rag.data_transformers.base import BaseDataTransformer
 from src.lib.services.rag.data_transformers.clean import regex
 from src.lib.services.rag.data_transformers.transform import llm, section, chunk
 from src.lib.services.rag.data_transformers.enrich import metadata
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

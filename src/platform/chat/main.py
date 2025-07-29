@@ -168,7 +168,7 @@ async def register():
         server = await platform_registry.register_platform_tool(
             name="chat",
             func=chat,
-            config=config["webapp"],
+            _config=config["webapp"],
             description=description
         )
         logger.info("Chat service registered successfully")

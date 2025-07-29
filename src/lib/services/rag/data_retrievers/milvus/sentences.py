@@ -11,7 +11,7 @@ This module provides functionality to:
 from typing import Optional, List, Dict, Any
 from pydantic import Field
 from src.lib.services.rag.data_retrievers.base import BaseDataRetriever
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

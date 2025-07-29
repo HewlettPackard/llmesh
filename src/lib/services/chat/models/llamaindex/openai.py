@@ -15,7 +15,7 @@ from typing import Optional, Dict, Any, Iterator, AsyncIterator
 from pydantic import Field
 from llama_index.llms.openai import OpenAI
 from llama_index.core.llms import ChatMessage, MessageRole
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
 from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 

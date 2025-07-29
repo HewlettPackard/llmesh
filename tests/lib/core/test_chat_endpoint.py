@@ -11,7 +11,7 @@ handling of unexpected fields.
 import os
 import logging
 import pytest
-from src.lib.core.chat_endpoint import ChatEndpoint, Message
+from src.lib.services.core.chat_endpoint import ChatEndpoint, Message
 
 
 @pytest.fixture

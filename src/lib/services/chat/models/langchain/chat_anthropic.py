@@ -15,7 +15,7 @@ import os
 from typing import Optional, Dict, Any, Iterator, AsyncIterator
 from pydantic import Field
 from langchain_anthropic import ChatAnthropic
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
 from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 

@@ -11,7 +11,7 @@ import os
 import logging
 from unittest.mock import patch, MagicMock
 import pytest
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 @pytest.fixture(autouse=True)

@@ -12,7 +12,6 @@ for a self-contained example.
 """
 
 from mcp.server.fastmcp import FastMCP
-from mcp.server.fastmcp.prompts.base import UserMessage, AssistantMessage 
 from fastapi import FastAPI
 import uvicorn
 from notebooks.platform_services.lablib.mcp.definitions import (

@@ -19,7 +19,7 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.tools import StructuredTool
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.model import ChatModel
 from src.lib.services.chat.memory import ChatMemory
 from src.lib.services.agents.tool_repository import ToolRepository

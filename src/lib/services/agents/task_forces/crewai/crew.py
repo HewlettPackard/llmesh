@@ -12,7 +12,7 @@ This module allows for:
 from typing import Optional, Any, Dict, List, Union
 from pydantic import Field
 from crewai import Agent, Crew, Task, Process
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.model import ChatModel
 from src.lib.services.agents.task_forces.base import BaseTaskForce
 

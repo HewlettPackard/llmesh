@@ -19,7 +19,7 @@ import os
 import pytest
 from crewai_tools import SerperDevTool
 from langchain_community.tools.tavily_search import TavilySearchResults
-from src.lib.package.athon.agents import TaskForce
+from athon.agents import TaskForce
 
 
 def get_tavily_tool():

@@ -52,7 +52,7 @@ def qdrant_for_sentences_config():
     }
 
 
-@patch('src.lib.core.log.Logger')
+@patch('src.lib.services.core.log.Logger')
 @patch('qdrant_client.QdrantClient')
 def test_insert_success(mock_qdrant_client, mock_logger, qdrant_for_sentences_config):  # pylint: disable=W0621, W0613
     """
@@ -80,7 +80,7 @@ def test_insert_success(mock_qdrant_client, mock_logger, qdrant_for_sentences_co
     mock_qdrant_client.upsert.assert_called_once()
 
 
-@patch('src.lib.core.log.Logger')
+@patch('src.lib.services.core.log.Logger')
 @patch('qdrant_client.QdrantClient')
 def test_insert_failure(mock_qdrant_client, mock_logger, qdrant_for_sentences_config):  # pylint: disable=W0621, W0613
     """

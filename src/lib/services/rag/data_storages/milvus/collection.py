@@ -17,7 +17,7 @@ from pymilvus import (
     FieldSchema
 )
 from src.lib.services.rag.data_storages.base import BaseDataStorage
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

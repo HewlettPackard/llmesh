@@ -18,7 +18,7 @@ from pydantic import Field
 from chromadb.utils.embedding_functions.sentence_transformer_embedding_function import (
     SentenceTransformerEmbeddingFunction)
 from src.lib.services.rag.data_retrievers.base import BaseDataRetriever
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

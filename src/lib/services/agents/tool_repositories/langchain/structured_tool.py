@@ -12,7 +12,7 @@ based on the configuration and maintains a repository of tools with metadata.
 
 from typing import Dict, Any, Optional
 import threading
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.agents.tool_repositories.base import BaseToolRepository
 
 

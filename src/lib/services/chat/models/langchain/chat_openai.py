@@ -16,7 +16,7 @@ from typing import Optional, Dict, Any, Iterator, AsyncIterator
 import httpx
 from pydantic import Field
 from langchain_openai import ChatOpenAI
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.models.base import BaseChatModel
 from src.lib.services.chat.models.error_handler import model_error_handler, stream_error_handler
 

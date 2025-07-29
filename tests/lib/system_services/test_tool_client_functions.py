@@ -12,8 +12,8 @@ import os
 from unittest.mock import MagicMock, patch
 import pytest
 from flask import Flask
-from src.lib.system_services.tool_client import AthonTool
-from src.lib.core.log import Logger
+from src.lib.tool_api.tool_client import AthonTool
+from src.lib.services.core.log import Logger
 
 
 def test_athon_tool_initialization():
@@ -165,7 +165,7 @@ def test_no_config_no_logger(mock_minimal_config):  # pylint: disable=W0621
     We patch out file-system calls so it doesn't rely on an actual config file.
     """
     with patch(
-        "src.lib.core.config.Config.get_settings",
+        "src.lib.services.core.config.Config.get_settings",
         return_value=mock_minimal_config):
         tool = AthonTool()  # No config, no logger
         assert tool.config["tool"]["name"] == "DefaultTool", \
@@ -197,7 +197,7 @@ def test_no_config_but_logger(mock_minimal_config):  # pylint: disable=W0621
     """
     mock_logger = MagicMock()
     with patch(
-        "src.lib.core.config.Config.get_settings",
+        "src.lib.services.core.config.Config.get_settings",
         return_value=mock_minimal_config):
         tool = AthonTool(logger=mock_logger)  # no config, but we have a logger
         assert tool.logger == mock_logger, "AthonTool should use the provided logger."

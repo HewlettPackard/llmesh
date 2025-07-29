@@ -13,7 +13,7 @@ from typing import Any, Dict, Optional
 from pydantic import Field
 from langchain.memory import ConversationBufferMemory
 from langchain_core.messages import BaseMessage
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.memories.base import BaseChatMemory
 from src.lib.services.chat.memories.error_handler import memory_error_handler
 

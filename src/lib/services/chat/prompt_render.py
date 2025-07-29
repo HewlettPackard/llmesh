@@ -4,13 +4,13 @@
 """
 Prompt Module
 
-This module defines the Prompt class and associated factory class for 
-managing prompt rendering. 
-It utilizes the Factory Pattern to allow for flexible extraction methods 
+This module defines the Prompt class and associated factory class for
+managing prompt rendering.
+It utilizes the Factory Pattern to allow for flexible extraction methods
 based on the document type.
 """
 
-from typing import Type, Dict, Any
+from typing import Type, Dict, Union
 from src.lib.services.chat.prompt_renders.jinja.template import (
     JinjaTemplatePromptRender)
 
@@ -25,7 +25,7 @@ class PromptRender:  # pylint: disable=R0903
     }
 
     @staticmethod
-    def create(config: dict) -> Any:
+    def create(config: dict) -> Union[JinjaTemplatePromptRender]:
         """
         Create and return a Prompt object based on the provided configuration.
 

@@ -12,7 +12,7 @@ This module provides functionality to:
 from typing import Dict, List, Any, Tuple
 from tqdm import tqdm
 from src.lib.services.rag.data_loaders.base import BaseDataLoader
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 
 
 logger = Logger().get_logger()

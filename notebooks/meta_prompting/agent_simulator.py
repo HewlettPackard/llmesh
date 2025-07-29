@@ -9,7 +9,7 @@ import math
 import json
 from typing import List, Any
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
-from src.lib.package.athon.chat import ChatModel
+from athon.chat import ChatModel
 
 
 class PersonaAgent:
@@ -20,7 +20,7 @@ class PersonaAgent:
     def __init__(self, llm_config, role: str, system_prompt: str, tools: Any = None):
         """
         Initialize the persona agent.
-        
+
         :param llm_config: Configuration for the LLM (model name, parameters, etc.)
         :param role: The persoma role.
         :param system_prompt: The system prompt with the info of the personas.
@@ -47,7 +47,7 @@ class PersonaAgent:
         """
         Takes the user’s input, appends it to the transcript,
         and gets a response from the agent LLM.
-        
+
         :param transcript: Thelist of messages.
         :return: The agent’s response.
         """

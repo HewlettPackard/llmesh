@@ -18,7 +18,7 @@ from typing import Dict, Any, List, Optional
 from llama_index.core.tools import FunctionTool
 from llama_index.core.agent import ReActAgent
 from langchain.tools import StructuredTool
-from src.lib.core.log import Logger
+from src.lib.services.core.log import Logger
 from src.lib.services.chat.model import ChatModel
 from src.lib.services.chat.memory import ChatMemory
 from src.lib.services.agents.tool_repository import ToolRepository

@@ -11,9 +11,9 @@ synthetis them from JSON results.
 import sys
 import asyncio
 from crewai.tools import BaseTool
-from src.lib.package.athon.system import Config, Logger
-from src.lib.package.athon.agents import TaskForce
-from src.lib.package.athon.chat import PromptRender
+from athon.system import Config, Logger
+from athon.agents import TaskForce
+from athon.chat import PromptRender
 from src.platform.mcp.main import platform_registry
 # Import tool classes needed to resolve properly the config file
 from src.platform.tool_agents.openapi_tool import OpenApiManagerTool  # pylint: disable=W0611
@@ -56,7 +56,7 @@ async def register():
         server = await platform_registry.register_platform_tool(
             name="tool_agents",
             func=openapi_manager,
-            config=config["webapp"],
+            _config=config["webapp"],
             description=description
         )
         logger.info("Tool agents service registered successfully")

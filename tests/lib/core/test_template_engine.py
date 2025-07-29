@@ -8,7 +8,7 @@ Test suite for the TemplateEngine class that handles Jinja2 templates.
 import os
 import pytest
 from jinja2 import TemplateNotFound
-from src.lib.core.template_engine import TemplateEngine
+from src.lib.services.core.template_engine import TemplateEngine
 
 
 @pytest.fixture
