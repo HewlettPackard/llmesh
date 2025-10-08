@@ -132,4 +132,4 @@ For more details about installation, usage, and advanced configurations, please 
 
 ## Contact
 
-If you have any questions or need further assistance, feel free to contact me at <antonio.fin@hpe.com>.
+If you have any questions or need further assistance, feel free to contact me at <michael.kinsy@hpe.com>.
