@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11, <3.13"
 resolution-markers = [
     "python_full_version >= '3.12.4' and sys_platform == 'darwin'",
@@ -2328,7 +2328,7 @@ wheels = [
 
 [[package]]
 name = "langchain-mistralai"
-version = "0.2.7"
+version = "0.2.12"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -2337,9 +2337,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/46/70/938414c1b3a085b6c7c04a722a66f000e01703459a79d0107a6286a3d2ff/langchain_mistralai-0.2.7.tar.gz", hash = "sha256:957c99104679a4fa74df28f92de50367bd9d2001572a58c522d6761aa439f04b", size = 19991, upload-time = "2025-02-20T17:43:38.863Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3d/b9/c6ee8f2383a63806d55e9426f02d26399dee3acff45c7e6ee04a156542a1/langchain_mistralai-0.2.12.tar.gz", hash = "sha256:c2ecd1460c48adbe497a2d3794052dfcc974a1280ceab4476047e62343d8bbc9", size = 22176, upload-time = "2025-09-18T15:47:40.498Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4d/bb/aeb45f005995672b9a5438e7ce521890df70247ee43ec9b17c2c717f8516/langchain_mistralai-0.2.7-py3-none-any.whl", hash = "sha256:2e8fc581f6c798b63a53fb8ec389f6e559027af1f3c01dfa3e228bdc58bafa9c", size = 15997, upload-time = "2025-02-20T17:43:37.116Z" },
+    { url = "https://files.pythonhosted.org/packages/64/fe/a4bf7240beb12ebaf9f1780938ec4402b40e7fa5ffcedc7c25473c2078ed/langchain_mistralai-0.2.12-py3-none-any.whl", hash = "sha256:64a85947776017eec787b586f4bfa092d237c5e95a9ed719b5ff22a81747dedf", size = 16695, upload-time = "2025-09-18T15:47:39.591Z" },
 ]
 
 [[package]]
